@@ -43,7 +43,7 @@ export async function fetchPublicBehanceProjects(): Promise<PublicProject[]> {
     if (seen.has(projectKey)) continue;
     seen.add(projectKey);
     const titleMatch = block.match(/aria-label="([^"]+)"/i) || block.match(/alt="([^"]+)"/i);
-    const coverMatch = block.match(/https:\/\/mir-s3-cdn-cf\.behance\.net\/projects\/(?:max_808|808|404)\/[^"]+/i);
+    const coverMatch = block.match(/https:\/\/mir-s3-cdn-cf\.behance\.net\/projects\/(?:max_808|808|404)\/[^\"\s]+/i);
     const slug = decode(href[2]);
     projects.push({
       projectKey,
