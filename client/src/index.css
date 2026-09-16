@@ -60,3 +60,9 @@ a { text-decoration: none; }
 .project-media-grid .embedded-media { min-height: 32vw; height: 100%; }
 .catalog-image .embedded-media { min-height: 100%; aspect-ratio: 1 / 1.18; pointer-events: none; }
 @media (max-width: 700px) { .embedded-media, .project-media-grid .embedded-media { min-height: 62vw; }.catalog-image .embedded-media { min-height: 100%; } }
+
+/* Harmonious centered rows */
+.catalog-grid { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 42px 18px; }
+.catalog-card { flex: 0 1 calc((100% - 36px) / 3); max-width: calc((100% - 36px) / 3); }
+.project-description { max-width: 720px; margin: 28px 0 0; color: rgba(232,228,220,.72); font: 400 clamp(1rem, 1.5vw, 1.28rem)/1.45 'DM Mono', monospace; letter-spacing: -.025em; }
+@media (max-width: 700px) { .catalog-grid { gap: 30px 10px; }.catalog-card { flex-basis: calc((100% - 10px) / 2); max-width: calc((100% - 10px) / 2); }.project-description { margin-top: 22px; font-size: .85rem; line-height: 1.5; } }
