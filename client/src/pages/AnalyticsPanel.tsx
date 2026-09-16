@@ -1,10 +1,10 @@
-import { startLogin } from "@/const";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
 import { useState } from "react";
 import { buildQuotesCsv } from "@/lib/reportExport";
 import { portfolioProjects } from "@/data/portfolio";
 import NotificationCenter from "@/components/NotificationCenter";
+import AdminLoginGuide from "@/components/AdminLoginGuide";
 
 type LeadStatus = "pending" | "responded" | "completed";
 type ProjectDraft = { projectKey: string; title: string; description: string; year: string; thumbnail: string; sourceUrl: string; hidden: boolean };
@@ -28,8 +28,8 @@ export default function AnalyticsPanel() {
   const audit = trpc.analytics.audit.useQuery(undefined, { enabled: isAuthenticated });
 
   if (loading) return <main className="panel-shell"><p className="eyebrow">Carregando painel…</p></main>;
-  if (!isAuthenticated) return <main className="panel-shell"><p className="eyebrow">Acesso privado</p><h1>Painel do portfólio</h1><p>Entre com a conta proprietária para ver métricas e pedidos.</p><button onClick={() => startLogin()}>Entrar</button></main>;
-  if (user?.role !== "admin") return <main className="panel-shell"><p className="eyebrow">Acesso restrito</p><h1>Este painel é privado.</h1></main>;
+  if (!isAuthenticated) return <AdminLoginGuide />;
+  if (user?.role !== "admin") return <main className="panel-shell"><p className="eyebrow">Acesso restrito</p><h1>Este painel é privado.</h1><p className="admin-denied-copy">Sua conta foi autenticada, mas não possui a função de administrador. Solicite acesso ao proprietário e não compartilhe suas credenciais.</p></main>;
 
   const data = summary.data;
   const values = data?.byDay.map(day => Number(day[metric])) ?? [];
@@ -51,7 +51,7 @@ export default function AnalyticsPanel() {
     const reader = new FileReader(); reader.onload = () => { const value = String(reader.result); uploadAsset.mutate({ projectKey, kind, fileName: file.name, contentType: file.type as "image/jpeg" | "image/png" | "image/webp" | "image/gif", dataBase64: value.split(",")[1] ?? "" }); }; reader.readAsDataURL(file);
   };
   return <main className="panel-shell" id="analytics-report">
-    <header className="panel-header"><div><p className="eyebrow">Deva Braga / analytics</p><h1>O que está acontecendo.</h1><p className="panel-subtitle">Dados agregados, atualizados automaticamente a cada 30 segundos.</p></div><div className="panel-actions"><a href="/">Voltar ao site ↗</a><button className="print-button" onClick={() => window.print()}>Exportar relatório PDF ↓</button></div></header>
+    <header className="panel-header"><div><p className="eyebrow">Deva Braga / analytics</p><h1>O que está acontecendo.</h1><p className="panel-subtitle">Dados agregados, atualizados automaticamente a cada 30 segundos.</p><p className="admin-session-note">Sessão administrativa ativa. Mantenha o 2FA habilitado e encerre a sessão ao usar um dispositivo compartilhado.</p></div><div className="panel-actions"><a href="/">Voltar ao site ↗</a><button className="print-button" onClick={() => window.print()}>Exportar relatório PDF ↓</button></div></header>
     <section className="metric-grid"><article><span>Visualizações totais</span><strong>{data?.totals.views ?? "—"}</strong></article><article><span>Visitantes únicos</span><strong>{data?.totals.visitors ?? "—"}</strong></article><article><span>Cliques em projetos</span><strong>{data?.totals.clicks ?? "—"}</strong></article></section>
     <NotificationCenter />
     <section className="lead-summary-grid"><button className={leadFilter === "all" ? "active" : ""} onClick={() => setLeadFilter("all")}><span>Todos os pedidos</span><strong>{leadsList.length}</strong></button><button className={leadFilter === "pending" ? "active" : ""} onClick={() => setLeadFilter("pending")}><span>Pendentes</span><strong>{leadCounts.pending}</strong></button><button className={leadFilter === "responded" ? "active" : ""} onClick={() => setLeadFilter("responded")}><span>Respondidos</span><strong>{leadCounts.responded}</strong></button><button className={leadFilter === "completed" ? "active" : ""} onClick={() => setLeadFilter("completed")}><span>Concluídos</span><strong>{leadCounts.completed}</strong></button></section>
