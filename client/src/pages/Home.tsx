@@ -1,7 +1,8 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ArrowDownRight, ArrowUpRight, ChevronLeft, ChevronRight, ExternalLink, X } from "lucide-react";
 import { categories, portfolioProjects, type PortfolioProject } from "@/data/portfolio";
 import { trpc } from "@/lib/trpc";
+import QuoteForm from "@/components/QuoteForm";
 
 function Media({ src, alt, featured = false }: { src: string; alt: string; featured?: boolean }) {
   const lower = src.toLowerCase();
@@ -40,14 +41,28 @@ function SpecialMedia({ item, alt, featured = false }: { item: { kind: "image" |
   return <img src={item.src} alt={alt} loading={featured ? "eager" : "lazy"} />;
 }
 
+function getVisitorId() {
+  const key = "deva-portfolio-visitor";
+  const existing = window.localStorage.getItem(key);
+  if (existing) return existing;
+  const created = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+  window.localStorage.setItem(key, created);
+  return created;
+}
+
 export default function Home() {
   const { data: syncedProjects = [] } = trpc.behance.projects.useQuery();
+  const track = trpc.analytics.track.useMutation();
+  const [cookieChoice, setCookieChoice] = useState<string | null>(() => window.localStorage.getItem("deva-cookie-choice"));
+  useEffect(() => { if (cookieChoice === "accepted") track.mutate({ eventType: "page_view", path: window.location.pathname, visitorId: getVisitorId() }); }, [cookieChoice]);
   const allProjects = useMemo<PortfolioProject[]>(() => {
     const existing = new Set(portfolioProjects.map(project => project.title.trim().toLocaleLowerCase()));
     const remote = syncedProjects.filter(project => !existing.has(project.title.trim().toLocaleLowerCase())).map((project, index) => ({
       id: 1000 + index, title: project.title, slug: `behance-${project.projectKey}`, year: project.publishedAt ? new Date(project.publishedAt).getFullYear().toString() : "Behance", sourceUrl: project.sourceUrl, categories: ["Design"] as PortfolioProject["categories"], thumbnail: project.cover ?? "", description: project.description ?? "Projeto publicado no Behance.", media: [],
     }));
-    return [...portfolioProjects, ...remote];
+    const festival = portfolioProjects.find(project => project.slug === "festival-gastronomico-da-feira-de-sao-joaquim");
+    const archive = portfolioProjects.filter(project => project.slug !== festival?.slug);
+    return festival ? [festival, ...remote, ...archive] : [...remote, ...portfolioProjects];
   }, [syncedProjects]);
   const [menuOpen, setMenuOpen] = useState(false);
   const [filter, setFilter] = useState<(typeof categories)[number]>("Todos");
@@ -66,15 +81,16 @@ export default function Home() {
       <section className="work-section" id="trabalhos">
         <div className="section-heading"><div><span className="section-index">01</span><h2>Trabalhos</h2></div><p>{allProjects.length} projetos<br />{allProjects.filter(p => p.id < 1000).length} páginas · {allProjects.reduce((sum, p) => sum + mediaFor(p).length, 0)} mídias</p></div>
         <div className="filter-row" aria-label="Filtrar trabalhos por categoria">{categories.map((item) => <button key={item} className={filter === item ? "active" : ""} onClick={() => setFilter(item)}>{item}<sup>{item === "Todos" ? allProjects.length : allProjects.filter(p => p.categories.includes(item)).length}</sup></button>)}</div>
-        <div className="catalog-grid">{filtered.map((project) => <button className="catalog-card" key={project.id} onClick={() => openProject(project)} aria-label={`Abrir projeto ${project.title}`}><div className="catalog-image"><img src={project.thumbnail} alt={project.title} loading="lazy" /><span className="card-shade" /><span className="card-arrow"><ArrowUpRight size={18} /></span></div><div className="catalog-meta"><span className="catalog-number">{String(project.id).padStart(2, "0")}</span><span><strong>{project.title}</strong><small>{project.year} · {categoryFor(project)} · {mediaFor(project).length} mídias</small></span></div></button>)}</div>
+        <div className="catalog-grid">{filtered.map((project) => <button className="catalog-card" key={project.id} onClick={() => { if (cookieChoice === "accepted") track.mutate({ eventType: "project_click", path: window.location.pathname, projectKey: project.slug, visitorId: getVisitorId() }); openProject(project); }} aria-label={`Abrir projeto ${project.title}`}><div className="catalog-image"><img src={project.thumbnail} alt={project.title} loading="lazy" /><span className="card-shade" /><span className="card-arrow"><ArrowUpRight size={18} /></span></div><div className="catalog-meta"><span className="catalog-number">{String(project.id).padStart(2, "0")}</span><span><strong>{project.title}</strong><small>{project.year} · {categoryFor(project)} · {mediaFor(project).length} mídias</small></span></div></button>)}</div>
       </section>
 
       <section className="statement" id="sobre"><span className="section-index">02</span><div><h2>Entre o documento<br />e a <em>atmosfera.</em></h2><p>Deva Braga é fotógrafo e designer gráfico em Salvador. Seu trabalho percorre pessoas, lugares e marcas em busca de uma imagem que carregue presença.</p><a href="#contato">Conheça o processo <ArrowUpRight size={17} /></a></div></section>
-      <footer className="footer" id="contato"><div><span className="section-index">03</span><p>Tem uma ideia em mente?</p><a href="mailto:oi@devabraga.com">oi@devabraga.com</a></div><div className="footer-right"><span>Salvador, BR</span><span>© 2026 Deva Braga</span></div></footer>
+      <footer className="footer" id="contato"><div className="footer-intro"><span className="section-index">03</span><p>Tem uma ideia em mente?</p><a href="mailto:oi@devabraga.com">oi@devabraga.com</a><div className="footer-links"><a href="https://www.behance.net/deva_braga" target="_blank" rel="noreferrer" onClick={() => { if (cookieChoice === "accepted") track.mutate({ eventType: "external_click", path: window.location.pathname, projectKey: "behance", visitorId: getVisitorId() }); }}>MEU BEHANCE <ExternalLink size={14} /></a><a href="https://stock.adobe.com/br/contributor/212810827/Deva%20Braga" target="_blank" rel="noreferrer" onClick={() => { if (cookieChoice === "accepted") track.mutate({ eventType: "external_click", path: window.location.pathname, projectKey: "adobe-stock", visitorId: getVisitorId() }); }}>ADOBE STOCK <ExternalLink size={14} /></a></div></div><div className="footer-form" id="orcamento"><QuoteForm /></div><div className="footer-right"><span>Salvador, BR</span><span>© 2026 Deva Braga</span></div></footer>
 
       <div className={`menu-panel ${menuOpen ? "open" : ""}`} aria-hidden={!menuOpen}><button className="close-menu" onClick={() => setMenuOpen(false)} aria-label="Fechar menu"><X /></button><div className="menu-inner"><p className="eyebrow">Navegação</p><nav><a href="#top" onClick={() => setMenuOpen(false)}>Início <span>01</span></a><a href="#trabalhos" onClick={() => setMenuOpen(false)}>Trabalhos <span>02</span></a><a href="#sobre" onClick={() => setMenuOpen(false)}>Sobre <span>03</span></a><a href="#contato" onClick={() => setMenuOpen(false)}>Contato <span>04</span></a></nav><p className="menu-note">Fotografia, design gráfico e edição<br />a partir de Salvador.</p></div></div>
 
       {selected && <div className="project-view" role="dialog" aria-modal="true" aria-label={selected.title}><button className="project-close" onClick={() => setSelected(null)} aria-label="Fechar projeto"><X /></button><div className="project-header"><div><span className="eyebrow">{String(selected.id).padStart(2, "0")} / {selected.year} / {categoryFor(selected)}</span><h2>{selected.title}</h2><p className="project-description">{selected.description}</p></div><a href={selected.sourceUrl} target="_blank" rel="noreferrer">Ver página original <ExternalLink size={15} /></a></div><div className="project-media-grid">{mediaFor(selected).map((item, i) => <figure key={`${item.src}-${i}`} className={i === 0 ? "project-media-feature" : ""}><SpecialMedia item={item} alt={`${selected.title} — mídia ${i + 1}`} featured={i === 0} /><figcaption>{String(i + 1).padStart(2, "0")} / {mediaFor(selected).length}</figcaption></figure>)}</div>{mediaFor(selected).length === 0 && <div className="project-media-empty"><p>Este projeto está publicado no Behance.</p><a href={selected.sourceUrl} target="_blank" rel="noreferrer">Abrir projeto no Behance <ExternalLink size={15} /></a></div>}<div className="project-controls"><button onClick={() => changeMedia(-1)} aria-label="Mídia anterior"><ChevronLeft /></button><span>{mediaIndex + 1} / {mediaFor(selected).length}</span><button onClick={() => changeMedia(1)} aria-label="Próxima mídia"><ChevronRight /></button></div></div>}
+      {!cookieChoice && <aside className="cookie-banner" role="dialog" aria-label="Aviso de cookies"><p>Este site utiliza cookies para melhorar a navegação.</p><div><button onClick={() => { window.localStorage.setItem("deva-cookie-choice", "accepted"); setCookieChoice("accepted"); }}>Aceitar</button><button className="cookie-reject" onClick={() => { window.localStorage.setItem("deva-cookie-choice", "rejected"); setCookieChoice("rejected"); }}>Recusar</button></div></aside>}
     </main>
   );
 }

@@ -1,6 +1,6 @@
-import { desc, eq } from "drizzle-orm";
+import { count, desc, eq, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, User, behanceProjects, behanceSyncJobs, users } from "../drizzle/schema";
+import { InsertUser, User, behanceProjects, behanceSyncJobs, quoteRequests, trafficEvents, users } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -75,4 +75,30 @@ export async function ensureBehanceSyncJob(name: string) {
 export async function updateBehanceSyncJob(name: string, values: Partial<typeof behanceSyncJobs.$inferInsert>) {
   const db = await getDb(); if (!db) throw new Error("DATABASE_URL is not configured");
   await db.update(behanceSyncJobs).set({ ...values, updatedAt: new Date() }).where(eq(behanceSyncJobs.name, name));
+}
+
+export async function createQuoteRequest(input: { name: string; email: string; phone?: string; message: string }) {
+  const db = await getDb(); if (!db) throw new Error("DATABASE_URL is not configured");
+  await db.insert(quoteRequests).values({ name: input.name, email: input.email, phone: input.phone ?? null, message: input.message, consent: 1, status: "new" });
+}
+
+export async function listQuoteRequests() {
+  const db = await getDb(); if (!db) return [];
+  return db.select().from(quoteRequests).orderBy(desc(quoteRequests.createdAt)).limit(100);
+}
+
+export async function recordTrafficEvent(input: { eventType: string; path: string; projectKey?: string; visitorId: string }) {
+  const db = await getDb(); if (!db) return;
+  await db.insert(trafficEvents).values({ eventType: input.eventType, path: input.path, projectKey: input.projectKey ?? null, visitorId: input.visitorId });
+}
+
+export async function getTrafficSummary() {
+  const db = await getDb(); if (!db) return { totals: { views: 0, clicks: 0, visitors: 0 }, byDay: [], topProjects: [] };
+  const [totals, visitors, byDay, topProjects] = await Promise.all([
+    db.select({ views: count(sql`CASE WHEN ${trafficEvents.eventType} = 'page_view' THEN 1 END`), clicks: count(sql`CASE WHEN ${trafficEvents.eventType} = 'project_click' THEN 1 END`) }).from(trafficEvents),
+    db.select({ visitors: sql<number>`COUNT(DISTINCT ${trafficEvents.visitorId})` }).from(trafficEvents),
+    db.select({ day: sql<string>`DATE_FORMAT(${trafficEvents.createdAt}, '%Y-%m-%d')`, views: count() }).from(trafficEvents).where(sql`${trafficEvents.createdAt} >= DATE_SUB(NOW(), INTERVAL 6 DAY)`).groupBy(sql`DATE_FORMAT(${trafficEvents.createdAt}, '%Y-%m-%d')`).orderBy(sql`DATE_FORMAT(${trafficEvents.createdAt}, '%Y-%m-%d')`),
+    db.select({ projectKey: trafficEvents.projectKey, clicks: count() }).from(trafficEvents).where(eq(trafficEvents.eventType, "project_click")).groupBy(trafficEvents.projectKey).orderBy(desc(count())).limit(8),
+  ]);
+  return { totals: { views: Number(totals[0]?.views ?? 0), clicks: Number(totals[0]?.clicks ?? 0), visitors: Number(visitors[0]?.visitors ?? 0) }, byDay, topProjects };
 }

@@ -8,6 +8,7 @@ type PublicProject = {
   title: string;
   sourceUrl: string;
   cover?: string;
+  publishedAt?: Date;
 };
 
 function decode(value: string) {
@@ -52,7 +53,7 @@ export async function fetchPublicBehanceProjects(): Promise<PublicProject[]> {
       cover: coverMatch?.[0]?.replace(/\\u0026/g, "&"),
     });
   }
-  return projects;
+  return projects.map((project, index) => ({ ...project, publishedAt: new Date(Date.now() - index * 1000) }));
 }
 
 export async function syncPublicBehanceProjects() {

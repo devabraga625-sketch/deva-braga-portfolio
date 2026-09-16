@@ -16,11 +16,12 @@ describe("fetchPublicBehanceProjects", () => {
 
     const projects = await fetchPublicBehanceProjects();
 
-    expect(projects).toEqual([{
+    expect(projects[0]).toMatchObject({
       projectKey: "123456",
       title: "Projeto de Teste, estudo visual",
       sourceUrl: "https://www.behance.net/gallery/123456/Projeto-de-Teste",
       cover: "https://mir-s3-cdn-cf.behance.net/projects/404/abc.jpg",
-    }]);
+    });
+    expect(projects[0]?.publishedAt).toBeInstanceOf(Date);
   });
 });

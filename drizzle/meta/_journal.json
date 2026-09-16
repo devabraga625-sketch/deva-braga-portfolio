@@ -8,6 +8,13 @@
       "when": 1789579824375,
       "tag": "0000_lovely_rocket_racer",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1789581892735,
+      "tag": "0001_puzzling_blue_blade",
+      "breakpoints": true
     }
   ]
 }

@@ -70,3 +70,42 @@ a { text-decoration: none; }
 .project-media-empty { display: grid; place-items: center; gap: 14px; min-height: 240px; margin-top: 32px; border: 1px solid rgba(232,228,220,.22); background: #24241f; color: rgba(232,228,220,.72); text-align: center; font: 12px 'DM Mono', monospace; }
 .project-media-empty p { margin: 0; }
 .project-media-empty a { display: inline-flex; align-items: center; gap: 8px; color: var(--acid); text-transform: uppercase; }
+
+.footer { align-items: flex-start; gap: 5vw; flex-wrap: wrap; }
+.footer-intro { flex: 1 1 260px; min-width: 240px; }
+.footer-links { display: flex; flex-direction: column; gap: 12px; margin-top: 36px; }
+.footer-links a { display: inline-flex; width: fit-content; align-items: center; gap: 8px; font: 500 11px 'DM Mono', monospace; letter-spacing: .04em; border-bottom: 1px solid var(--ink); }
+.footer-form { flex: 1 1 360px; min-width: min(100%, 340px); max-width: 540px; }
+.quote-form { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 18px; }
+.quote-form-heading, .quote-form label:nth-of-type(4), .quote-consent, .quote-form button, .quote-status { grid-column: 1 / -1; }
+.quote-form-heading h3 { margin: 8px 0 12px; font: 500 clamp(2rem, 4vw, 4rem)/.9 'Playfair Display', serif; letter-spacing: -.06em; }
+.quote-form-heading em { color: #516000; font-style: italic; }
+.quote-form label { display: grid; gap: 7px; font: 500 10px 'DM Mono', monospace; text-transform: uppercase; letter-spacing: .04em; }
+.quote-form label span { opacity: .65; text-transform: none; }
+.quote-form input:not([type="checkbox"]), .quote-form textarea { width: 100%; border: 0; border-bottom: 1px solid rgba(17,17,15,.5); padding: 9px 0; background: transparent; color: var(--ink); outline: none; font: 15px 'DM Sans', sans-serif; }
+.quote-form textarea { resize: vertical; min-height: 90px; }
+.quote-form input:focus, .quote-form textarea:focus { border-color: var(--ink); }
+.quote-consent { display: flex !important; grid-template-columns: none !important; align-items: flex-start; gap: 8px !important; font: 11px/1.4 'DM Sans', sans-serif !important; text-transform: none !important; letter-spacing: 0 !important; }
+.quote-consent input { margin-top: 2px; accent-color: var(--ink); }
+.quote-form button, .panel-shell button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: fit-content; border: 1px solid var(--ink); background: var(--ink); color: var(--paper); padding: 12px 18px; font: 500 10px 'DM Mono', monospace; text-transform: uppercase; }
+.quote-form button:disabled { opacity: .45; cursor: not-allowed; }
+.quote-status { min-height: 18px; margin: 0; font: 11px 'DM Mono', monospace; }
+.panel-shell { min-height: 100vh; padding: 7vw 6vw; background: var(--ink); color: var(--paper); }
+.panel-header { display: flex; justify-content: space-between; align-items: end; gap: 24px; border-bottom: 1px solid rgba(232,228,220,.25); padding-bottom: 34px; }
+.panel-header h1, .panel-shell > h1 { margin: 18px 0 0; font: 500 clamp(3rem, 7vw, 7rem)/.9 'Playfair Display', serif; letter-spacing: -.06em; }
+.panel-header a { color: var(--acid); font: 11px 'DM Mono', monospace; text-transform: uppercase; }
+.metric-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin: 30px 0; }
+.metric-grid article, .panel-card { border: 1px solid rgba(232,228,220,.22); padding: 22px; }
+.metric-grid span, .panel-card-heading span:last-child, .panel-card > span { color: rgba(232,228,220,.62); font: 10px 'DM Mono', monospace; text-transform: uppercase; }
+.metric-grid strong { display: block; margin-top: 18px; color: var(--acid); font: 500 clamp(2.4rem, 5vw, 5rem) 'Playfair Display', serif; }
+.panel-grid { display: grid; grid-template-columns: 1.35fr 1fr; gap: 14px; }
+.panel-card-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 30px; }
+.bar-chart { min-height: 180px; display: flex; align-items: end; justify-content: space-around; gap: 8px; border-bottom: 1px solid rgba(232,228,220,.22); }
+.bar-column { height: 170px; display: flex; flex: 1; flex-direction: column; align-items: center; justify-content: end; gap: 8px; }.bar { width: min(40px, 70%); min-height: 4px; background: var(--acid); }.bar-column small { color: rgba(232,228,220,.6); font: 10px 'DM Mono', monospace; }
+.rank-list { display: grid; gap: 13px; margin: 0; padding-left: 25px; }.rank-list li { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid rgba(232,228,220,.15); padding-bottom: 10px; font: 12px 'DM Mono', monospace; }.rank-list strong { color: var(--acid); }
+.leads-card { margin-top: 14px; }.leads-list { display: grid; gap: 12px; }.leads-list article { display: grid; grid-template-columns: 1fr auto; gap: 4px 15px; padding: 15px 0; border-top: 1px solid rgba(232,228,220,.15); }.leads-list article strong { display: block; font: 500 1.2rem 'Playfair Display', serif; }.leads-list article span, .leads-list article time { color: rgba(232,228,220,.62); font: 10px 'DM Mono', monospace; }.leads-list article p { grid-column: 1 / -1; margin: 8px 0 0; color: rgba(232,228,220,.82); line-height: 1.45; }
+@media (max-width: 700px) { .footer { display: block; }.footer-form { margin-top: 70px; }.footer-right { margin-top: 24vh; }.quote-form { grid-template-columns: 1fr; }.quote-form-heading, .quote-form label:nth-of-type(4), .quote-consent, .quote-form button, .quote-status { grid-column: auto; }.panel-shell { padding: 22vw 20px 15vw; }.panel-header { display: block; }.panel-header a { display: block; margin-top: 24px; }.metric-grid, .panel-grid { grid-template-columns: 1fr; }.leads-list article { grid-template-columns: 1fr; }.leads-list article time { grid-row: 1; } }
+
+.cookie-banner { position: fixed; z-index: 50; left: 24px; bottom: 24px; display: flex; align-items: center; gap: 24px; max-width: min(600px, calc(100vw - 48px)); padding: 15px 17px; background: var(--ink); color: var(--paper); box-shadow: 0 12px 35px rgba(0,0,0,.25); border: 1px solid rgba(232,228,220,.2); }
+.cookie-banner p { margin: 0; font: 12px/1.35 'DM Sans', sans-serif; }.cookie-banner div { display: flex; gap: 8px; flex-shrink: 0; }.cookie-banner button { border: 1px solid var(--acid); background: var(--acid); color: var(--ink); padding: 9px 13px; font: 500 10px 'DM Mono', monospace; text-transform: uppercase; }.cookie-banner .cookie-reject { border-color: rgba(232,228,220,.5); background: transparent; color: var(--paper); }
+@media (max-width: 700px) { .cookie-banner { left: 14px; right: 14px; bottom: 14px; max-width: none; display: block; padding: 14px; }.cookie-banner div { margin-top: 12px; }.cookie-banner button { flex: 1; } }
