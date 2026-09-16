@@ -143,3 +143,10 @@ a { text-decoration: none; }
 
 .protected-media { -webkit-user-drag: none; user-select: none; }
 @media print { .protected-media { visibility: hidden !important; } }
+
+.quote-status { display: flex; align-items: center; gap: 7px; }
+.quote-status.is-success { color: #516000; }
+.quote-status.is-error { color: #a33f32; }
+.quote-spinner { animation: quote-spin .8s linear infinite; }
+@keyframes quote-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .quote-spinner { animation: none; } }
