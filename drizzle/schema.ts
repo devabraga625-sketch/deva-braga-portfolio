@@ -24,9 +24,14 @@ export const trafficEvents = mysqlTable("traffic_events", {
   id: int("id").autoincrement().primaryKey(), eventType: varchar("eventType", { length: 64 }).notNull(), path: varchar("path", { length: 255 }).notNull(), projectKey: varchar("projectKey", { length: 191 }), visitorId: varchar("visitorId", { length: 64 }).notNull(), createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
+export const portfolioProjectOverrides = mysqlTable("portfolio_project_overrides", {
+  id: int("id").autoincrement().primaryKey(), projectKey: varchar("projectKey", { length: 191 }).notNull().unique(), title: text("title"), description: text("description"), year: varchar("year", { length: 32 }), thumbnail: text("thumbnail"), sourceUrl: text("sourceUrl"), hidden: int("hidden").default(0).notNull(), updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 export type BehanceProject = typeof behanceProjects.$inferSelect;
 export type BehanceSyncJob = typeof behanceSyncJobs.$inferSelect;
 export type QuoteRequest = typeof quoteRequests.$inferSelect;
 export type TrafficEvent = typeof trafficEvents.$inferSelect;
+export type PortfolioProjectOverride = typeof portfolioProjectOverrides.$inferSelect;

@@ -75,6 +75,7 @@ function getThemeChoice() {
 
 export default function Home() {
   const { data: syncedProjects = [] } = trpc.behance.projects.useQuery();
+  const { data: overrides = [] } = trpc.portfolio.overrides.useQuery();
   const { data: accessCounts = [] } = trpc.analytics.projectAccess.useQuery();
   const track = trpc.analytics.track.useMutation();
   const [cookieChoice, setCookieChoice] = useState<string | null>(() => getCookieChoice());
@@ -87,8 +88,14 @@ export default function Home() {
     }));
     const festival = portfolioProjects.find(project => project.slug === "festival-gastronomico-da-feira-de-sao-joaquim");
     const archive = portfolioProjects.filter(project => project.slug !== festival?.slug);
-    return festival ? [festival, ...remote, ...archive] : [...remote, ...portfolioProjects];
-  }, [syncedProjects]);
+    const base = festival ? [festival, ...remote, ...archive] : [...remote, ...portfolioProjects];
+    const overrideMap = new Map(overrides.map(override => [override.projectKey, override]));
+    return base.flatMap(project => {
+      const override = overrideMap.get(project.slug);
+      if (override?.hidden) return [];
+      return [{ ...project, title: override?.title ?? project.title, description: override?.description ?? project.description, year: override?.year ?? project.year, thumbnail: override?.thumbnail ?? project.thumbnail, sourceUrl: override?.sourceUrl ?? project.sourceUrl }];
+    });
+  }, [overrides, syncedProjects]);
   const [menuOpen, setMenuOpen] = useState(false);
   const [filter, setFilter] = useState<(typeof categories)[number]>("Todos");
   const [searchQuery, setSearchQuery] = useState("");
@@ -131,7 +138,7 @@ export default function Home() {
 
       <div className={`menu-panel ${menuOpen ? "open" : ""}`} aria-hidden={!menuOpen}><button className="close-menu" onClick={() => setMenuOpen(false)} aria-label="Fechar menu"><X /></button><div className="menu-inner"><p className="eyebrow">Navegação</p><nav><a href="#top" onClick={() => setMenuOpen(false)}>Início <span>01</span></a><a href="#trabalhos" onClick={() => setMenuOpen(false)}>Trabalhos <span>02</span></a><a href="#sobre" onClick={() => setMenuOpen(false)}>Sobre <span>03</span></a><a href="#contato" onClick={() => setMenuOpen(false)}>Contato <span>04</span></a></nav><p className="menu-note">Fotografia, design gráfico e edição<br />a partir de Salvador.</p></div></div>
 
-      {selected && <div className="project-view" role="dialog" aria-modal="true" aria-label={selected.title}><button className="project-close" onClick={() => setSelected(null)} aria-label="Fechar projeto"><X /></button><div className="project-header"><div><span className="eyebrow">{String(selected.id).padStart(2, "0")} / {selected.year} / {categoryFor(selected)}</span><h2>{selected.title}</h2><p className="project-description">{selected.description}</p></div><a href={selected.sourceUrl} target="_blank" rel="noreferrer">Ver página original <ExternalLink size={15} /></a></div><div className="project-media-grid">{mediaFor(selected).map((item, i) => <figure key={`${item.src}-${i}`} className={i === 0 ? "project-media-feature" : ""}><SpecialMedia item={item} alt={`${selected.title} — mídia ${i + 1}`} featured={i === 0} /><figcaption>{String(i + 1).padStart(2, "0")} / {mediaFor(selected).length}</figcaption></figure>)}</div>{mediaFor(selected).length === 0 && <div className="project-media-empty"><p>Este projeto está publicado no Behance.</p><a href={selected.sourceUrl} target="_blank" rel="noreferrer">Abrir projeto no Behance <ExternalLink size={15} /></a></div>}{mediaFor(selected).length > 0 && <div className="project-controls"><button onClick={() => changeMedia(-1)} aria-label="Mídia anterior"><ChevronLeft /></button><span>{mediaIndex + 1} / {mediaFor(selected).length}</span><button onClick={() => changeMedia(1)} aria-label="Próxima mídia"><ChevronRight /></button></div>}</div>}
+      {selected && <div className="project-view" role="dialog" aria-modal="true" aria-label={selected.title}><button className="project-close" onClick={() => setSelected(null)} aria-label="Fechar projeto"><X /></button><div className="project-header"><div><span className="quick-view-label">Visualização rápida</span><span className="eyebrow">{String(selected.id).padStart(2, "0")} / {selected.year} / {categoryFor(selected)}</span><h2>{selected.title}</h2><p className="project-description">{selected.description}</p></div><a href={selected.sourceUrl} target="_blank" rel="noreferrer">Ver página original <ExternalLink size={15} /></a></div><div className="project-media-grid">{mediaFor(selected).map((item, i) => <figure key={`${item.src}-${i}`} className={i === 0 ? "project-media-feature" : ""}><SpecialMedia item={item} alt={`${selected.title} — mídia ${i + 1}`} featured={i === 0} /><figcaption>{String(i + 1).padStart(2, "0")} / {mediaFor(selected).length}</figcaption></figure>)}</div>{mediaFor(selected).length === 0 && <div className="project-media-empty"><p>Este projeto está publicado no Behance.</p><a href={selected.sourceUrl} target="_blank" rel="noreferrer">Abrir projeto no Behance <ExternalLink size={15} /></a></div>}{mediaFor(selected).length > 0 && <div className="project-controls"><button onClick={() => changeMedia(-1)} aria-label="Mídia anterior"><ChevronLeft /></button><span>{mediaIndex + 1} / {mediaFor(selected).length}</span><button onClick={() => changeMedia(1)} aria-label="Próxima mídia"><ChevronRight /></button></div>}</div>}
       {!cookieChoice && <aside className="cookie-banner" role="dialog" aria-label="Aviso de cookies"><p>Este site utiliza cookies para melhorar a navegação. <a href="/politica-de-privacidade">Política de privacidade</a></p><div><button onClick={() => { saveCookieChoice("accepted"); setCookieChoice("accepted"); }}>Aceitar</button><button className="cookie-reject" onClick={() => { saveCookieChoice("rejected"); setCookieChoice("rejected"); }}>Recusar</button></div></aside>}
     </main>
   );

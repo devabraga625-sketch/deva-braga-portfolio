@@ -1,6 +1,6 @@
 import { count, desc, eq, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, User, behanceProjects, behanceSyncJobs, quoteRequests, trafficEvents, users } from "../drizzle/schema";
+import { InsertUser, User, behanceProjects, behanceSyncJobs, portfolioProjectOverrides, quoteRequests, trafficEvents, users } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -111,4 +111,19 @@ export async function getTrafficSummary(days = 7) {
 export async function getProjectAccessCounts() {
   const db = await getDb(); if (!db) return [];
   return db.select({ projectKey: trafficEvents.projectKey, accesses: count() }).from(trafficEvents).where(eq(trafficEvents.eventType, "project_click")).groupBy(trafficEvents.projectKey).orderBy(desc(count())).limit(200);
+}
+
+export async function listPortfolioProjectOverrides() {
+  const db = await getDb(); if (!db) return [];
+  return db.select().from(portfolioProjectOverrides);
+}
+
+export async function upsertPortfolioProjectOverride(input: { projectKey: string; title?: string; description?: string; year?: string; thumbnail?: string; sourceUrl?: string; hidden?: boolean }) {
+  const db = await getDb(); if (!db) throw new Error("DATABASE_URL is not configured");
+  await db.insert(portfolioProjectOverrides).values({ projectKey: input.projectKey, title: input.title ?? null, description: input.description ?? null, year: input.year ?? null, thumbnail: input.thumbnail ?? null, sourceUrl: input.sourceUrl ?? null, hidden: input.hidden ? 1 : 0 }).onDuplicateKeyUpdate({ set: { title: input.title ?? null, description: input.description ?? null, year: input.year ?? null, thumbnail: input.thumbnail ?? null, sourceUrl: input.sourceUrl ?? null, hidden: input.hidden ? 1 : 0, updatedAt: new Date() } });
+}
+
+export async function deletePortfolioProjectOverride(projectKey: string) {
+  const db = await getDb(); if (!db) throw new Error("DATABASE_URL is not configured");
+  await db.delete(portfolioProjectOverrides).where(eq(portfolioProjectOverrides.projectKey, projectKey));
 }
