@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArrowDownRight, ArrowUpRight, ChevronLeft, ChevronRight, ExternalLink, X } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight, ChevronLeft, ChevronRight, ExternalLink, Moon, Search, Sun, X } from "lucide-react";
 import { categories, portfolioProjects, type PortfolioProject } from "@/data/portfolio";
 import { trpc } from "@/lib/trpc";
 import QuoteForm from "@/components/QuoteForm";
@@ -60,10 +60,15 @@ function saveCookieChoice(choice: "accepted" | "rejected") {
   try { window.localStorage.setItem("deva-cookie-choice", choice); } catch {}
 }
 
+function getThemeChoice() {
+  try { return window.localStorage.getItem("deva-theme") === "dark"; } catch { return false; }
+}
+
 export default function Home() {
   const { data: syncedProjects = [] } = trpc.behance.projects.useQuery();
   const track = trpc.analytics.track.useMutation();
   const [cookieChoice, setCookieChoice] = useState<string | null>(() => getCookieChoice());
+  const [darkMode, setDarkMode] = useState(() => getThemeChoice());
   useEffect(() => { if (cookieChoice === "accepted") track.mutate({ eventType: "page_view", path: window.location.pathname, visitorId: getVisitorId() }); }, [cookieChoice]);
   const allProjects = useMemo<PortfolioProject[]>(() => {
     const existing = new Set(portfolioProjects.map(project => project.title.trim().toLocaleLowerCase()));
@@ -76,21 +81,27 @@ export default function Home() {
   }, [syncedProjects]);
   const [menuOpen, setMenuOpen] = useState(false);
   const [filter, setFilter] = useState<(typeof categories)[number]>("Todos");
+  const [searchQuery, setSearchQuery] = useState("");
   const [selected, setSelected] = useState<PortfolioProject | null>(null);
   const [mediaIndex, setMediaIndex] = useState(0);
-  const filtered = useMemo(() => filter === "Todos" ? allProjects : allProjects.filter((p) => p.categories.includes(filter)), [allProjects, filter]);
+  const filtered = useMemo(() => {
+    const query = searchQuery.trim().toLocaleLowerCase();
+    return allProjects.filter(project => (filter === "Todos" || project.categories.includes(filter)) && (!query || project.title.toLocaleLowerCase().includes(query)));
+  }, [allProjects, filter, searchQuery]);
+  const toggleTheme = () => { const next = !darkMode; setDarkMode(next); try { window.localStorage.setItem("deva-theme", next ? "dark" : "light"); } catch {} };
   
   const openProject = (project: PortfolioProject) => { setSelected(project); setMediaIndex(0); };
   const changeMedia = (direction: number) => { if (!selected) return; const total = mediaFor(selected).length; if (!total) return; setMediaIndex((mediaIndex + direction + total) % total); };
 
   return (
-    <main className="site-shell">
-      <header className="topbar"><a className="wordmark" href="#top" aria-label="Deva Braga, início">DEVA<br /><span>BRAGA</span></a><div className="topbar-center">Portfólio / 2025—26</div><button className="menu-trigger" onClick={() => setMenuOpen(true)} aria-label="Abrir menu">Menu <span className="menu-lines"><i /><i /></span></button></header>
+    <main className={`site-shell${darkMode ? " dark-mode" : ""}`}>
+      <header className="topbar"><a className="wordmark" href="#top" aria-label="Deva Braga, início">DEVA<br /><span>BRAGA</span></a><div className="topbar-center">Portfólio / 2025—26</div><div className="topbar-actions"><button className="theme-toggle" onClick={toggleTheme} aria-label={darkMode ? "Ativar modo claro" : "Ativar modo escuro"}>{darkMode ? <Sun size={15} /> : <Moon size={15} />}</button><button className="menu-trigger" onClick={() => setMenuOpen(true)} aria-label="Abrir menu">Menu <span className="menu-lines"><i /><i /></span></button></div></header>
       <section className="hero" id="top"><p className="eyebrow">Fotografia · Design gráfico · Edição</p><h1>Imagens que<br /><em>ficam.</em></h1><div className="hero-footer"><p>Um arquivo visual entre Salvador,<br />a rua e o que ainda não tem nome.</p><a href="#trabalhos" className="scroll-cue">Explorar trabalhos <ArrowDownRight size={17} /></a></div></section>
 
       <section className="work-section" id="trabalhos">
         <div className="section-heading"><div><span className="section-index">01</span><h2>Trabalhos</h2></div><p>{allProjects.length} projetos<br />{allProjects.filter(p => p.id < 1000).length} páginas · {allProjects.reduce((sum, p) => sum + mediaFor(p).length, 0)} mídias</p></div>
-        <div className="filter-row" aria-label="Filtrar trabalhos por categoria">{categories.map((item) => <button key={item} className={filter === item ? "active" : ""} onClick={() => setFilter(item)}>{item}<sup>{item === "Todos" ? allProjects.length : allProjects.filter(p => p.categories.includes(item)).length}</sup></button>)}</div>
+        <div className="work-tools"><div className="filter-row" aria-label="Filtrar trabalhos por categoria">{categories.map((item) => <button key={item} className={filter === item ? "active" : ""} onClick={() => setFilter(item)}>{item}<sup>{item === "Todos" ? allProjects.length : allProjects.filter(p => p.categories.includes(item)).length}</sup></button>)}</div><label className="work-search"><Search size={16} /><span className="sr-only">Buscar trabalhos pelo nome</span><input type="search" value={searchQuery} onChange={event => setSearchQuery(event.target.value)} placeholder="Buscar por nome" aria-label="Buscar trabalhos pelo nome" />{searchQuery && <button type="button" onClick={() => setSearchQuery("")} aria-label="Limpar busca"><X size={14} /></button>}</label></div>
+        {filtered.length === 0 && <p className="empty-search">Nenhum trabalho encontrado para esta busca.</p>}
         <div className="catalog-grid">{filtered.map((project) => <button className="catalog-card" key={project.id} onClick={() => { if (cookieChoice === "accepted") track.mutate({ eventType: "project_click", path: window.location.pathname, projectKey: project.slug, visitorId: getVisitorId() }); openProject(project); }} aria-label={`Abrir projeto ${project.title}`}><div className="catalog-image"><img src={project.thumbnail} alt={project.title} loading="lazy" /><span className="card-shade" /><span className="card-arrow"><ArrowUpRight size={18} /></span></div><div className="catalog-meta"><span className="catalog-number">{String(project.id).padStart(2, "0")}</span><span><strong>{project.title}</strong><small>{project.year} · {categoryFor(project)} · {mediaFor(project).length} mídias</small></span></div></button>)}</div>
       </section>
 
