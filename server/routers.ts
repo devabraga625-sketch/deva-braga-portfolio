@@ -24,7 +24,7 @@ export const appRouter = router({
       await recordTrafficEvent(input);
       return { ok: true } as const;
     }),
-    summary: adminProcedure.query(() => getTrafficSummary()),
+    summary: adminProcedure.input(z.object({ days: z.union([z.literal(7), z.literal(30)]).default(7) })).query(({ input }) => getTrafficSummary(input.days)),
     leads: adminProcedure.query(() => listQuoteRequests()),
   }),
   quoteRequests: router({

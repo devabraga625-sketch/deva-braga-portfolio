@@ -43,17 +43,27 @@ function SpecialMedia({ item, alt, featured = false }: { item: { kind: "image" |
 
 function getVisitorId() {
   const key = "deva-portfolio-visitor";
-  const existing = window.localStorage.getItem(key);
-  if (existing) return existing;
+  try {
+    const existing = window.localStorage.getItem(key);
+    if (existing) return existing;
+  } catch {}
   const created = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
-  window.localStorage.setItem(key, created);
+  try { window.localStorage.setItem(key, created); } catch {}
   return created;
+}
+
+function getCookieChoice() {
+  try { return window.localStorage.getItem("deva-cookie-choice"); } catch { return null; }
+}
+
+function saveCookieChoice(choice: "accepted" | "rejected") {
+  try { window.localStorage.setItem("deva-cookie-choice", choice); } catch {}
 }
 
 export default function Home() {
   const { data: syncedProjects = [] } = trpc.behance.projects.useQuery();
   const track = trpc.analytics.track.useMutation();
-  const [cookieChoice, setCookieChoice] = useState<string | null>(() => window.localStorage.getItem("deva-cookie-choice"));
+  const [cookieChoice, setCookieChoice] = useState<string | null>(() => getCookieChoice());
   useEffect(() => { if (cookieChoice === "accepted") track.mutate({ eventType: "page_view", path: window.location.pathname, visitorId: getVisitorId() }); }, [cookieChoice]);
   const allProjects = useMemo<PortfolioProject[]>(() => {
     const existing = new Set(portfolioProjects.map(project => project.title.trim().toLocaleLowerCase()));
@@ -71,7 +81,7 @@ export default function Home() {
   const filtered = useMemo(() => filter === "Todos" ? allProjects : allProjects.filter((p) => p.categories.includes(filter)), [allProjects, filter]);
   
   const openProject = (project: PortfolioProject) => { setSelected(project); setMediaIndex(0); };
-  const changeMedia = (direction: number) => { if (!selected) return; setMediaIndex((mediaIndex + direction + mediaFor(selected).length) % mediaFor(selected).length); };
+  const changeMedia = (direction: number) => { if (!selected) return; const total = mediaFor(selected).length; if (!total) return; setMediaIndex((mediaIndex + direction + total) % total); };
 
   return (
     <main className="site-shell">
@@ -89,8 +99,8 @@ export default function Home() {
 
       <div className={`menu-panel ${menuOpen ? "open" : ""}`} aria-hidden={!menuOpen}><button className="close-menu" onClick={() => setMenuOpen(false)} aria-label="Fechar menu"><X /></button><div className="menu-inner"><p className="eyebrow">Navegação</p><nav><a href="#top" onClick={() => setMenuOpen(false)}>Início <span>01</span></a><a href="#trabalhos" onClick={() => setMenuOpen(false)}>Trabalhos <span>02</span></a><a href="#sobre" onClick={() => setMenuOpen(false)}>Sobre <span>03</span></a><a href="#contato" onClick={() => setMenuOpen(false)}>Contato <span>04</span></a></nav><p className="menu-note">Fotografia, design gráfico e edição<br />a partir de Salvador.</p></div></div>
 
-      {selected && <div className="project-view" role="dialog" aria-modal="true" aria-label={selected.title}><button className="project-close" onClick={() => setSelected(null)} aria-label="Fechar projeto"><X /></button><div className="project-header"><div><span className="eyebrow">{String(selected.id).padStart(2, "0")} / {selected.year} / {categoryFor(selected)}</span><h2>{selected.title}</h2><p className="project-description">{selected.description}</p></div><a href={selected.sourceUrl} target="_blank" rel="noreferrer">Ver página original <ExternalLink size={15} /></a></div><div className="project-media-grid">{mediaFor(selected).map((item, i) => <figure key={`${item.src}-${i}`} className={i === 0 ? "project-media-feature" : ""}><SpecialMedia item={item} alt={`${selected.title} — mídia ${i + 1}`} featured={i === 0} /><figcaption>{String(i + 1).padStart(2, "0")} / {mediaFor(selected).length}</figcaption></figure>)}</div>{mediaFor(selected).length === 0 && <div className="project-media-empty"><p>Este projeto está publicado no Behance.</p><a href={selected.sourceUrl} target="_blank" rel="noreferrer">Abrir projeto no Behance <ExternalLink size={15} /></a></div>}<div className="project-controls"><button onClick={() => changeMedia(-1)} aria-label="Mídia anterior"><ChevronLeft /></button><span>{mediaIndex + 1} / {mediaFor(selected).length}</span><button onClick={() => changeMedia(1)} aria-label="Próxima mídia"><ChevronRight /></button></div></div>}
-      {!cookieChoice && <aside className="cookie-banner" role="dialog" aria-label="Aviso de cookies"><p>Este site utiliza cookies para melhorar a navegação.</p><div><button onClick={() => { window.localStorage.setItem("deva-cookie-choice", "accepted"); setCookieChoice("accepted"); }}>Aceitar</button><button className="cookie-reject" onClick={() => { window.localStorage.setItem("deva-cookie-choice", "rejected"); setCookieChoice("rejected"); }}>Recusar</button></div></aside>}
+      {selected && <div className="project-view" role="dialog" aria-modal="true" aria-label={selected.title}><button className="project-close" onClick={() => setSelected(null)} aria-label="Fechar projeto"><X /></button><div className="project-header"><div><span className="eyebrow">{String(selected.id).padStart(2, "0")} / {selected.year} / {categoryFor(selected)}</span><h2>{selected.title}</h2><p className="project-description">{selected.description}</p></div><a href={selected.sourceUrl} target="_blank" rel="noreferrer">Ver página original <ExternalLink size={15} /></a></div><div className="project-media-grid">{mediaFor(selected).map((item, i) => <figure key={`${item.src}-${i}`} className={i === 0 ? "project-media-feature" : ""}><SpecialMedia item={item} alt={`${selected.title} — mídia ${i + 1}`} featured={i === 0} /><figcaption>{String(i + 1).padStart(2, "0")} / {mediaFor(selected).length}</figcaption></figure>)}</div>{mediaFor(selected).length === 0 && <div className="project-media-empty"><p>Este projeto está publicado no Behance.</p><a href={selected.sourceUrl} target="_blank" rel="noreferrer">Abrir projeto no Behance <ExternalLink size={15} /></a></div>}{mediaFor(selected).length > 0 && <div className="project-controls"><button onClick={() => changeMedia(-1)} aria-label="Mídia anterior"><ChevronLeft /></button><span>{mediaIndex + 1} / {mediaFor(selected).length}</span><button onClick={() => changeMedia(1)} aria-label="Próxima mídia"><ChevronRight /></button></div>}</div>}
+      {!cookieChoice && <aside className="cookie-banner" role="dialog" aria-label="Aviso de cookies"><p>Este site utiliza cookies para melhorar a navegação. <a href="/politica-de-privacidade">Política de privacidade</a></p><div><button onClick={() => { saveCookieChoice("accepted"); setCookieChoice("accepted"); }}>Aceitar</button><button className="cookie-reject" onClick={() => { saveCookieChoice("rejected"); setCookieChoice("rejected"); }}>Recusar</button></div></aside>}
     </main>
   );
 }
