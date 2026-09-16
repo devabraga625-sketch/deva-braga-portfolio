@@ -12,6 +12,7 @@ function clientKey(req: Request) {
 export function apiRateLimit(req: Request, res: Response, next: NextFunction) {
   const now = Date.now();
   const key = clientKey(req);
+  res.setHeader("X-RateLimit-Limit", String(MAX_API_REQUESTS));
   const current = buckets.get(key);
   if (!current || now - current.startedAt >= WINDOW_MS) {
     buckets.set(key, { startedAt: now, count: 1 });
@@ -21,6 +22,7 @@ export function apiRateLimit(req: Request, res: Response, next: NextFunction) {
   if (current.count > MAX_API_REQUESTS) {
     const retryAfter = Math.ceil((WINDOW_MS - (now - current.startedAt)) / 1000);
     res.setHeader("Retry-After", String(retryAfter));
+    void import("../db").then(({ createTemplatedNotification }) => createTemplatedNotification({ eventKey: "security_rate_limit", variables: { path: req.path }, fallback: { title: "Proteção antiabuso acionada", message: `O limite de requisições foi acionado na rota ${req.path}.`, severity: "warning" } })).catch(() => undefined);
     return res.status(429).json({ error: "Too many requests", retryAfter });
   }
   return next();

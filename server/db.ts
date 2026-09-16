@@ -1,6 +1,6 @@
 import { count, desc, eq, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, User, auditLogs, behanceProjects, behanceSyncJobs, notificationTemplates, notifications, portfolioProjectOverrides, quoteRequests, trafficEvents, users } from "../drizzle/schema";
+import { InsertUser, User, auditLogs, backupJobs, behanceProjects, behanceSyncJobs, notificationTemplates, notifications, portfolioProjectOverrides, quoteRequests, trafficEvents, users } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -198,6 +198,22 @@ export async function ensureDefaultNotificationTemplates() {
     { eventKey: "quote_received", title: "Novo pedido de orçamento", message: "{{name}} enviou um pedido ({{email}}): {{message}}", severity: "urgent" as const },
     { eventKey: "lead_status_changed", title: "Pedido atualizado", message: "O pedido #{{id}} mudou para {{status}}.", severity: "info" as const },
     { eventKey: "project_updated", title: "Projeto atualizado", message: "O projeto “{{title}}” foi atualizado no painel.", severity: "success" as const },
+    { eventKey: "security_rate_limit", title: "Proteção antiabuso acionada", message: "O limite de requisições foi acionado na rota {{path}}.", severity: "warning" as const },
   ];
   for (const template of defaults) await db.insert(notificationTemplates).values({ ...template, enabled: 1 }).onDuplicateKeyUpdate({ set: { updatedAt: new Date() } });
+}
+
+export async function ensureBackupJob(name: string) {
+  const db = await getDb(); if (!db) return;
+  await db.insert(backupJobs).values({ name }).onDuplicateKeyUpdate({ set: { updatedAt: new Date() } });
+}
+
+export async function updateBackupJob(name: string, values: { scheduleCronTaskUid?: string; lastRunAt?: Date; lastStatus?: string; lastError?: string | null; lastObjectKey?: string | null }) {
+  const db = await getDb(); if (!db) return;
+  await db.update(backupJobs).set(values).where(eq(backupJobs.name, name));
+}
+
+export async function getBackupJobByTaskUid(taskUid: string) {
+  const db = await getDb(); if (!db) return undefined;
+  return (await db.select().from(backupJobs).where(eq(backupJobs.scheduleCronTaskUid, taskUid)).limit(1))[0];
 }

@@ -7,6 +7,7 @@ import { systemRouter } from "./_core/systemRouter";
 import { createQuoteRequest, createTemplatedNotification, deletePortfolioProjectOverride, getProjectAccessCounts, getTrafficSummary, listAuditLogs, listBehanceProjects, listNotificationTemplates, listNotifications, listPortfolioProjectOverrides, listQuoteRequests, markNotificationRead, recordAuditLog, recordTrafficEvent, setPortfolioProjectAsset, updateQuoteRequestStatus, upsertNotificationTemplate, upsertPortfolioProjectOverride } from "./db";
 import { storagePut } from "./storage";
 import { sendQuoteNotifications } from "./external-notifications";
+import { createEncryptedBackup } from "./backup";
 
 export const appRouter = router({
   system: systemRouter,
@@ -42,6 +43,7 @@ export const appRouter = router({
     markNotificationRead: adminProcedure.input(z.object({ id: z.number().int().positive() })).mutation(({ input }) => markNotificationRead(input.id)),
     notificationTemplates: adminProcedure.query(() => listNotificationTemplates()),
     saveNotificationTemplate: adminProcedure.input(z.object({ eventKey: z.string().min(1).max(64), title: z.string().min(1).max(160), message: z.string().min(1).max(5000), severity: z.enum(["info", "success", "warning", "urgent"]), enabled: z.boolean() })).mutation(({ input }) => upsertNotificationTemplate(input)),
+    createEncryptedBackup: adminProcedure.mutation(async ({ ctx }) => { const backup = await createEncryptedBackup(); await recordAuditLog({ actor: ctx.user.email ?? ctx.user.name ?? ctx.user.openId, entityType: "security", entityKey: "database", action: "encrypted_backup_created", details: JSON.stringify({ algorithm: backup.algorithm, version: backup.version }) }); return { fileName: `deva-backup-${new Date().toISOString().slice(0, 10)}.json.enc`, backup }; }),
   }),
   quoteRequests: router({
     create: publicProcedure.input(z.object({ name: z.string().trim().min(2).max(160), email: z.string().email().max(320), phone: z.string().trim().max(40).optional(), message: z.string().trim().min(10).max(5000), consent: z.literal(true) })).mutation(async ({ input }) => {

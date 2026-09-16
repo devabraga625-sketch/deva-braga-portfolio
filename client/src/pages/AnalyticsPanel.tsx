@@ -26,6 +26,7 @@ export default function AnalyticsPanel() {
   const restoreProject = trpc.analytics.restoreProject.useMutation({ onSuccess: () => projectOverrides.refetch() });
   const uploadAsset = trpc.analytics.uploadProjectAsset.useMutation({ onSuccess: () => projectOverrides.refetch() });
   const audit = trpc.analytics.audit.useQuery(undefined, { enabled: isAuthenticated });
+  const createBackup = trpc.analytics.createEncryptedBackup.useMutation();
 
   if (loading) return <main className="panel-shell"><p className="eyebrow">Carregando painel…</p></main>;
   if (!isAuthenticated) return <AdminLoginGuide />;
@@ -46,12 +47,17 @@ export default function AnalyticsPanel() {
     const blob = new Blob([buildQuotesCsv(leads.data ?? [])], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob); const link = document.createElement("a"); link.href = url; link.download = `pedidos-orcamento-${new Date().toISOString().slice(0, 10)}.csv`; link.click(); URL.revokeObjectURL(url);
   };
+  const downloadEncryptedBackup = async () => {
+    const result = await createBackup.mutateAsync();
+    const blob = new Blob([JSON.stringify(result.backup)], { type: "application/octet-stream" });
+    const url = URL.createObjectURL(blob); const link = document.createElement("a"); link.href = url; link.download = result.fileName; link.click(); URL.revokeObjectURL(url);
+  };
   const handleAssetUpload = (projectKey: string, kind: "thumbnail" | "media", file: File | undefined) => {
     if (!file || !file.type.startsWith("image/") || file.size > 12 * 1024 * 1024) return;
     const reader = new FileReader(); reader.onload = () => { const value = String(reader.result); uploadAsset.mutate({ projectKey, kind, fileName: file.name, contentType: file.type as "image/jpeg" | "image/png" | "image/webp" | "image/gif", dataBase64: value.split(",")[1] ?? "" }); }; reader.readAsDataURL(file);
   };
   return <main className="panel-shell" id="analytics-report">
-    <header className="panel-header"><div><p className="eyebrow">Deva Braga / analytics</p><h1>O que está acontecendo.</h1><p className="panel-subtitle">Dados agregados, atualizados automaticamente a cada 30 segundos.</p><p className="admin-session-note">Sessão administrativa ativa. Mantenha o 2FA habilitado e encerre a sessão ao usar um dispositivo compartilhado.</p></div><div className="panel-actions"><a href="/">Voltar ao site ↗</a><button className="print-button" onClick={() => window.print()}>Exportar relatório PDF ↓</button></div></header>
+    <header className="panel-header"><div><p className="eyebrow">Deva Braga / analytics</p><h1>O que está acontecendo.</h1><p className="panel-subtitle">Dados agregados, atualizados automaticamente a cada 30 segundos.</p><p className="admin-session-note">Sessão administrativa ativa. Mantenha o 2FA habilitado e encerre a sessão ao usar um dispositivo compartilhado.</p></div><div className="panel-actions"><a href="/">Voltar ao site ↗</a><button className="print-button" onClick={() => window.print()}>Exportar relatório PDF ↓</button><button className="backup-button" onClick={downloadEncryptedBackup} disabled={createBackup.isPending}>{createBackup.isPending ? "Gerando backup…" : "Backup criptografado ↓"}</button></div></header>
     <section className="metric-grid"><article><span>Visualizações totais</span><strong>{data?.totals.views ?? "—"}</strong></article><article><span>Visitantes únicos</span><strong>{data?.totals.visitors ?? "—"}</strong></article><article><span>Cliques em projetos</span><strong>{data?.totals.clicks ?? "—"}</strong></article></section>
     <NotificationCenter />
     <section className="lead-summary-grid"><button className={leadFilter === "all" ? "active" : ""} onClick={() => setLeadFilter("all")}><span>Todos os pedidos</span><strong>{leadsList.length}</strong></button><button className={leadFilter === "pending" ? "active" : ""} onClick={() => setLeadFilter("pending")}><span>Pendentes</span><strong>{leadCounts.pending}</strong></button><button className={leadFilter === "responded" ? "active" : ""} onClick={() => setLeadFilter("responded")}><span>Respondidos</span><strong>{leadCounts.responded}</strong></button><button className={leadFilter === "completed" ? "active" : ""} onClick={() => setLeadFilter("completed")}><span>Concluídos</span><strong>{leadCounts.completed}</strong></button></section>

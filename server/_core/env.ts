@@ -15,4 +15,5 @@ export const ENV = {
   twilioWhatsAppFrom: process.env.TWILIO_WHATSAPP_FROM ?? "",
   twilioWhatsAppTo: process.env.TWILIO_WHATSAPP_TO ?? "whatsapp:+5571986397739",
   twilioContentSid: process.env.TWILIO_CONTENT_SID ?? "",
+  backupEncryptionKey: process.env.BACKUP_ENCRYPTION_KEY ?? "",
 };

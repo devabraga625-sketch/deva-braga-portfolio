@@ -9,9 +9,12 @@ import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import { handleBehanceSync } from "../behance-scheduled";
-import { ensureBehanceSyncJob, ensureDefaultNotificationTemplates } from "../db";
+import { handleEncryptedBackup } from "../backup-scheduled";
+import { ensureBackupJob, ensureBehanceSyncJob, ensureDefaultNotificationTemplates } from "../db";
 import { JOB_NAME } from "../behance-sync";
 import { applySecurityMiddleware } from "./security";
+
+const BACKUP_JOB_NAME = "encrypted-daily-backup";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -38,6 +41,7 @@ async function startServer() {
   applySecurityMiddleware(app);
   await ensureBehanceSyncJob(JOB_NAME).catch(error => console.warn("[Behance] Could not initialize sync job:", error));
   await ensureDefaultNotificationTemplates().catch(error => console.warn("[Notifications] Could not initialize templates:", error));
+  await ensureBackupJob(BACKUP_JOB_NAME).catch(error => console.warn("[Backup] Could not initialize backup job:", error));
   // Configure body parser with larger size limit for file uploads
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
@@ -52,6 +56,7 @@ async function startServer() {
     })
   );
   app.post("/api/scheduled/syncBehance", handleBehanceSync);
+  app.post("/api/scheduled/encryptedBackup", handleEncryptedBackup);
   // development mode uses Vite, production mode uses static files
   if (process.env.NODE_ENV === "development") {
     await setupVite(app, server);
