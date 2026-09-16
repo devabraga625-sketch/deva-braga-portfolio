@@ -1,8 +1,8 @@
 export type WorkCategory = "Fotografia" | "Design" | "Edição";
-export type PortfolioProject = { id:number; title:string; slug:string; year:string; sourceUrl:string; categories:WorkCategory[]; media:string[]; };
+export type PortfolioProject = { id:number; title:string; slug:string; year:string; sourceUrl:string; categories:WorkCategory[]; thumbnail:string; media:string[]; };
 
 export const portfolioProjects: PortfolioProject[] = [
-  { id: 1, title: "Lavagem das Baianas, Festa de Nossa Senhora D'Ajuda", slug: "lavagem-das-baianas-festa-de-nossa-senhora-dajuda", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/lavagem-das-baianas-festa-de-nossa-senhora-dajuda", categories: ["Fotografia", "Edição"], media: [
+  { id: 1, title: "Lavagem das Baianas, Festa de Nossa Senhora D'Ajuda", slug: "lavagem-das-baianas-festa-de-nossa-senhora-dajuda", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/lavagem-das-baianas-festa-de-nossa-senhora-dajuda", categories: ["Fotografia", "Edição"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/742cca61-7853-456f-a700-7018cf1d34b5_car_1x1.jpg?h=aa26e48acc852c4fadeddd4b41cce264&url=aHR0cHM6Ly9taXItczMtY2RuLWNmLmJlaGFuY2UubmV0L3Byb2plY3RzL29yaWdpbmFsLzY4YThlMTI1NTc2NDg0My5ZM0p2Y0N3MU1URXpMRFF3TURBc05EVTFMREEuanBn", media: [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/93ceb4ab-7aac-4eff-845c-298f0e087ee8_rw_3840.jpg?h=416166a22d53ee70c4bfd02d1bb0e080",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/1ec49b92-d400-48c5-85af-59644e02120f_rw_3840.jpg?h=d5562f1c7f9043a5570d01630c98c484",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/04679ae6-67a2-46de-be1b-47c1a0c6cca7_rw_3840.jpg?h=6c0e13c0df38df06b7bf8ebd9efb4d21",
@@ -84,7 +84,7 @@ export const portfolioProjects: PortfolioProject[] = [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/3cfcd1d7-f4c9-482e-b5af-cad22adefb6d_rw_3840.jpg?h=d5a43365dc3fdd193ac4f659efe63c7c",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/2af60656-121c-4bc4-b0e6-d02df9bcf2f7_rw_3840.jpg?h=613b34dcf98bab271061b6e1bf97bdcc"
   ] },
-  { id: 2, title: "Rolê pelas ruas de Cachoeira", slug: "role-pelas-ruas-de-cachoeira", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/role-pelas-ruas-de-cachoeira", categories: ["Fotografia"], media: [
+  { id: 2, title: "Rolê pelas ruas de Cachoeira", slug: "role-pelas-ruas-de-cachoeira", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/role-pelas-ruas-de-cachoeira", categories: ["Fotografia"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/0148e7f3-c828-4e33-b55c-ebdd37157be9_car_1x1.jpg?h=be02932c33da70be5e477407d51bb5ab", media: [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/0c7101ec-6359-45e2-bc50-b09bb458fe43_rw_1920.jpg?h=9acecb2b9a77485316825c448fe2f97d",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/f936e58d-0091-4544-8bdb-0e4baa9cb4c0_rw_3840.jpg?h=1f26242e0a808a2e566bd723fd40461e",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/38b0814f-1bda-4084-8527-55e5cda098b2_rw_3840.jpg?h=334be477112b9cf6ef0522678b81be0c",
@@ -192,7 +192,7 @@ export const portfolioProjects: PortfolioProject[] = [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/53f8d7e0-8249-40d8-8c14-ea72a5ef4b42_rw_3840.jpg?h=b8c2bfe2f38c8482f825613b16a01161",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/782269e6-89fe-4329-bbaa-8e546fb1d2d1_rw_3840.jpg?h=973dd727693793e4c65fb0cae0c24acd"
   ] },
-  { id: 3, title: "ÍRIA - Apresentação Pitch", slug: "iria-apresentacao-pitch", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/iria-apresentacao-pitch", categories: ["Design"], media: [
+  { id: 3, title: "ÍRIA - Apresentação Pitch", slug: "iria-apresentacao-pitch", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/iria-apresentacao-pitch", categories: ["Design"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/e08a588e-9c11-4f58-a870-0d1048fe4233_car_1x1.png?h=d0cd2675ae62b302961fa3b4ce892b8c", media: [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/e2ecde73-a90f-4d5f-958e-b32056015638_rw_1920.png?h=d765b037842e945ca2e916ec31f3ca79",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/7a921792-0c8d-4691-9ffb-f8bf02431e96_rw_3840.png?h=5424e80ce770e6ba95bc4508efebb3db",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/31026dd6-f863-45b7-9e66-d4430b592f9c_rw_3840.png?h=ca6ea0b151c74c99a4663a3e63a8dd71",
@@ -208,10 +208,10 @@ export const portfolioProjects: PortfolioProject[] = [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/fd6c7843-b324-4bc9-b13c-a5306f0feec0_rw_3840.png?h=db757ef24861dec625a2029077ddf297",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/ced36f3a-3e54-400d-b7c3-af039e533472_rw_1920.png?h=b16b745124561d502717645ebe4cda0b"
   ] },
-  { id: 4, title: "Ocupação 377", slug: "ocupacao-377", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/ocupacao-377", categories: ["Fotografia"], media: [
+  { id: 4, title: "Ocupação 377", slug: "ocupacao-377", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/ocupacao-377", categories: ["Fotografia"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/92c926bc-fd09-414f-a421-ff48872b9926_car_1x1.jpg?h=cb842d706a0805b6e4b4f4077c6aa70d", media: [
       
   ] },
-  { id: 5, title: "Festival Salvador Cidade Reggae", slug: "festival-salvador-cidade-reggae-1", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/festival-salvador-cidade-reggae-1", categories: ["Fotografia"], media: [
+  { id: 5, title: "Festival Salvador Cidade Reggae", slug: "festival-salvador-cidade-reggae-1", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/festival-salvador-cidade-reggae-1", categories: ["Fotografia"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/75c2e309-91ba-4da5-83c3-f7aa5fa510c8_car_1x1.jpg?h=4cd94dbcea2b419ddccf297393e5b6d4", media: [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/c9395606-9509-4f77-b812-c965dcef5f5a_rw_1920.jpg?h=12d9a498a795908aaaa6b0f85e567125",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/b8d0dc34-d62b-496f-b22c-f947148728ff_rw_1920.jpg?h=c4a9a3d33b1cc0ad7bdc4b475321602d",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/43dda90e-30e3-4972-ad72-71763f66d827_rw_1920.jpg?h=bed9e24bd734eb0834e83dc9d9565a33",
@@ -270,7 +270,7 @@ export const portfolioProjects: PortfolioProject[] = [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/5f93f1c7-972c-46ef-8cae-2cce65c14604_rw_1920.jpg?h=5c69a23f3121190fd4c63ac90a771e4d",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/bccd5967-62c6-48d9-a767-40485aaef755_rw_1920.jpg?h=34094c0546abeb8fc5301ad6cd0dc6d5"
   ] },
-  { id: 6, title: "Praia Energy Drink", slug: "praia-energy-drink", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/praia-energy-drink", categories: ["Design"], media: [
+  { id: 6, title: "Praia Energy Drink", slug: "praia-energy-drink", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/praia-energy-drink", categories: ["Design"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/3feba8f4-b95e-498e-8228-eaebdd319e93_car_1x1.jpg?h=59f7c70d771334625864729896e94cde", media: [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/8fcb0bdd-98a8-4d7d-8236-310216932ca1_rw_3840.jpg?h=4b960dafb50ed14cae34fab6ea305463",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/4e8ac6bd-4247-4dd6-9d3a-017c28e0c023_rw_3840.jpg?h=716bdc8f772fae896a1faf216c7742b2",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/0c80ed43-f43f-4bc0-9003-12a45e00b49b_rw_3840.jpg?h=5b072afef2a3589913cda22226b7e1cb",
@@ -282,7 +282,7 @@ export const portfolioProjects: PortfolioProject[] = [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/612c04ed-c255-4864-8ea8-4b213b5d176b_rw_3840.jpg?h=c4b5a0098400a343fa68ce157ab0a30e",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/154c9eec-9575-41ee-8e44-271372b5575b_rw_3840.jpg?h=c13cfad396b0614ce0190dadfab5ea6f"
   ] },
-  { id: 7, title: "tons de azul que só vejo em Salvador", slug: "tons-de-azul-que-so-vejo-em-salvador", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/tons-de-azul-que-so-vejo-em-salvador", categories: ["Fotografia"], media: [
+  { id: 7, title: "tons de azul que só vejo em Salvador", slug: "tons-de-azul-que-so-vejo-em-salvador", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/tons-de-azul-que-so-vejo-em-salvador", categories: ["Fotografia"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/d11ea9a2-5a8c-46ad-893f-392e4984c6c5_car_1x1.jpg?h=67334894926c8f6cfeab77d8d584ece0", media: [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/a6bec85c-7978-482c-972c-0a197704914b_rw_1920.jpg?h=18d498be4f6c941fcd59030b3e20e58f",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/8baa0341-1969-45a9-bc7b-740a4b46f16f_rw_3840.jpg?h=3749b3faf64ff3db58e2a154c8f21232",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/4f8074f4-0f3d-40ac-bd94-b6078ad585ae_rw_3840.jpeg?h=69248f23801a3dedbe188dc3623f492c",
@@ -290,7 +290,7 @@ export const portfolioProjects: PortfolioProject[] = [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/364f3f4e-5a54-4904-9720-65dc106c79fb_rw_3840.jpeg?h=82585a825b6c0ba6396d9def1ab1852e",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/4988a554-f11c-42c2-9996-85472c8e4bb9_rw_3840.jpeg?h=6cefd967870b837d384c181098984ab9"
   ] },
-  { id: 8, title: "Karamelli - Confeitaria Artesanal", slug: "karamelli-confeitaria-artesanal", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/karamelli-confeitaria-artesanal", categories: ["Design"], media: [
+  { id: 8, title: "Karamelli - Confeitaria Artesanal", slug: "karamelli-confeitaria-artesanal", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/karamelli-confeitaria-artesanal", categories: ["Design"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/5b7e299a-8850-4940-ad46-d5894e72e7c2_rwc_94x0x632x632x632.jpg?h=6e2a8457d2e2f50511339a3d3a8efcb9", media: [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/8c28cb66-e9fb-43b8-9901-1a05d60a7552_rw_3840.png?h=6b612a1778cebfcabf624ca456b850cc",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/53990b80-3348-4ebb-92ec-567c1aed64ca_rw_1920.gif?h=1394bceae291df00b953609c02fdb8a2",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/563de2dc-cb2e-485b-99ee-d9ad2181e441_rw_3840.png?h=6ec9c01fea75cbe65aeb61e66e00477e",
@@ -304,16 +304,16 @@ export const portfolioProjects: PortfolioProject[] = [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/3364eadb-9a5a-4926-ab8b-e085082029ba_rw_1920.png?h=4493856a49fe7b94b5a53ff3eb10a425",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/06fe2780-c502-4d52-9b7f-00121534136d_rw_1920.png?h=085031dcb338195cb2686664a2fd408d"
   ] },
-  { id: 9, title: "A REVOLUÇÃO SILENCIOSA", slug: "a-revolucao-silenciosa", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/a-revolucao-silenciosa", categories: ["Edição"], media: [
+  { id: 9, title: "A REVOLUÇÃO SILENCIOSA", slug: "a-revolucao-silenciosa", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/a-revolucao-silenciosa", categories: ["Edição"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/6a92c89b-a730-497d-a769-6f4c42f406c4_car_1x1.jpg?h=0a8b0353d53404ce4c9b33e4618d081d", media: [
       "https://www.youtube.com/embed/jaQDrIh1lDM?si=sWQr9Sc3GtUvRJYG"
   ] },
-  { id: 10, title: "ZEST&SPICE - Propaganda", slug: "zestspice-propaganda", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/zestspice-propaganda", categories: ["Design", "Edição"], media: [
+  { id: 10, title: "ZEST&SPICE - Propaganda", slug: "zestspice-propaganda", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/zestspice-propaganda", categories: ["Design", "Edição"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/ad0e2ca8-4d71-4ade-8044-b462e5c78aa0_rwc_525x0x1376x1376x1376.jpeg?h=e2f2e8cbf36993f790d675099b0cd3ea", media: [
       
   ] },
-  { id: 11, title: "CNA inglês definitivo - PANFLETO A4", slug: "cna-ingles-definitivo-panfleto-a4", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/cna-ingles-definitivo-panfleto-a4", categories: ["Design"], media: [
+  { id: 11, title: "CNA inglês definitivo - PANFLETO A4", slug: "cna-ingles-definitivo-panfleto-a4", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/cna-ingles-definitivo-panfleto-a4", categories: ["Design"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/dc09dfda-6e23-4560-aeb4-66f6710867ab_car_1x1.jpg?h=1ce535145fe0ff791ca0c97d9d4b996b", media: [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/9eaf0f61-1c87-4d60-9809-3c0cc5a93071_rw_1920.jpeg?h=0fd73c45adfb1c46244f85f306b5c695"
   ] },
-  { id: 12, title: "Portfólio de Ativos - Adobe Stock", slug: "destaque", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/destaque", categories: ["Design"], media: [
+  { id: 12, title: "Portfólio de Ativos - Adobe Stock", slug: "destaque", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/destaque", categories: ["Design"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/9f71737e-fe16-436c-902f-5143ed5d73e6_car_1x1.jpg?h=6cbe23d384c63c6401020101c1a16d97", media: [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/f8431fff-c93e-431e-b7e1-a33ef9b45746_rw_1200.jpg?h=b07a11d06e4b49e8a29be218622d60c3",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/aa410f03-6f3f-4d0f-afc3-8653a97f4fea_rw_1200.jpg?h=e657cc0f791b050ffa23b4e9a312a81b",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/dfbd05a7-f4f7-43dd-a05c-5769ce6a8f4c_rw_1200.jpg?h=9812965bbe684b5ee49135587081da15",
@@ -365,10 +365,10 @@ export const portfolioProjects: PortfolioProject[] = [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/29c58877-5768-4b00-a391-941accc853fd_rw_1200.jpg?h=b8943f6da2d4179240182a5a45f80ab5",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/88b4fc5f-42af-448b-8838-edb4681d27dc_rw_1200.jpg?h=cd205aadf6632345112e08db9863a938"
   ] },
-  { id: 13, title: "Vinheta Savior", slug: "vinheta-savior", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/vinheta-savior", categories: ["Design"], media: [
+  { id: 13, title: "Vinheta Savior", slug: "vinheta-savior", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/vinheta-savior", categories: ["Design"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/c5bac3a8-9660-4099-b1e1-ae0e55e42c3e_car_1x1.png?h=5aaa59f163e6cc9f610c79289478b034", media: [
       
   ] },
-  { id: 14, title: "Múltipla Segurança Eletrônica", slug: "multipla-seguranca-eletronica", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/multipla-seguranca-eletronica", categories: ["Design"], media: [
+  { id: 14, title: "Múltipla Segurança Eletrônica", slug: "multipla-seguranca-eletronica", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/multipla-seguranca-eletronica", categories: ["Design"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/8c9db2f0-fef5-4079-9f8c-b38eb45db7e7_rwc_0x108x1080x1080x1080.jpg?h=a822af298fc44396e147de2128f843ad", media: [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/c503fcd0-3d67-434e-b789-dd8bd9db0fd1_rw_1200.jpg?h=6097c67c281edffc1146b8d47ebdbd86",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/e1a65685-9af8-4b78-81ff-ddb9e1c33211_rw_1200.jpg?h=16bcd3f60fa1de6c678fff4d47b57649",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/8efe7e31-9569-40f0-8ec7-689a2fe09e70_rw_1200.jpg?h=c46a34a7cec71ce02c55aeedc3d6e003",
@@ -378,7 +378,7 @@ export const portfolioProjects: PortfolioProject[] = [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/3eb0bf61-f8a9-4f98-b305-65dd33056b69_rw_600.png?h=0ac546c0df108fcf577565b14cd77519",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/8d95163b-c81a-49bc-8a62-16ae0deb808c_rw_600.png?h=6905ccc69bd2495c6016d5e425d3c5ff"
   ] },
-  { id: 15, title: "Floricultura Lusitana", slug: "floricultura-lusitana", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/floricultura-lusitana", categories: ["Fotografia", "Edição"], media: [
+  { id: 15, title: "Floricultura Lusitana", slug: "floricultura-lusitana", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/floricultura-lusitana", categories: ["Fotografia", "Edição"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/0d515a08-69bb-4f5e-bead-276f574c4278_car_1x1.jpg?h=a25925b34e68835066f2b8b2e09d3f6c", media: [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/6b620d75-a9be-4545-b627-65de52188f86_rw_3840.jpg?h=e313df778835b4b3823d1050872a569e",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/cabcfd3a-4c81-4ea7-babc-a5cbc170d177_rw_3840.jpg?h=8294e5ec0b35d154cfc9868e489905c4",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/2b062e18-0c57-4bd4-a34b-a743c947b72e_rw_3840.jpg?h=de1e69a045d722077121a7e4d0c6cd53",
@@ -430,7 +430,7 @@ export const portfolioProjects: PortfolioProject[] = [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/be573098-e565-43c0-ac91-87225310fbcf_rw_3840.jpg?h=c1317b6d64a3cfd35454a9395405368b",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/90a3607f-1685-46c2-ae73-6b5418e46201_rw_3840.jpg?h=42d4d240455872d871501c2544e411cc"
   ] },
-  { id: 16, title: "Ubuntu Arte Galeria", slug: "ubuntu-arte-galeria-1", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/ubuntu-arte-galeria-1", categories: ["Fotografia", "Edição"], media: [
+  { id: 16, title: "Ubuntu Arte Galeria", slug: "ubuntu-arte-galeria-1", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/ubuntu-arte-galeria-1", categories: ["Fotografia", "Edição"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/003a21dc-34f5-48fb-a78b-b7b65f64428d_rwc_636x0x5184x5184x5184.jpg?h=60f5a376e861b7a6b137a2290ad86bde", media: [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/15454ab5-c29d-477d-a196-1fc14a0ff077_rw_3840.jpg?h=0ece19814eba846763b420003bc7f42d",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/a6b6db6a-e0db-4646-aa7a-a4382f584169_rw_3840.jpg?h=4bbfcf3ddc473346c0d73e063734c6d5",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/f0b4d05c-0099-4425-aad7-aacae9853661_rw_3840.jpg?h=8249aa249232d2cbe59502577fefeed8",
@@ -526,10 +526,10 @@ export const portfolioProjects: PortfolioProject[] = [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/257cbc7b-e734-468b-af86-e45e75c4724d_rw_3840.jpg?h=9450b53edd7426dd975ac7f415e869a6",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/928526b6-b119-4448-b0a1-d5143366fed7_rw_3840.jpg?h=ad64291e03020e22abf8d3d21bf51ca5"
   ] },
-  { id: 17, title: "Stories – Depyl Care (01/2026)", slug: "stories-depyl-care-012026", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/stories-depyl-care-012026", categories: ["Design", "Edição"], media: [
+  { id: 17, title: "Stories – Depyl Care (01/2026)", slug: "stories-depyl-care-012026", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/stories-depyl-care-012026", categories: ["Design", "Edição"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/8806769e-9e4d-4ca4-a1b3-fb83c3706b35_car_1x1.jpg?h=5fdbde0a09c3ff0ebdf57cc5690a1cb4", media: [
       "https://www.youtube.com/embed/Pyd7CJO2H-A?si=BEV73KL_0-_AdWwU"
   ] },
-  { id: 18, title: "BRANDBOOK DEPYL CARE", slug: "brandbook-depyl-care", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/brandbook-depyl-care", categories: ["Design"], media: [
+  { id: 18, title: "BRANDBOOK DEPYL CARE", slug: "brandbook-depyl-care", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/brandbook-depyl-care", categories: ["Design"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/f7c53375-bd97-4a5f-a745-f046bf89ece2_car_1x1.jpg?h=769a4e5e89966d2f720b2df273a10695", media: [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/fb040118-7ea1-4a0b-959c-c19a8ce24b79_rw_3840.jpg?h=f6b17c49d94162e0001f76227ae227c3",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/11180621-c996-4efe-bfd1-a6be0fd9ec07_rw_3840.jpg?h=b84dd940ae3af9e6668002cbf7c72661",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/2e342a76-304f-4ac2-b266-c7c8b07b7d57_rw_3840.jpg?h=0d43947960f0fdee0b0bccfd3ed3a9d5",
@@ -556,14 +556,14 @@ export const portfolioProjects: PortfolioProject[] = [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/5281e3b6-1771-4a5d-a8c3-7bb73fdf35a1_rw_3840.jpg?h=bcc5c286050a277be72c7f28b24e848e",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/3c87da30-4ea3-4d10-b390-33f84f566651_rw_3840.jpg?h=363be3f4dd53176be2a58338309bd9f0"
   ] },
-  { id: 19, title: "Uma Noite no Museu + Descendo a Ladeira da Barra", slug: "uma-noite-no-museu-descendo-a-ladeira-da-barra", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/uma-noite-no-museu-descendo-a-ladeira-da-barra", categories: ["Fotografia", "Edição"], media: [
+  { id: 19, title: "Uma Noite no Museu + Descendo a Ladeira da Barra", slug: "uma-noite-no-museu-descendo-a-ladeira-da-barra", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/uma-noite-no-museu-descendo-a-ladeira-da-barra", categories: ["Fotografia", "Edição"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/c5acc1a1-3fda-4454-b6ad-3011fd4640c8_car_1x1.jpg?h=2c2f6b26ecbc3b183832f75c563cc89c", media: [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/a29047e5-3515-4114-92a0-4f1c6277b13a_rw_1920.jpg?h=53667cfefe7a56dfda4373c26cf6fa5d",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/04964f75-f32a-4d49-b11d-9db2cd366fb5_rw_1920.jpg?h=61775f84fd9a0e3b1abd84cc390ca677",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/f11dcbf7-75ba-48f8-808e-3483a883a006_rw_1920.jpg?h=edbf3c19e4e52977c0d657e1b174e7c5",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/878b2fd3-e6b5-4d7e-9ed9-c394471b3169_rw_3840.jpg?h=17be34f71081d8406938fdb68b1b4643",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/1ff26165-75f0-4a0d-b6ea-62d99ebd6ca3_rw_3840.jpg?h=4bb061a07a03f65d71ae16ac56210783"
   ] },
-  { id: 20, title: "Outra Tarde no MAM", slug: "outra-tarde-no-mam", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/outra-tarde-no-mam", categories: ["Fotografia", "Edição"], media: [
+  { id: 20, title: "Outra Tarde no MAM", slug: "outra-tarde-no-mam", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/outra-tarde-no-mam", categories: ["Fotografia", "Edição"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/e4b78b01-bda0-4121-99c4-d745f3ef83a8_car_1x1.jpg?h=464fae76e381db76c185b3eaa3d95e4d", media: [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/24d6014a-2574-4803-a60c-19623ff3a225_rw_3840.jpg?h=8af1a5aa63a4bcd4d7b7aa89824d65a9",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/4b917df0-25e4-4755-9f15-59bd834b874d_rw_3840.jpg?h=84c709639034381d15a9aded5667aa8b",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/c903782c-238f-467d-b6c3-b9d3cd4c47c5_rw_3840.jpg?h=fdfa2d22d8fe211762cbbb880f28ad1e",
@@ -591,11 +591,11 @@ export const portfolioProjects: PortfolioProject[] = [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/cf387880-89ce-4c4d-86dc-2d6653bdf7a5_rw_3840.jpg?h=e03e58b919b89113436541cff12db862",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/5ce594c4-96c9-4a15-9c45-7c59a85f8507_rw_3840.jpg?h=6b1be2dcfdfdd1b644f70133f45181b4"
   ] },
-  { id: 21, title: "Campanha #AssédioNão (Outdoor + Carrossel)", slug: "campanha-assedionao-outdoor-carrossel", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/campanha-assedionao-outdoor-carrossel", categories: ["Design", "Edição"], media: [
+  { id: 21, title: "Campanha #AssédioNão (Outdoor + Carrossel)", slug: "campanha-assedionao-outdoor-carrossel", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/campanha-assedionao-outdoor-carrossel", categories: ["Design", "Edição"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/83e86ae6-00a4-4108-a54a-3be484be97e5_car_1x1.jpg?h=5a66793788d156359e13a5136c4be9cd", media: [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/eccf7b15-d919-44aa-993e-92a6e5013952_rw_3840.jpg?h=812053a0fab2aec633b9c522d80a44bd",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/cddfc17b-c7c3-45eb-9998-2e707c34f272_rw_3840.png?h=2d5305353d7d306632367d55d531bd6c"
   ] },
-  { id: 22, title: "Branding - Braga.RAW", slug: "branding-bragaraw", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/branding-bragaraw", categories: ["Design"], media: [
+  { id: 22, title: "Branding - Braga.RAW", slug: "branding-bragaraw", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/branding-bragaraw", categories: ["Design"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/94ac2302-b3ce-49a2-81bd-eb6a1034a39c_car_1x1.jpg?h=a8df3011fec0cd21bc43e7ee188cfee8", media: [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/0662eacd-98b1-43e6-a99d-6757c08e11bf_rw_1920.jpeg?h=4f9406e84b091ea79f45ee959bbcd1f3",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/02a69b53-562b-4a34-8edb-2d235a71cba8_rw_1920.jpeg?h=54c8dbcc83219a5b2fcff38497eb55cd",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/7059310e-e1b2-4feb-816b-2f314c6a2ea2_rw_1920.jpeg?h=adb7710d18405f7d618fb15e42ac2b7d",
@@ -617,7 +617,7 @@ export const portfolioProjects: PortfolioProject[] = [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/fcfbe917-f839-466f-9578-d70acfd56f63_rw_1920.jpeg?h=64f870fc8147f9a1b07355ba00f1d15d",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/ac35e729-949d-4456-afe2-d46738f4b1c4_rw_1920.jpeg?h=4605e0d4a624aa00606f096e4ebabb70"
   ] },
-  { id: 23, title: "Manual da Marca - G9 Edition", slug: "manual-da-marca-g9-edition", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/manual-da-marca-g9-edition", categories: ["Design"], media: [
+  { id: 23, title: "Manual da Marca - G9 Edition", slug: "manual-da-marca-g9-edition", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/manual-da-marca-g9-edition", categories: ["Design"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/7f34746d-4b6c-4c58-91cd-66ae5801ad74_rwc_182x0x2362x2362x2362.png?h=ae45f8165f714c17c6d557702d034bf8", media: [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/411026a7-1dbb-4fe1-a16e-44b1e5bbf13a_rw_1920.png?h=7972a52178b991af4bbe0e5eeee0a051",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/243688f6-2312-4cb1-84d0-d437232b390a_rw_1920.png?h=4fdb859cecd85884ba6cf283bc9653c2",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/43cf4377-5cbf-4077-bd75-fa5b74f2a50b_rw_1920.png?h=30f185d1f51e8cf1fd61dd4d6cea2029",
@@ -653,37 +653,37 @@ export const portfolioProjects: PortfolioProject[] = [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/5c8068ce-53e4-4df6-a33f-07072f972a21_rw_1920.png?h=83561dc1c31bd9454f7742b5af56ce3d",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/d1694722-8182-4d37-b7f5-847172473f81_rw_1920.png?h=039c5d51f9e6816a21075e4e42fecd36"
   ] },
-  { id: 24, title: "Landing Page Green Drop", slug: "landing-page-green-drop", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/landing-page-green-drop", categories: ["Design"], media: [
+  { id: 24, title: "Landing Page Green Drop", slug: "landing-page-green-drop", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/landing-page-green-drop", categories: ["Design"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/49a8fd87-1fb5-462b-8952-72f509f44c6c_rwc_690x276x632x632x632.png?h=29eae7e74d65af0cdeb75901d7fab3c3", media: [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/ef3fcc60-324b-4c8c-ab36-04214ac81cae_rw_1920.png?h=0fe42f257fed2fb4e5226308dc4be8ec"
   ] },
-  { id: 25, title: "Carrossel Zé do Burguer", slug: "carrossel-ze-do-burguer", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/carrossel-ze-do-burguer", categories: ["Design", "Edição"], media: [
+  { id: 25, title: "Carrossel Zé do Burguer", slug: "carrossel-ze-do-burguer", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/carrossel-ze-do-burguer", categories: ["Design", "Edição"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/357913a6-9aa3-48f5-9517-dc4631eed41e_car_1x1.jpg?h=d20967af4f165e36678466e4a2ac57ab", media: [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/a5da129f-e77a-48d9-a794-e569a867e7c4_rw_3840.png?h=967e2c11b00a62b59a5774703ca0aca8"
   ] },
-  { id: 26, title: "Zé do Burguer - Peça publicitária para Instagram", slug: "ze-do-burguer-peca-publicitaria-para-instagram", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/ze-do-burguer-peca-publicitaria-para-instagram", categories: ["Design", "Edição"], media: [
+  { id: 26, title: "Zé do Burguer - Peça publicitária para Instagram", slug: "ze-do-burguer-peca-publicitaria-para-instagram", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/ze-do-burguer-peca-publicitaria-para-instagram", categories: ["Design", "Edição"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/616f239d-de0f-458e-828e-fcdb3668fbc2_car_1x1.jpg?h=0f7fbdd0de62977c1973ac3dd324f7cd", media: [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/2f5472cd-f3ed-4cc5-9784-fbbd249f8b9e_rw_1920.jpg?h=c89ca43755a148424f59efd7acacc70e"
   ] },
-  { id: 27, title: "Poster filme de terror Desova", slug: "poster-filme-de-terror-desova", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/poster-filme-de-terror-desova", categories: ["Design", "Edição"], media: [
+  { id: 27, title: "Poster filme de terror Desova", slug: "poster-filme-de-terror-desova", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/poster-filme-de-terror-desova", categories: ["Design", "Edição"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/67cfa2ff-1647-4c51-be33-c444bc131739_car_1x1.jpg?h=11d59d24b7f152a0055a5756cf2b1403", media: [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/47859665-9275-44f1-8c9c-f58c963d0cf5_rw_3840.jpg?h=912521b85fc0d02d53299b78edae336c"
   ] },
-  { id: 28, title: "Outdoor Universitário: Criatividade vs IA", slug: "outdoor-universitario-criatividade-vs-ia", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/outdoor-universitario-criatividade-vs-ia", categories: ["Design"], media: [
+  { id: 28, title: "Outdoor Universitário: Criatividade vs IA", slug: "outdoor-universitario-criatividade-vs-ia", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/outdoor-universitario-criatividade-vs-ia", categories: ["Design"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/a9629b77-2c16-4a7e-9bfe-ac380e4e4a8f_car_1x1.jpg?h=dc7ab45b451264938c07c7248ac196df", media: [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/5cec04d8-ae55-479b-b218-5b1c29924e79_rw_3840.jpg?h=291a1609155ea9d7c5bb0456222eb1dc"
   ] },
-  { id: 29, title: "Cais da Baía de Todos os Santos", slug: "cais-da-baia-de-todos-os-santos", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/cais-da-baia-de-todos-os-santos", categories: ["Fotografia", "Edição"], media: [
+  { id: 29, title: "Cais da Baía de Todos os Santos", slug: "cais-da-baia-de-todos-os-santos", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/cais-da-baia-de-todos-os-santos", categories: ["Fotografia", "Edição"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/837b7f1c-42f5-4831-8f09-420bab503b4b_car_1x1.jpg?h=8330fda7ceba0e5530bc89579a866e23", media: [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/c5f8bbbc-cd7c-4b4c-9093-4c2f6f8d5ed7_rw_3840.jpg?h=234953d3866e09240ea570c6c145b90a"
   ] },
-  { id: 30, title: "Últimos Segundos de Sol", slug: "ultimos-segundos-de-sol", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/ultimos-segundos-de-sol", categories: ["Fotografia", "Edição"], media: [
+  { id: 30, title: "Últimos Segundos de Sol", slug: "ultimos-segundos-de-sol", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/ultimos-segundos-de-sol", categories: ["Fotografia", "Edição"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/77c3d90c-731e-4452-81ae-4878521da2d2_car_1x1.jpg?h=2575f0b09f349fe16a320538bd96b836", media: [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/33192245-04d5-46e1-945f-5a3d7643de9f_rw_3840.jpg?h=b16636c739b54b425064b2039e06cb8d"
   ] },
-  { id: 31, title: "Céu Azul no Morro do Cristo", slug: "ceu-azul-no-morro-do-cristo", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/ceu-azul-no-morro-do-cristo", categories: ["Fotografia", "Edição"], media: [
+  { id: 31, title: "Céu Azul no Morro do Cristo", slug: "ceu-azul-no-morro-do-cristo", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/ceu-azul-no-morro-do-cristo", categories: ["Fotografia", "Edição"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/1450fff1-1fb7-496c-9005-c6190285d762_car_1x1.jpg?h=6287c2038efd111450b81454264aa0c1", media: [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/7c7c98a1-5fdd-499a-9678-528467ef5a01_rw_3840.jpg?h=5fc84b740ee197cbd2825859b25fa405"
   ] },
-  { id: 32, title: "Turistas ao pôr do Sol de Salvador", slug: "turistas-ao-por-do-sol-de-salvador", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/turistas-ao-por-do-sol-de-salvador", categories: ["Fotografia", "Edição"], media: [
+  { id: 32, title: "Turistas ao pôr do Sol de Salvador", slug: "turistas-ao-por-do-sol-de-salvador", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/turistas-ao-por-do-sol-de-salvador", categories: ["Fotografia", "Edição"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/efb1eb12-1280-4071-9a48-b3266d237f7b_car_1x1.jpg?h=b85443c43b761872a8deaa13a05e5b02", media: [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/07b05c5f-ba77-495d-8f7d-2bbc3a2d50f0_rw_3840.jpg?h=f52312c3c58ea1120d329c2a5b4db68b"
   ] },
-  { id: 33, title: "Propaganda do refrigerante Kiwizito", slug: "propaganda-do-refrigerante-kiwizito", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/propaganda-do-refrigerante-kiwizito", categories: ["Design"], media: [
+  { id: 33, title: "Propaganda do refrigerante Kiwizito", slug: "propaganda-do-refrigerante-kiwizito", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/propaganda-do-refrigerante-kiwizito", categories: ["Design"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/c2c3bbc9-90d4-423a-97c8-6659ef91d407_car_1x1.jpg?h=1ba2d1ad993f3b8cc274f807117eca4d", media: [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/df163ee1-934d-46f1-92c6-1e7193c95b8b_rw_1920.jpg?h=a126660a3bb2f139c885ba2294c02e61"
   ] },
-  { id: 34, title: "Apresentação Logo + Identidade Visual Savior E-Sports", slug: "apresentacao-logo-identidade-visual-savior-e-sports", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/apresentacao-logo-identidade-visual-savior-e-sports", categories: ["Design"], media: [
+  { id: 34, title: "Apresentação Logo + Identidade Visual Savior E-Sports", slug: "apresentacao-logo-identidade-visual-savior-e-sports", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/apresentacao-logo-identidade-visual-savior-e-sports", categories: ["Design"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/4e7f1187-9351-433c-bd8b-1a239fbd1343_car_1x1.jpg?h=fab83dbcf8539b43438192d357ad8549", media: [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/c229e652-941f-4bfa-930f-37764e353d37_rw_3840.jpg?h=b259b1ac5b4a4675fc3017a83923428f",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/3e58e6f6-1863-4666-8b93-ce76719c6893_rw_3840.jpg?h=59816efc1c3058112c6a250534287999",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/fea8c380-0ff7-43d2-95a0-14ddf766e456_rw_3840.jpg?h=86c487da0b81579d90588d93b6bbe3f3",
@@ -691,17 +691,17 @@ export const portfolioProjects: PortfolioProject[] = [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/657f25ff-bfae-401d-8518-08530b50979f_rw_3840.jpg?h=5c5bb6947756ace2127693603b47d1db",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/0d667e10-17a0-42c7-b56d-4f6fbd67c0af_rw_3840.jpg?h=1dd5195788296b44c0560b9e88e3e0e0"
   ] },
-  { id: 35, title: "Capa de Álbum - Doce Utopia: Disco Um", slug: "capa-de-album-doce-utopia-disco-um", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/capa-de-album-doce-utopia-disco-um", categories: ["Design"], media: [
+  { id: 35, title: "Capa de Álbum - Doce Utopia: Disco Um", slug: "capa-de-album-doce-utopia-disco-um", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/capa-de-album-doce-utopia-disco-um", categories: ["Design"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/b3c1900d-1298-479b-84e0-87e382d4a701_car_1x1.jpg?h=ae9ec1d3e4a2c037b7764a0782511d16", media: [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/627a6bd0-062f-420a-9786-1fa75cfac1cc_rw_1920.png?h=71bb4fef278c8bb2459d80f5e80b9f3a",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/8ab50de0-aa86-4384-853b-089212d4f3e3_rw_1920.jpg?h=047067af11ddb39b1661a4df17d5b0c2"
   ] },
-  { id: 36, title: "Folder Publicitário oBoticário", slug: "folder-publicitario-oboticario-1", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/folder-publicitario-oboticario-1", categories: ["Design", "Edição"], media: [
+  { id: 36, title: "Folder Publicitário oBoticário", slug: "folder-publicitario-oboticario-1", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/folder-publicitario-oboticario-1", categories: ["Design", "Edição"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/1eda1384-3a77-4d67-b602-eb4407a54d0b_rwc_484x0x2879x2879x2879.jpg?h=f0b3428cad04842bb274cc855089d96c", media: [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/243132a3-8b65-4ca0-9204-b29def1657b3_rw_3840.jpg?h=069bf4fb07eae2a5054597cf24419562",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/af3f6e6a-7bcd-404b-8e8b-fe8b47bebf58_rw_1920.jpg?h=82c63ad522436c9e9109af7bb273ecb2",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/6708f074-7239-4f14-9bb2-4d716e55dc40_rw_1920.jpg?h=df87fa8f096af6674faf2a1b0a6585b6",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/31f821df-fb9c-4bd2-8929-d6c1ccfbb2da_rw_1920.jpg?h=69162ec9538dcfffa92efae123fcba76"
   ] },
-  { id: 37, title: "Fim de tarde na Gamboa", slug: "fim-de-tarde-na-gamboa", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/fim-de-tarde-na-gamboa", categories: ["Fotografia", "Edição"], media: [
+  { id: 37, title: "Fim de tarde na Gamboa", slug: "fim-de-tarde-na-gamboa", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/fim-de-tarde-na-gamboa", categories: ["Fotografia", "Edição"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/76bd4f6d-dda7-4a3b-a909-bd9186392218_car_1x1.jpg?h=34f69ea320356c981097324b5ec76425", media: [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/43927902-24da-4c48-87dd-90eae1d3d6a9_rw_1920.jpg?h=b494c68ae0dbd92f53231a90910962ac",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/5021163d-3b37-4ce2-97dd-e91b1731c23e_rw_1920.jpg?h=f70a7cf100ab5c8b6e028834ed6c0c46",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/2a00ffa7-fafe-498e-89a9-215544610af7_rw_1920.jpg?h=c28f7a285ea940379ca6ad4321ce6e9e",
@@ -711,41 +711,41 @@ export const portfolioProjects: PortfolioProject[] = [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/444c683e-f575-4249-9818-5bda8fbcc593_rw_1200.jpg?h=d486e1d896ad444771bc6591538d4f1e",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/46e762e8-87c7-481e-999a-f31587f5de8b_rw_1920.jpg?h=cae6089ce8383a1073b733c79ba7e717"
   ] },
-  { id: 38, title: "17:45 na Barra", slug: "1745-na-barra", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/1745-na-barra", categories: ["Fotografia", "Edição"], media: [
+  { id: 38, title: "17:45 na Barra", slug: "1745-na-barra", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/1745-na-barra", categories: ["Fotografia", "Edição"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/c17cdde1-61c6-4d05-86ff-eae3af565c2e_car_1x1.jpg?h=ab7156e5cfaa024bf36da402188e2ae3", media: [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/866e95e3-e0ef-46de-85ad-f39334868645_rw_1200.jpg?h=06d8a8f8b364993d8d194f4b8e66313a",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/19b363e5-10f9-4da1-9bf7-73a9b72ba03a_rw_1200.jpg?h=5d20e7d39082c8551b23eb142c969068",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/9a46a3ae-9003-4ba4-aac0-bc486273e0aa_rw_1200.jpg?h=cea9676c1425d5f77af5ff7c9bc1c7eb",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/de402a70-d3f7-4b34-a299-5e76e4b8b46d_rw_1200.jpg?h=77d61ef227f13bd5ec7002999b96d22f"
   ] },
-  { id: 39, title: "3 Céus de Matatu de Brotas", slug: "3-ceus-de-matatu-de-brotas", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/3-ceus-de-matatu-de-brotas", categories: ["Fotografia", "Edição"], media: [
+  { id: 39, title: "3 Céus de Matatu de Brotas", slug: "3-ceus-de-matatu-de-brotas", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/3-ceus-de-matatu-de-brotas", categories: ["Fotografia", "Edição"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/2cd7db10-c8d1-4a37-bc1b-356a3efd8dbc_car_1x1.jpg?h=ad85dc7c3d074ce706a9c28146743865", media: [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/c5cf49dd-eca7-405a-a03b-0c4dc30938d3_rw_1920.jpg?h=a731f6b379fe4c317982827d03337e3d",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/ba866d9f-9f88-4655-bf27-d35366bfca31_rw_1920.jpg?h=5f790249a3fa5ac4d189fb687e2f35ed",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/f486d0ad-eb95-4edd-b8c0-05977d41198b_rw_1920.jpg?h=abcebf51c64b4a7e818c985f5b7afdd8"
   ] },
-  { id: 40, title: "Outdoor Universitário - Tema 2: Papel Social das Marcas", slug: "outdoor-universitario-tema-2-papel-social-das-marcas", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/outdoor-universitario-tema-2-papel-social-das-marcas", categories: ["Design", "Edição"], media: [
+  { id: 40, title: "Outdoor Universitário - Tema 2: Papel Social das Marcas", slug: "outdoor-universitario-tema-2-papel-social-das-marcas", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/outdoor-universitario-tema-2-papel-social-das-marcas", categories: ["Design", "Edição"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/2abeba82-a05e-4ce1-a68b-c25abd1c0675_car_1x1.jpg?h=ab07bb31e768a64c41c5c18218d91db6", media: [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/03f26052-c82a-41a1-99f3-cf19974c2309_rw_3840.jpg?h=92ec013c154a6dc591071d169ffd9152"
   ] },
-  { id: 41, title: "Outdoor Universitário – Tema: Rota Cultural Salvador", slug: "outdoor-universitario-tema-rota-cultural-salvador", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/outdoor-universitario-tema-rota-cultural-salvador", categories: ["Design", "Edição"], media: [
+  { id: 41, title: "Outdoor Universitário – Tema: Rota Cultural Salvador", slug: "outdoor-universitario-tema-rota-cultural-salvador", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/outdoor-universitario-tema-rota-cultural-salvador", categories: ["Design", "Edição"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/26ec4790-145e-4b82-8ec1-30e2ec606cbd_car_1x1.jpg?h=3ad13453ff122746c24ab8da51e9d438", media: [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/cdf246e5-6754-4dd0-813b-4d68c95c66af_rw_3840.jpeg?h=f09e6b574944ef0d39aaabae73a91f5a",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/b1e09e0c-8922-4834-83fa-329ece0f34fb_rw_3840.jpg?h=af27b3daa4c65a9926e9d9feb975ff7d"
   ] },
-  { id: 42, title: "Aula 5 AS Design Toolkit - Unreal Engine 5", slug: "aula-5-as-design-toolkit-unreal-engine-5", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/aula-5-as-design-toolkit-unreal-engine-5", categories: ["Design"], media: [
+  { id: 42, title: "Aula 5 AS Design Toolkit - Unreal Engine 5", slug: "aula-5-as-design-toolkit-unreal-engine-5", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/aula-5-as-design-toolkit-unreal-engine-5", categories: ["Design"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/a072137f-9b21-4d1f-9817-38425cef4bd3_car_1x1.jpg?h=06b5dfaa29d7edd5aab3005cf5e39303", media: [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/c9ec2fec-ca98-4381-a26b-a89ca1759b8b_rw_1920.jpeg?h=2fa6a2b394c9bb72dfe818a2f89bee43"
   ] },
-  { id: 43, title: "Aula 4 SAGA - Ilustração Vetorial: Estampa", slug: "aula-4-saga-ilustracao-vetorial-estampa", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/aula-4-saga-ilustracao-vetorial-estampa", categories: ["Design"], media: [
+  { id: 43, title: "Aula 4 SAGA - Ilustração Vetorial: Estampa", slug: "aula-4-saga-ilustracao-vetorial-estampa", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/aula-4-saga-ilustracao-vetorial-estampa", categories: ["Design"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/c433d4c0-3cec-495d-81a1-405203516cc0_car_1x1.jpg?h=3bfaa028b4512b05b54dffc7ed2dd55d", media: [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/5300ec84-dae7-46f5-9ea1-b6128edf5836_rw_1200.jpg?h=2020046144011ef91ed0d618a922efd8"
   ] },
-  { id: 44, title: "Aula 3 Art Suite SAGA - Ilustração Vetorial: Frutas", slug: "aula-3-art-suite-saga-ilustracao-vetorial-frutas", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/aula-3-art-suite-saga-ilustracao-vetorial-frutas", categories: ["Design"], media: [
+  { id: 44, title: "Aula 3 Art Suite SAGA - Ilustração Vetorial: Frutas", slug: "aula-3-art-suite-saga-ilustracao-vetorial-frutas", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/aula-3-art-suite-saga-ilustracao-vetorial-frutas", categories: ["Design"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/ef56faf6-02f4-40e9-82e4-9bbfa3e44459_car_1x1.jpg?h=9335f4d78858cd83e4f888afe88fb2f5", media: [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/55c342a1-e8c0-4106-9dd0-13c1a1b5e467_rw_1200.jpg?h=fbc11add2ebf4c3c1bc8e7b3fc716bce"
   ] },
-  { id: 45, title: "Atividade 2 SAGA - Design Vetorial - Adesivos", slug: "atividade-2-saga-design-vetorial-adesivos", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/atividade-2-saga-design-vetorial-adesivos", categories: ["Design"], media: [
+  { id: 45, title: "Atividade 2 SAGA - Design Vetorial - Adesivos", slug: "atividade-2-saga-design-vetorial-adesivos", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/atividade-2-saga-design-vetorial-adesivos", categories: ["Design"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/08f12f07-a9c5-4fdb-9789-4ca37c98a8f0_car_1x1.jpg?h=37cacabfa46112521d4417b1aad928e2", media: [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/f0d90e03-0652-49b0-90f8-8268468e2bd1_rw_1200.jpg?h=e7c93ac2e7730da224bd10cf0770171d",
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/d3426bdb-c6b8-415f-8e32-8ecfada3b4c2_rw_1200.jpg?h=35a3c92e1c1132eb962d7d1d5a1008fa"
   ] },
-  { id: 46, title: "Atividade 1 SAGA - Capa de Revista", slug: "atividade-1-saga-capa-de-revista", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/atividade-1-saga-capa-de-revista", categories: ["Design", "Edição"], media: [
+  { id: 46, title: "Atividade 1 SAGA - Capa de Revista", slug: "atividade-1-saga-capa-de-revista", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/atividade-1-saga-capa-de-revista", categories: ["Design", "Edição"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/d60dfe95-b417-450b-ba64-2d3d6e3beccb_car_1x1.jpg?h=cac053170709157ba673e0213ee290ad", media: [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/a3992f67-64fc-403f-a54b-4e8eebe1cf91_rw_1920.png?h=40e59e00ae2ffbf9d2c162ec0f00d40a"
   ] },
-  { id: 47, title: "trabalho de oficina de midia impressa - Deva Braga", slug: "trabalho-de-oficina-de-midia-impressa-deva-braga", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/trabalho-de-oficina-de-midia-impressa-deva-braga", categories: ["Design"], media: [
+  { id: 47, title: "trabalho de oficina de midia impressa - Deva Braga", slug: "trabalho-de-oficina-de-midia-impressa-deva-braga", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/trabalho-de-oficina-de-midia-impressa-deva-braga", categories: ["Design"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/3c8b0c76-c17f-4d2c-b8be-6883eb6488c7_rwc_50x66x458x458x458.jpg?h=9b22c19e712a11de6596d005eb5a77db", media: [
       "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/6e2d5a47-f7d6-485b-89bb-2ec48447404a_rw_1200.jpg?h=e35787a849c0238d52251b35083a3459"
   ] },
 ];

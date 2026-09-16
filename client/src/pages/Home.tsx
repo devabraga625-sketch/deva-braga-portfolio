@@ -12,23 +12,18 @@ function categoryFor(project: PortfolioProject) { return project.categories.join
 
 const specialMedia: Record<string, Array<{ kind: "image" | "youtube" | "embed"; src: string }>> = {
   "ocupacao-377": [
-    { kind: "image", src: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/92c926bc-fd09-414f-a421-ff48872b9926_car_1x1.jpg?h=cb842d706a0805b6e4b4f4077c6aa70d" },
     { kind: "embed", src: "https://lightroom.adobe.com/embed/shares/a50ed03d5cb1425e947972a52f60bf80" },
   ],
   "a-revolucao-silenciosa": [
-    { kind: "image", src: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/6a92c89b-a730-497d-a769-6f4c42f406c4_car_1x1.jpg?h=0a8b0353d53404ce4c9b33e4618d081d" },
     { kind: "youtube", src: "https://www.youtube.com/embed/jaQDrIh1lDM?si=sWQr9Sc3GtUvRJYG" },
   ],
   "zestspice-propaganda": [
-    { kind: "image", src: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/ad0e2ca8-4d71-4ade-8044-b462e5c78aa0_rwc_525x0x1376x1376x1376.jpeg?h=e2f2e8cbf36993f790d675099b0cd3ea" },
     { kind: "embed", src: "https://www-ccv.adobe.io/v1/player/ccv/HgNHUoM6UzU/embed?bgcolor=%23191919&lazyLoading=true&api_key=BehancePro2View" },
   ],
   "vinheta-savior": [
-    { kind: "image", src: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/c5bac3a8-9660-4099-b1e1-ae0e55e42c3e_car_1x1.png?h=5aaa59f163e6cc9f610c79289478b034" },
     { kind: "embed", src: "https://www-ccv.adobe.io/v1/player/ccv/IrznVPAI3gR/embed?bgcolor=%23191919&lazyLoading=true&api_key=BehancePro2View" },
   ],
   "stories-depyl-care-012026": [
-    { kind: "image", src: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/8806769e-9e4d-4ca4-a1b3-fb83c3706b35_car_1x1.jpg?h=5fdbde0a09c3ff0ebdf57cc5690a1cb4" },
     { kind: "youtube", src: "https://www.youtube.com/embed/Pyd7CJO2H-A?si=BEV73KL_0-_AdWwU" },
   ],
 };
@@ -36,7 +31,7 @@ const specialMedia: Record<string, Array<{ kind: "image" | "youtube" | "embed"; 
 function mediaFor(project: PortfolioProject) {
   const special = specialMedia[project.slug];
   if (!special) return project.media.map(src => ({ kind: "image" as const, src }));
-  return [...special, ...project.media.filter(src => !special.some(item => item.src === src)).map(src => ({ kind: "image" as const, src }))];
+  return [...special, ...project.media.map(src => ({ kind: "image" as const, src }))];
 }
 
 function SpecialMedia({ item, alt, featured = false }: { item: { kind: "image" | "youtube" | "embed"; src: string }; alt: string; featured?: boolean }) {
@@ -62,7 +57,7 @@ export default function Home() {
       <section className="work-section" id="trabalhos">
         <div className="section-heading"><div><span className="section-index">01</span><h2>Trabalhos</h2></div><p>{portfolioProjects.length} projetos<br />47 páginas · 649 mídias</p></div>
         <div className="filter-row" aria-label="Filtrar trabalhos por categoria">{categories.map((item) => <button key={item} className={filter === item ? "active" : ""} onClick={() => setFilter(item)}>{item}<sup>{item === "Todos" ? portfolioProjects.length : portfolioProjects.filter(p => p.categories.includes(item)).length}</sup></button>)}</div>
-        <div className="catalog-grid">{filtered.map((project) => <button className="catalog-card" key={project.id} onClick={() => openProject(project)} aria-label={`Abrir projeto ${project.title}`}><div className="catalog-image">{mediaFor(project)[0] ? <SpecialMedia item={mediaFor(project)[0]} alt={project.title} featured /> : <div className="media-empty">Mídia indisponível</div>}<span className="card-shade" /><span className="card-arrow"><ArrowUpRight size={18} /></span></div><div className="catalog-meta"><span className="catalog-number">{String(project.id).padStart(2, "0")}</span><span><strong>{project.title}</strong><small>{project.year} · {categoryFor(project)} · {mediaFor(project).length} mídias</small></span></div></button>)}</div>
+        <div className="catalog-grid">{filtered.map((project) => <button className="catalog-card" key={project.id} onClick={() => openProject(project)} aria-label={`Abrir projeto ${project.title}`}><div className="catalog-image"><img src={project.thumbnail} alt={project.title} loading="lazy" /><span className="card-shade" /><span className="card-arrow"><ArrowUpRight size={18} /></span></div><div className="catalog-meta"><span className="catalog-number">{String(project.id).padStart(2, "0")}</span><span><strong>{project.title}</strong><small>{project.year} · {categoryFor(project)} · {mediaFor(project).length} mídias</small></span></div></button>)}</div>
       </section>
 
       <section className="statement" id="sobre"><span className="section-index">02</span><div><h2>Entre o documento<br />e a <em>atmosfera.</em></h2><p>Deva Braga é fotógrafo e designer gráfico em Salvador. Seu trabalho percorre pessoas, lugares e marcas em busca de uma imagem que carregue presença.</p><a href="#contato">Conheça o processo <ArrowUpRight size={17} /></a></div></section>
