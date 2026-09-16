@@ -11,6 +11,7 @@ import { serveStatic, setupVite } from "./vite";
 import { handleBehanceSync } from "../behance-scheduled";
 import { ensureBehanceSyncJob, ensureDefaultNotificationTemplates } from "../db";
 import { JOB_NAME } from "../behance-sync";
+import { applySecurityMiddleware } from "./security";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -34,6 +35,7 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
 async function startServer() {
   const app = express();
   const server = createServer(app);
+  applySecurityMiddleware(app);
   await ensureBehanceSyncJob(JOB_NAME).catch(error => console.warn("[Behance] Could not initialize sync job:", error));
   await ensureDefaultNotificationTemplates().catch(error => console.warn("[Notifications] Could not initialize templates:", error));
   // Configure body parser with larger size limit for file uploads
