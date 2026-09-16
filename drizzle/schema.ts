@@ -32,6 +32,14 @@ export const auditLogs = mysqlTable("audit_logs", {
   id: int("id").autoincrement().primaryKey(), actor: varchar("actor", { length: 320 }).notNull(), entityType: varchar("entityType", { length: 64 }).notNull(), entityKey: varchar("entityKey", { length: 191 }).notNull(), action: varchar("action", { length: 64 }).notNull(), details: text("details"), createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
+export const notificationTemplates = mysqlTable("notification_templates", {
+  id: int("id").autoincrement().primaryKey(), eventKey: varchar("eventKey", { length: 64 }).notNull().unique(), title: varchar("title", { length: 160 }).notNull(), message: text("message").notNull(), severity: mysqlEnum("severity", ["info", "success", "warning", "urgent"]).default("info").notNull(), enabled: int("enabled").default(1).notNull(), updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export const notifications = mysqlTable("notifications", {
+  id: int("id").autoincrement().primaryKey(), eventKey: varchar("eventKey", { length: 64 }).notNull(), title: varchar("title", { length: 160 }).notNull(), message: text("message").notNull(), severity: mysqlEnum("severity", ["info", "success", "warning", "urgent"]).default("info").notNull(), recipient: varchar("recipient", { length: 64 }).default("owner").notNull(), readAt: timestamp("readAt"), createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 export type BehanceProject = typeof behanceProjects.$inferSelect;
@@ -40,3 +48,5 @@ export type QuoteRequest = typeof quoteRequests.$inferSelect;
 export type TrafficEvent = typeof trafficEvents.$inferSelect;
 export type PortfolioProjectOverride = typeof portfolioProjectOverrides.$inferSelect;
 export type AuditLog = typeof auditLogs.$inferSelect;
+export type NotificationTemplate = typeof notificationTemplates.$inferSelect;
+export type Notification = typeof notifications.$inferSelect;

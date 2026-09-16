@@ -1,6 +1,6 @@
 import { count, desc, eq, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, User, auditLogs, behanceProjects, behanceSyncJobs, portfolioProjectOverrides, quoteRequests, trafficEvents, users } from "../drizzle/schema";
+import { InsertUser, User, auditLogs, behanceProjects, behanceSyncJobs, notificationTemplates, notifications, portfolioProjectOverrides, quoteRequests, trafficEvents, users } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -156,4 +156,48 @@ export async function recordAuditLog(input: { actor: string; entityType: string;
 export async function listAuditLogs() {
   const db = await getDb(); if (!db) return [];
   return db.select().from(auditLogs).orderBy(desc(auditLogs.createdAt)).limit(250);
+}
+
+export async function createNotification(input: { eventKey: string; title: string; message: string; severity?: "info" | "success" | "warning" | "urgent" }) {
+  const db = await getDb(); if (!db) return;
+  await db.insert(notifications).values({ eventKey: input.eventKey, title: input.title, message: input.message, severity: input.severity ?? "info", recipient: "owner" });
+}
+
+export async function createTemplatedNotification(input: { eventKey: string; variables: Record<string, string>; fallback: { title: string; message: string; severity: "info" | "success" | "warning" | "urgent" } }) {
+  const db = await getDb(); if (!db) return;
+  const template = (await db.select().from(notificationTemplates).where(eq(notificationTemplates.eventKey, input.eventKey)).limit(1))[0];
+  if (template && !template.enabled) return;
+  const source = template ?? input.fallback;
+  const render = (value: string) => Object.entries(input.variables).reduce((result, [key, replacement]) => result.replaceAll(`{{${key}}}`, replacement), value);
+  await createNotification({ eventKey: input.eventKey, title: render(source.title), message: render(source.message), severity: source.severity });
+}
+
+export async function listNotifications() {
+  const db = await getDb(); if (!db) return [];
+  return db.select().from(notifications).orderBy(desc(notifications.createdAt)).limit(100);
+}
+
+export async function markNotificationRead(id: number) {
+  const db = await getDb(); if (!db) return;
+  await db.update(notifications).set({ readAt: new Date() }).where(eq(notifications.id, id));
+}
+
+export async function listNotificationTemplates() {
+  const db = await getDb(); if (!db) return [];
+  return db.select().from(notificationTemplates).orderBy(notificationTemplates.eventKey);
+}
+
+export async function upsertNotificationTemplate(input: { eventKey: string; title: string; message: string; severity: "info" | "success" | "warning" | "urgent"; enabled: boolean }) {
+  const db = await getDb(); if (!db) throw new Error("DATABASE_URL is not configured");
+  await db.insert(notificationTemplates).values({ eventKey: input.eventKey, title: input.title, message: input.message, severity: input.severity, enabled: input.enabled ? 1 : 0 }).onDuplicateKeyUpdate({ set: { title: input.title, message: input.message, severity: input.severity, enabled: input.enabled ? 1 : 0, updatedAt: new Date() } });
+}
+
+export async function ensureDefaultNotificationTemplates() {
+  const db = await getDb(); if (!db) return;
+  const defaults = [
+    { eventKey: "quote_received", title: "Novo pedido de orçamento", message: "{{name}} enviou um pedido ({{email}}): {{message}}", severity: "urgent" as const },
+    { eventKey: "lead_status_changed", title: "Pedido atualizado", message: "O pedido #{{id}} mudou para {{status}}.", severity: "info" as const },
+    { eventKey: "project_updated", title: "Projeto atualizado", message: "O projeto “{{title}}” foi atualizado no painel.", severity: "success" as const },
+  ];
+  for (const template of defaults) await db.insert(notificationTemplates).values({ ...template, enabled: 1 }).onDuplicateKeyUpdate({ set: { updatedAt: new Date() } });
 }

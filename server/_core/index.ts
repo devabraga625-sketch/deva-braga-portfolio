@@ -9,7 +9,7 @@ import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import { handleBehanceSync } from "../behance-scheduled";
-import { ensureBehanceSyncJob } from "../db";
+import { ensureBehanceSyncJob, ensureDefaultNotificationTemplates } from "../db";
 import { JOB_NAME } from "../behance-sync";
 
 function isPortAvailable(port: number): Promise<boolean> {
@@ -35,6 +35,7 @@ async function startServer() {
   const app = express();
   const server = createServer(app);
   await ensureBehanceSyncJob(JOB_NAME).catch(error => console.warn("[Behance] Could not initialize sync job:", error));
+  await ensureDefaultNotificationTemplates().catch(error => console.warn("[Notifications] Could not initialize templates:", error));
   // Configure body parser with larger size limit for file uploads
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
