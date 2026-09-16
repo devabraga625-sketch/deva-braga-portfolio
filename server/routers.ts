@@ -6,6 +6,7 @@ import { adminProcedure, publicProcedure, router } from "./_core/trpc";
 import { systemRouter } from "./_core/systemRouter";
 import { createQuoteRequest, deletePortfolioProjectOverride, getProjectAccessCounts, getTrafficSummary, listAuditLogs, listBehanceProjects, listPortfolioProjectOverrides, listQuoteRequests, recordAuditLog, recordTrafficEvent, setPortfolioProjectAsset, updateQuoteRequestStatus, upsertPortfolioProjectOverride } from "./db";
 import { storagePut } from "./storage";
+import { sendQuoteNotifications } from "./external-notifications";
 
 export const appRouter = router({
   system: systemRouter,
@@ -41,8 +42,12 @@ export const appRouter = router({
   quoteRequests: router({
     create: publicProcedure.input(z.object({ name: z.string().trim().min(2).max(160), email: z.string().email().max(320), phone: z.string().trim().max(40).optional(), message: z.string().trim().min(10).max(5000), consent: z.literal(true) })).mutation(async ({ input }) => {
       await createQuoteRequest(input);
-      const notified = await notifyOwner({ title: "Novo pedido de orçamento", content: `${input.name} (${input.email}) enviou um pedido de orçamento pelo portfólio.\n\n${input.message}` });
-      return { ok: true as const, notified };
+      const content = `${input.name} (${input.email}) enviou um pedido de orçamento pelo portfólio.\n\n${input.message}`;
+      const [internal, external] = await Promise.all([
+        notifyOwner({ title: "Novo pedido de orçamento", content }).catch(() => false),
+        sendQuoteNotifications(input).catch(() => ({ email: false, whatsapp: false, delivered: false })),
+      ]);
+      return { ok: true as const, notified: internal || external.delivered, channels: { internal, email: external.email, whatsapp: external.whatsapp } };
     }),
   }),
 });

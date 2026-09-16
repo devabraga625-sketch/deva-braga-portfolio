@@ -7,4 +7,12 @@ export const ENV = {
   isProduction: process.env.NODE_ENV === "production",
   forgeApiUrl: process.env.BUILT_IN_FORGE_API_URL ?? "",
   forgeApiKey: process.env.BUILT_IN_FORGE_API_KEY ?? "",
+  resendApiKey: process.env.RESEND_API_KEY ?? "",
+  resendFrom: process.env.RESEND_FROM ?? "",
+  notificationEmail: process.env.NOTIFICATION_EMAIL ?? "deva.jpeg@gmail.com",
+  twilioAccountSid: process.env.TWILIO_ACCOUNT_SID ?? "",
+  twilioAuthToken: process.env.TWILIO_AUTH_TOKEN ?? "",
+  twilioWhatsAppFrom: process.env.TWILIO_WHATSAPP_FROM ?? "",
+  twilioWhatsAppTo: process.env.TWILIO_WHATSAPP_TO ?? "whatsapp:+5571986397739",
+  twilioContentSid: process.env.TWILIO_CONTENT_SID ?? "",
 };
