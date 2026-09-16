@@ -79,12 +79,17 @@ export async function updateBehanceSyncJob(name: string, values: Partial<typeof 
 
 export async function createQuoteRequest(input: { name: string; email: string; phone?: string; message: string }) {
   const db = await getDb(); if (!db) throw new Error("DATABASE_URL is not configured");
-  await db.insert(quoteRequests).values({ name: input.name, email: input.email, phone: input.phone ?? null, message: input.message, consent: 1, status: "new" });
+  await db.insert(quoteRequests).values({ name: input.name, email: input.email, phone: input.phone ?? null, message: input.message, consent: 1, status: "pending" });
 }
 
 export async function listQuoteRequests() {
   const db = await getDb(); if (!db) return [];
   return db.select().from(quoteRequests).orderBy(desc(quoteRequests.createdAt)).limit(100);
+}
+
+export async function updateQuoteRequestStatus(id: number, status: "pending" | "responded" | "completed") {
+  const db = await getDb(); if (!db) throw new Error("DATABASE_URL is not configured");
+  await db.update(quoteRequests).set({ status, }).where(eq(quoteRequests.id, id));
 }
 
 export async function recordTrafficEvent(input: { eventType: string; path: string; projectKey?: string; visitorId: string }) {
@@ -101,4 +106,9 @@ export async function getTrafficSummary(days = 7) {
     db.select({ projectKey: trafficEvents.projectKey, clicks: count() }).from(trafficEvents).where(eq(trafficEvents.eventType, "project_click")).groupBy(trafficEvents.projectKey).orderBy(desc(count())).limit(8),
   ]);
   return { totals: { views: Number(totals[0]?.views ?? 0), clicks: Number(totals[0]?.clicks ?? 0), visitors: Number(visitors[0]?.visitors ?? 0) }, byDay, topProjects };
+}
+
+export async function getProjectAccessCounts() {
+  const db = await getDb(); if (!db) return [];
+  return db.select({ projectKey: trafficEvents.projectKey, accesses: count() }).from(trafficEvents).where(eq(trafficEvents.eventType, "project_click")).groupBy(trafficEvents.projectKey).orderBy(desc(count())).limit(200);
 }

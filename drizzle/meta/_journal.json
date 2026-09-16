@@ -15,6 +15,13 @@
       "when": 1789581892735,
       "tag": "0001_puzzling_blue_blade",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1789584330661,
+      "tag": "0002_ancient_eternity",
+      "breakpoints": true
     }
   ]
 }

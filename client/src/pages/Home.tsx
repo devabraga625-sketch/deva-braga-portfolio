@@ -12,6 +12,8 @@ function Media({ src, alt, featured = false }: { src: string; alt: string; featu
 
 function categoryFor(project: PortfolioProject) { return project.categories.join(" · "); }
 
+function yearScore(year: string) { const parsed = Number(year); return Number.isFinite(parsed) ? parsed : 0; }
+
 const specialMedia: Record<string, Array<{ kind: "image" | "youtube" | "embed"; src: string }>> = {
   "ocupacao-377": [
     { kind: "embed", src: "https://lightroom.adobe.com/embed/shares/a50ed03d5cb1425e947972a52f60bf80" },
@@ -34,6 +36,13 @@ function mediaFor(project: PortfolioProject) {
   const special = specialMedia[project.slug];
   if (!special) return project.media.map(src => ({ kind: "image" as const, src }));
   return [...special, ...project.media.map(src => ({ kind: "image" as const, src }))];
+}
+
+function mediaTypesFor(project: PortfolioProject) {
+  const media = mediaFor(project);
+  if (!media.length) return ["Sem mídia"];
+  const types = new Set(media.map(item => item.kind === "image" ? "Imagem" : item.kind === "youtube" ? "Vídeo" : "Embed"));
+  return Array.from(types);
 }
 
 function SpecialMedia({ item, alt, featured = false }: { item: { kind: "image" | "youtube" | "embed"; src: string }; alt: string; featured?: boolean }) {
@@ -66,6 +75,7 @@ function getThemeChoice() {
 
 export default function Home() {
   const { data: syncedProjects = [] } = trpc.behance.projects.useQuery();
+  const { data: accessCounts = [] } = trpc.analytics.projectAccess.useQuery();
   const track = trpc.analytics.track.useMutation();
   const [cookieChoice, setCookieChoice] = useState<string | null>(() => getCookieChoice());
   const [darkMode, setDarkMode] = useState(() => getThemeChoice());
@@ -82,12 +92,22 @@ export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [filter, setFilter] = useState<(typeof categories)[number]>("Todos");
   const [searchQuery, setSearchQuery] = useState("");
+  const [yearFilter, setYearFilter] = useState("Todos");
+  const [mediaFilter, setMediaFilter] = useState("Todos");
+  const [sortOrder, setSortOrder] = useState<"recent" | "accessed" | "alphabetical">("recent");
   const [selected, setSelected] = useState<PortfolioProject | null>(null);
   const [mediaIndex, setMediaIndex] = useState(0);
+  const years = useMemo(() => Array.from(new Set(allProjects.map(project => project.year).filter(year => /^\d{4}$/.test(year)))).sort((a, b) => Number(b) - Number(a)), [allProjects]);
+  const accessMap = useMemo(() => new Map(accessCounts.map(item => [item.projectKey ?? "", Number(item.accesses)])), [accessCounts]);
   const filtered = useMemo(() => {
     const query = searchQuery.trim().toLocaleLowerCase();
-    return allProjects.filter(project => (filter === "Todos" || project.categories.includes(filter)) && (!query || project.title.toLocaleLowerCase().includes(query)));
-  }, [allProjects, filter, searchQuery]);
+    const matching = allProjects.filter(project => (filter === "Todos" || project.categories.includes(filter)) && (yearFilter === "Todos" || project.year === yearFilter) && (mediaFilter === "Todos" || mediaTypesFor(project).includes(mediaFilter)) && (!query || project.title.toLocaleLowerCase().includes(query)));
+    return [...matching].sort((a, b) => {
+      if (sortOrder === "alphabetical") return a.title.localeCompare(b.title, "pt-BR");
+      if (sortOrder === "accessed") return (accessMap.get(b.slug) ?? 0) - (accessMap.get(a.slug) ?? 0) || yearScore(b.year) - yearScore(a.year) || a.title.localeCompare(b.title, "pt-BR");
+      return yearScore(b.year) - yearScore(a.year) || a.title.localeCompare(b.title, "pt-BR");
+    });
+  }, [accessMap, allProjects, filter, mediaFilter, searchQuery, sortOrder, yearFilter]);
   const toggleTheme = () => { const next = !darkMode; setDarkMode(next); try { window.localStorage.setItem("deva-theme", next ? "dark" : "light"); } catch {} };
   
   const openProject = (project: PortfolioProject) => { setSelected(project); setMediaIndex(0); };
@@ -101,8 +121,9 @@ export default function Home() {
       <section className="work-section" id="trabalhos">
         <div className="section-heading"><div><span className="section-index">01</span><h2>Trabalhos</h2></div><p>{allProjects.length} projetos<br />{allProjects.filter(p => p.id < 1000).length} páginas · {allProjects.reduce((sum, p) => sum + mediaFor(p).length, 0)} mídias</p></div>
         <div className="work-tools"><div className="filter-row" aria-label="Filtrar trabalhos por categoria">{categories.map((item) => <button key={item} className={filter === item ? "active" : ""} onClick={() => setFilter(item)}>{item}<sup>{item === "Todos" ? allProjects.length : allProjects.filter(p => p.categories.includes(item)).length}</sup></button>)}</div><label className="work-search"><Search size={16} /><span className="sr-only">Buscar trabalhos pelo nome</span><input type="search" value={searchQuery} onChange={event => setSearchQuery(event.target.value)} placeholder="Buscar por nome" aria-label="Buscar trabalhos pelo nome" />{searchQuery && <button type="button" onClick={() => setSearchQuery("")} aria-label="Limpar busca"><X size={14} /></button>}</label></div>
+        <div className="advanced-work-tools"><label>Ano<select value={yearFilter} onChange={event => setYearFilter(event.target.value)}><option>Todos</option>{years.map(year => <option key={year}>{year}</option>)}</select></label><label>Mídia<select value={mediaFilter} onChange={event => setMediaFilter(event.target.value)}><option>Todos</option><option>Imagem</option><option>Vídeo</option><option>Embed</option><option>Sem mídia</option></select></label><label>Ordenar<select value={sortOrder} onChange={event => setSortOrder(event.target.value as typeof sortOrder)}><option value="recent">Mais recentes</option><option value="accessed">Mais acessados</option><option value="alphabetical">Ordem alfabética</option></select></label></div>
         {filtered.length === 0 && <p className="empty-search">Nenhum trabalho encontrado para esta busca.</p>}
-        <div className="catalog-grid">{filtered.map((project) => <button className="catalog-card" key={project.id} onClick={() => { if (cookieChoice === "accepted") track.mutate({ eventType: "project_click", path: window.location.pathname, projectKey: project.slug, visitorId: getVisitorId() }); openProject(project); }} aria-label={`Abrir projeto ${project.title}`}><div className="catalog-image"><img src={project.thumbnail} alt={project.title} loading="lazy" /><span className="card-shade" /><span className="card-arrow"><ArrowUpRight size={18} /></span></div><div className="catalog-meta"><span className="catalog-number">{String(project.id).padStart(2, "0")}</span><span><strong>{project.title}</strong><small>{project.year} · {categoryFor(project)} · {mediaFor(project).length} mídias</small></span></div></button>)}</div>
+        <div className="catalog-grid">{filtered.map((project) => <button className="catalog-card" key={project.id} onClick={() => { if (cookieChoice === "accepted") track.mutate({ eventType: "project_click", path: window.location.pathname, projectKey: project.slug, visitorId: getVisitorId() }); openProject(project); }} aria-label={`Abrir projeto ${project.title}`}><div className="catalog-image"><img src={project.thumbnail} alt={project.title} loading="lazy" /><span className="card-shade" /><span className="card-arrow"><ArrowUpRight size={18} /></span></div><div className="catalog-meta"><span className="catalog-number">{String(project.id).padStart(2, "0")}</span><span><strong>{project.title}</strong><small>{project.year} · {categoryFor(project)} · {mediaTypesFor(project).join(" + ")} · {mediaFor(project).length} mídias</small></span></div></button>)}</div>
       </section>
 
       <section className="statement" id="sobre"><span className="section-index">02</span><div><h2>Entre o documento<br />e a <em>atmosfera.</em></h2><p>Deva Braga é fotógrafo e designer gráfico em Salvador. Seu trabalho percorre pessoas, lugares e marcas em busca de uma imagem que carregue presença.</p><a href="#contato">Conheça o processo <ArrowUpRight size={17} /></a></div></section>

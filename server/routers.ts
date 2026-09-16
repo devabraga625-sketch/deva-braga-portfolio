@@ -4,7 +4,7 @@ import { getSessionCookieOptions } from "./_core/cookies";
 import { notifyOwner } from "./_core/notification";
 import { adminProcedure, publicProcedure, router } from "./_core/trpc";
 import { systemRouter } from "./_core/systemRouter";
-import { createQuoteRequest, getTrafficSummary, listBehanceProjects, listQuoteRequests, recordTrafficEvent } from "./db";
+import { createQuoteRequest, getProjectAccessCounts, getTrafficSummary, listBehanceProjects, listQuoteRequests, recordTrafficEvent, updateQuoteRequestStatus } from "./db";
 
 export const appRouter = router({
   system: systemRouter,
@@ -26,6 +26,8 @@ export const appRouter = router({
     }),
     summary: adminProcedure.input(z.object({ days: z.union([z.literal(7), z.literal(30)]).default(7) })).query(({ input }) => getTrafficSummary(input.days)),
     leads: adminProcedure.query(() => listQuoteRequests()),
+    updateLeadStatus: adminProcedure.input(z.object({ id: z.number().int().positive(), status: z.enum(["pending", "responded", "completed"]) })).mutation(({ input }) => updateQuoteRequestStatus(input.id, input.status)),
+    projectAccess: publicProcedure.query(() => getProjectAccessCounts()),
   }),
   quoteRequests: router({
     create: publicProcedure.input(z.object({ name: z.string().trim().min(2).max(160), email: z.string().email().max(320), phone: z.string().trim().max(40).optional(), message: z.string().trim().min(10).max(5000), consent: z.literal(true) })).mutation(async ({ input }) => {

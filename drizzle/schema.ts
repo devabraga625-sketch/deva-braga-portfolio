@@ -17,7 +17,7 @@ export const behanceSyncJobs = mysqlTable("behance_sync_jobs", {
 });
 
 export const quoteRequests = mysqlTable("quote_requests", {
-  id: int("id").autoincrement().primaryKey(), name: varchar("name", { length: 160 }).notNull(), email: varchar("email", { length: 320 }).notNull(), phone: varchar("phone", { length: 40 }), message: text("message").notNull(), consent: int("consent").notNull(), status: mysqlEnum("status", ["new", "read", "replied"]).default("new").notNull(), createdAt: timestamp("createdAt").defaultNow().notNull(),
+  id: int("id").autoincrement().primaryKey(), name: varchar("name", { length: 160 }).notNull(), email: varchar("email", { length: 320 }).notNull(), phone: varchar("phone", { length: 40 }), message: text("message").notNull(), consent: int("consent").notNull(), status: varchar("status", { length: 32 }).default("pending").notNull(), createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
 export const trafficEvents = mysqlTable("traffic_events", {
