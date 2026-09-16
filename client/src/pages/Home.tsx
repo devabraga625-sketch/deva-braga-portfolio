@@ -19,7 +19,7 @@ const projects = [
   { title: "Uma Noite no Museu", type: "Fotografia / Styling", year: "2025", image: images[3], size: "feature" },
 ];
 
-const filters = ["Todos", "Fotografia", "Direção de arte", "Edição"];
+const filters = ["Todos", "Fotografia", "Design Gráfico", "Edição"];
 
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -66,7 +66,7 @@ export default function Home() {
       </section>
 
       <section className="statement" id="sobre">
-        <span className="section-index">02</span><div><h2>Entre o documento<br />e a <em>atmosfera.</em></h2><p>Deva Braga é fotógrafa e diretora de arte em Salvador. Seu trabalho percorre pessoas, lugares e marcas em busca de uma imagem que carregue presença.</p><a href="#contato">Conheça o processo <ArrowUpRight size={17} /></a></div>
+        <span className="section-index">02</span><div><h2>Entre o documento<br />e a <em>atmosfera.</em></h2><p>Deva Braga é fotógrafo e designer gráfico em Salvador. Seu trabalho percorre pessoas, lugares e marcas em busca de uma imagem que carregue presença.</p><a href="#contato">Conheça o processo <ArrowUpRight size={17} /></a></div>
       </section>
 
       <footer className="footer" id="contato"><div><span className="section-index">03</span><p>Tem uma ideia em mente?</p><a href="mailto:oi@devabraga.com">oi@devabraga.com</a></div><div className="footer-right"><span>Salvador, BR</span><span>© 2026 Deva Braga</span></div></footer>
