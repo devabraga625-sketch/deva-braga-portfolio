@@ -66,3 +66,7 @@ a { text-decoration: none; }
 .catalog-card { flex: 0 1 calc((100% - 36px) / 3); max-width: calc((100% - 36px) / 3); }
 .project-description { max-width: 720px; margin: 28px 0 0; color: rgba(232,228,220,.72); font: 400 clamp(1rem, 1.5vw, 1.28rem)/1.45 'DM Mono', monospace; letter-spacing: -.025em; }
 @media (max-width: 700px) { .catalog-grid { gap: 30px 10px; }.catalog-card { flex-basis: calc((100% - 10px) / 2); max-width: calc((100% - 10px) / 2); }.project-description { margin-top: 22px; font-size: .85rem; line-height: 1.5; } }
+
+.project-media-empty { display: grid; place-items: center; gap: 14px; min-height: 240px; margin-top: 32px; border: 1px solid rgba(232,228,220,.22); background: #24241f; color: rgba(232,228,220,.72); text-align: center; font: 12px 'DM Mono', monospace; }
+.project-media-empty p { margin: 0; }
+.project-media-empty a { display: inline-flex; align-items: center; gap: 8px; color: var(--acid); text-transform: uppercase; }

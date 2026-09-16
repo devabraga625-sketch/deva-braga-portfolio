@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "mysql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1789579824375,
+      "tag": "0000_lovely_rocket_racer",
+      "breakpoints": true
+    }
+  ]
+}
