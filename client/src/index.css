@@ -140,3 +140,6 @@ a { text-decoration: none; }
 .audit-list article strong { color: var(--acid); font: 11px 'DM Mono', monospace; text-transform: uppercase; }
 .audit-list article span, .audit-list article time { color: rgba(232,228,220,.65); font: 10px 'DM Mono', monospace; }
 @media (max-width: 700px) { .audit-list article { grid-template-columns: 1fr; gap: 5px; }.panel-card-heading .panel-actions { display: grid; gap: 8px; width: 100%; }.panel-card-heading .panel-actions input { width: 100%; } }
+
+.protected-media { -webkit-user-drag: none; user-select: none; }
+@media print { .protected-media { visibility: hidden !important; } }

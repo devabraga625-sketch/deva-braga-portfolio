@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
@@ -28,6 +29,15 @@ function Router() {
 // - If you want to make theme switchable, pass `switchable` ThemeProvider and use `useTheme` hook
 
 function App() {
+  useEffect(() => {
+    const onContextMenu = (event: MouseEvent) => { if ((event.target as HTMLElement).closest(".protected-media")) event.preventDefault(); };
+    const onDragStart = (event: DragEvent) => { if ((event.target as HTMLElement).closest(".protected-media")) event.preventDefault(); };
+    const onKeyDown = (event: KeyboardEvent) => { if ((event.ctrlKey || event.metaKey) && ["s", "u", "p"].includes(event.key.toLowerCase())) event.preventDefault(); };
+    document.addEventListener("contextmenu", onContextMenu);
+    document.addEventListener("dragstart", onDragStart);
+    document.addEventListener("keydown", onKeyDown);
+    return () => { document.removeEventListener("contextmenu", onContextMenu); document.removeEventListener("dragstart", onDragStart); document.removeEventListener("keydown", onKeyDown); };
+  }, []);
   return (
     <ErrorBoundary>
       <ThemeProvider
