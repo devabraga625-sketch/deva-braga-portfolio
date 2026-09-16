@@ -131,3 +131,12 @@ a { text-decoration: none; }
 @media (max-width: 700px) { .lead-summary-grid { grid-template-columns: repeat(2, 1fr); }.lead-summary-grid button { min-height: 92px; }.lead-summary-grid strong { font-size: 2.3rem; }.project-admin-list article { display: block; }.project-admin-actions { margin-top: 12px; }.project-editor-overlay { padding: 14px; }.project-editor { padding: 18px; } }
 
 .dark-mode .work-section svg, .dark-mode .work-section .catalog-card .card-arrow { color: #fff; }.dark-mode .work-section .work-search svg { color: #fff; }.dark-mode .quick-view-label { color: var(--acid); }
+
+.upload-button { display: inline-flex; align-items: center; border: 1px solid rgba(232,228,220,.35); color: var(--paper); padding: 8px 10px; font: 10px 'DM Mono', monospace; text-transform: uppercase; cursor: pointer; }
+.upload-button input { display: none; }
+.audit-card { margin-top: 14px; }
+.audit-list { display: grid; gap: 0; }
+.audit-list article { display: grid; grid-template-columns: 180px 1fr auto; gap: 12px; border-top: 1px solid rgba(232,228,220,.15); padding: 12px 0; }
+.audit-list article strong { color: var(--acid); font: 11px 'DM Mono', monospace; text-transform: uppercase; }
+.audit-list article span, .audit-list article time { color: rgba(232,228,220,.65); font: 10px 'DM Mono', monospace; }
+@media (max-width: 700px) { .audit-list article { grid-template-columns: 1fr; gap: 5px; }.panel-card-heading .panel-actions { display: grid; gap: 8px; width: 100%; }.panel-card-heading .panel-actions input { width: 100%; } }

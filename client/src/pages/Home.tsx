@@ -13,6 +13,9 @@ function Media({ src, alt, featured = false }: { src: string; alt: string; featu
 function categoryFor(project: PortfolioProject) { return project.categories.join(" · "); }
 
 function yearScore(year: string) { const parsed = Number(year); return Number.isFinite(parsed) ? parsed : 0; }
+function recencyScore(project: PortfolioProject) { if (project.publishedAt) { const timestamp = Date.parse(project.publishedAt); if (Number.isFinite(timestamp)) return timestamp; } return yearScore(project.year) * 100000 - project.id; }
+
+function extraMedia(override: { media?: string | null } | undefined) { try { return override?.media ? JSON.parse(override.media) as string[] : []; } catch { return []; } }
 
 const specialMedia: Record<string, Array<{ kind: "image" | "youtube" | "embed"; src: string }>> = {
   "ocupacao-377": [
@@ -84,7 +87,7 @@ export default function Home() {
   const allProjects = useMemo<PortfolioProject[]>(() => {
     const existing = new Set(portfolioProjects.map(project => project.title.trim().toLocaleLowerCase()));
     const remote = syncedProjects.filter(project => !existing.has(project.title.trim().toLocaleLowerCase())).map((project, index) => ({
-      id: 1000 + index, title: project.title, slug: `behance-${project.projectKey}`, year: project.publishedAt ? new Date(project.publishedAt).getFullYear().toString() : "Behance", sourceUrl: project.sourceUrl, categories: ["Design"] as PortfolioProject["categories"], thumbnail: project.cover ?? "", description: project.description ?? "Projeto publicado no Behance.", media: [],
+      id: 1000 + index, title: project.title, slug: `behance-${project.projectKey}`, year: project.publishedAt ? new Date(project.publishedAt).getFullYear().toString() : "Behance", publishedAt: project.publishedAt?.toISOString(), sourceUrl: project.sourceUrl, categories: ["Design"] as PortfolioProject["categories"], thumbnail: project.cover ?? "", description: project.description ?? "Projeto publicado no Behance.", media: [],
     }));
     const festival = portfolioProjects.find(project => project.slug === "festival-gastronomico-da-feira-de-sao-joaquim");
     const archive = portfolioProjects.filter(project => project.slug !== festival?.slug);
@@ -93,7 +96,7 @@ export default function Home() {
     return base.flatMap(project => {
       const override = overrideMap.get(project.slug);
       if (override?.hidden) return [];
-      return [{ ...project, title: override?.title ?? project.title, description: override?.description ?? project.description, year: override?.year ?? project.year, thumbnail: override?.thumbnail ?? project.thumbnail, sourceUrl: override?.sourceUrl ?? project.sourceUrl }];
+      return [{ ...project, title: override?.title ?? project.title, description: override?.description ?? project.description, year: override?.year ?? project.year, thumbnail: override?.thumbnail ?? project.thumbnail, sourceUrl: override?.sourceUrl ?? project.sourceUrl, media: [...project.media, ...extraMedia(override)] }];
     });
   }, [overrides, syncedProjects]);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -101,7 +104,7 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [yearFilter, setYearFilter] = useState("Todos");
   const [mediaFilter, setMediaFilter] = useState("Todos");
-  const [sortOrder, setSortOrder] = useState<"recent" | "accessed" | "alphabetical">("recent");
+  const [sortOrder, setSortOrder] = useState<"recent" | "oldest" | "accessed" | "alphabetical">("recent");
   const [selected, setSelected] = useState<PortfolioProject | null>(null);
   const [mediaIndex, setMediaIndex] = useState(0);
   const years = useMemo(() => Array.from(new Set(allProjects.map(project => project.year).filter(year => /^\d{4}$/.test(year)))).sort((a, b) => Number(b) - Number(a)), [allProjects]);
@@ -111,8 +114,9 @@ export default function Home() {
     const matching = allProjects.filter(project => (filter === "Todos" || project.categories.includes(filter)) && (yearFilter === "Todos" || project.year === yearFilter) && (mediaFilter === "Todos" || mediaTypesFor(project).includes(mediaFilter)) && (!query || project.title.toLocaleLowerCase().includes(query)));
     return [...matching].sort((a, b) => {
       if (sortOrder === "alphabetical") return a.title.localeCompare(b.title, "pt-BR");
-      if (sortOrder === "accessed") return (accessMap.get(b.slug) ?? 0) - (accessMap.get(a.slug) ?? 0) || yearScore(b.year) - yearScore(a.year) || a.title.localeCompare(b.title, "pt-BR");
-      return yearScore(b.year) - yearScore(a.year) || a.title.localeCompare(b.title, "pt-BR");
+      if (sortOrder === "accessed") return (accessMap.get(b.slug) ?? 0) - (accessMap.get(a.slug) ?? 0) || recencyScore(b) - recencyScore(a) || a.title.localeCompare(b.title, "pt-BR");
+      if (sortOrder === "oldest") return recencyScore(a) - recencyScore(b) || a.title.localeCompare(b.title, "pt-BR");
+      return recencyScore(b) - recencyScore(a) || a.title.localeCompare(b.title, "pt-BR");
     });
   }, [accessMap, allProjects, filter, mediaFilter, searchQuery, sortOrder, yearFilter]);
   const toggleTheme = () => { const next = !darkMode; setDarkMode(next); try { window.localStorage.setItem("deva-theme", next ? "dark" : "light"); } catch {} };
@@ -128,13 +132,13 @@ export default function Home() {
       <section className="work-section" id="trabalhos">
         <div className="section-heading"><div><span className="section-index">01</span><h2>Trabalhos</h2></div><p>{allProjects.length} projetos<br />{allProjects.filter(p => p.id < 1000).length} páginas · {allProjects.reduce((sum, p) => sum + mediaFor(p).length, 0)} mídias</p></div>
         <div className="work-tools"><div className="filter-row" aria-label="Filtrar trabalhos por categoria">{categories.map((item) => <button key={item} className={filter === item ? "active" : ""} onClick={() => setFilter(item)}>{item}<sup>{item === "Todos" ? allProjects.length : allProjects.filter(p => p.categories.includes(item)).length}</sup></button>)}</div><label className="work-search"><Search size={16} /><span className="sr-only">Buscar trabalhos pelo nome</span><input type="search" value={searchQuery} onChange={event => setSearchQuery(event.target.value)} placeholder="Buscar por nome" aria-label="Buscar trabalhos pelo nome" />{searchQuery && <button type="button" onClick={() => setSearchQuery("")} aria-label="Limpar busca"><X size={14} /></button>}</label></div>
-        <div className="advanced-work-tools"><label>Ano<select value={yearFilter} onChange={event => setYearFilter(event.target.value)}><option>Todos</option>{years.map(year => <option key={year}>{year}</option>)}</select></label><label>Mídia<select value={mediaFilter} onChange={event => setMediaFilter(event.target.value)}><option>Todos</option><option>Imagem</option><option>Vídeo</option><option>Embed</option><option>Sem mídia</option></select></label><label>Ordenar<select value={sortOrder} onChange={event => setSortOrder(event.target.value as typeof sortOrder)}><option value="recent">Mais recentes</option><option value="accessed">Mais acessados</option><option value="alphabetical">Ordem alfabética</option></select></label></div>
+        <div className="advanced-work-tools"><label>Ano<select value={yearFilter} onChange={event => setYearFilter(event.target.value)}><option>Todos</option>{years.map(year => <option key={year}>{year}</option>)}</select></label><label>Mídia<select value={mediaFilter} onChange={event => setMediaFilter(event.target.value)}><option>Todos</option><option>Imagem</option><option>Vídeo</option><option>Embed</option><option>Sem mídia</option></select></label><label>Ordenar<select value={sortOrder} onChange={event => setSortOrder(event.target.value as typeof sortOrder)}><option value="recent">Mais recentes</option><option value="oldest">Mais antigos</option><option value="accessed">Mais acessados</option><option value="alphabetical">Ordem alfabética</option></select></label></div>
         {filtered.length === 0 && <p className="empty-search">Nenhum trabalho encontrado para esta busca.</p>}
         <div className="catalog-grid">{filtered.map((project) => <button className="catalog-card" key={project.id} onClick={() => { if (cookieChoice === "accepted") track.mutate({ eventType: "project_click", path: window.location.pathname, projectKey: project.slug, visitorId: getVisitorId() }); openProject(project); }} aria-label={`Abrir projeto ${project.title}`}><div className="catalog-image"><img src={project.thumbnail} alt={project.title} loading="lazy" /><span className="card-shade" /><span className="card-arrow"><ArrowUpRight size={18} /></span></div><div className="catalog-meta"><span className="catalog-number">{String(project.id).padStart(2, "0")}</span><span><strong>{project.title}</strong><small>{project.year} · {categoryFor(project)} · {mediaTypesFor(project).join(" + ")} · {mediaFor(project).length} mídias</small></span></div></button>)}</div>
       </section>
 
       <section className="statement" id="sobre"><span className="section-index">02</span><div><h2>Entre o documento<br />e a <em>atmosfera.</em></h2><p>Deva Braga é fotógrafo e designer gráfico em Salvador. Seu trabalho percorre pessoas, lugares e marcas em busca de uma imagem que carregue presença.</p><a href="#contato">Conheça o processo <ArrowUpRight size={17} /></a></div></section>
-      <footer className="footer" id="contato"><div className="footer-intro"><span className="section-index">03</span><p>Tem uma ideia em mente?</p><a href="mailto:oi@devabraga.com">oi@devabraga.com</a><div className="footer-links"><a href="https://www.behance.net/deva_braga" target="_blank" rel="noreferrer" onClick={() => { if (cookieChoice === "accepted") track.mutate({ eventType: "external_click", path: window.location.pathname, projectKey: "behance", visitorId: getVisitorId() }); }}>MEU BEHANCE <ExternalLink size={14} /></a><a href="https://stock.adobe.com/br/contributor/212810827/Deva%20Braga" target="_blank" rel="noreferrer" onClick={() => { if (cookieChoice === "accepted") track.mutate({ eventType: "external_click", path: window.location.pathname, projectKey: "adobe-stock", visitorId: getVisitorId() }); }}>ADOBE STOCK <ExternalLink size={14} /></a></div></div><div className="footer-form" id="orcamento"><QuoteForm /></div><div className="footer-right"><span>Salvador, BR</span><span>© 2026 Deva Braga</span></div></footer>
+      <footer className="footer" id="contato"><div className="footer-intro"><span className="section-index">03</span><p>Tem uma ideia em mente?</p><a href="mailto:deva.jpeg@gmail.com">deva.jpeg@gmail.com</a><div className="footer-links"><a href="https://www.behance.net/deva_braga" target="_blank" rel="noreferrer" onClick={() => { if (cookieChoice === "accepted") track.mutate({ eventType: "external_click", path: window.location.pathname, projectKey: "behance", visitorId: getVisitorId() }); }}>MEU BEHANCE <ExternalLink size={14} /></a><a href="https://stock.adobe.com/br/contributor/212810827/Deva%20Braga" target="_blank" rel="noreferrer" onClick={() => { if (cookieChoice === "accepted") track.mutate({ eventType: "external_click", path: window.location.pathname, projectKey: "adobe-stock", visitorId: getVisitorId() }); }}>ADOBE STOCK <ExternalLink size={14} /></a></div></div><div className="footer-form" id="orcamento"><QuoteForm /></div><div className="footer-right"><span>Salvador, BR</span><span>© 2026 Deva Braga</span></div></footer>
 
       <div className={`menu-panel ${menuOpen ? "open" : ""}`} aria-hidden={!menuOpen}><button className="close-menu" onClick={() => setMenuOpen(false)} aria-label="Fechar menu"><X /></button><div className="menu-inner"><p className="eyebrow">Navegação</p><nav><a href="#top" onClick={() => setMenuOpen(false)}>Início <span>01</span></a><a href="#trabalhos" onClick={() => setMenuOpen(false)}>Trabalhos <span>02</span></a><a href="#sobre" onClick={() => setMenuOpen(false)}>Sobre <span>03</span></a><a href="#contato" onClick={() => setMenuOpen(false)}>Contato <span>04</span></a></nav><p className="menu-note">Fotografia, design gráfico e edição<br />a partir de Salvador.</p></div></div>
 

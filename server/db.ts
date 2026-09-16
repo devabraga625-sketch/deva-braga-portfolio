@@ -1,6 +1,6 @@
 import { count, desc, eq, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, User, behanceProjects, behanceSyncJobs, portfolioProjectOverrides, quoteRequests, trafficEvents, users } from "../drizzle/schema";
+import { InsertUser, User, auditLogs, behanceProjects, behanceSyncJobs, portfolioProjectOverrides, quoteRequests, trafficEvents, users } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -118,12 +118,42 @@ export async function listPortfolioProjectOverrides() {
   return db.select().from(portfolioProjectOverrides);
 }
 
-export async function upsertPortfolioProjectOverride(input: { projectKey: string; title?: string; description?: string; year?: string; thumbnail?: string; sourceUrl?: string; hidden?: boolean }) {
+export async function getPortfolioProjectOverride(projectKey: string) {
+  const db = await getDb(); if (!db) return undefined;
+  const result = await db.select().from(portfolioProjectOverrides).where(eq(portfolioProjectOverrides.projectKey, projectKey)).limit(1);
+  return result[0];
+}
+
+export async function upsertPortfolioProjectOverride(input: { projectKey: string; title?: string; description?: string; year?: string; thumbnail?: string; media?: string[]; sourceUrl?: string; hidden?: boolean }) {
   const db = await getDb(); if (!db) throw new Error("DATABASE_URL is not configured");
-  await db.insert(portfolioProjectOverrides).values({ projectKey: input.projectKey, title: input.title ?? null, description: input.description ?? null, year: input.year ?? null, thumbnail: input.thumbnail ?? null, sourceUrl: input.sourceUrl ?? null, hidden: input.hidden ? 1 : 0 }).onDuplicateKeyUpdate({ set: { title: input.title ?? null, description: input.description ?? null, year: input.year ?? null, thumbnail: input.thumbnail ?? null, sourceUrl: input.sourceUrl ?? null, hidden: input.hidden ? 1 : 0, updatedAt: new Date() } });
+  await db.insert(portfolioProjectOverrides).values({ projectKey: input.projectKey, title: input.title ?? null, description: input.description ?? null, year: input.year ?? null, thumbnail: input.thumbnail ?? null, media: input.media ? JSON.stringify(input.media) : null, sourceUrl: input.sourceUrl ?? null, hidden: input.hidden ? 1 : 0 }).onDuplicateKeyUpdate({ set: { title: input.title ?? null, description: input.description ?? null, year: input.year ?? null, thumbnail: input.thumbnail ?? null, media: input.media ? JSON.stringify(input.media) : null, sourceUrl: input.sourceUrl ?? null, hidden: input.hidden ? 1 : 0, updatedAt: new Date() } });
 }
 
 export async function deletePortfolioProjectOverride(projectKey: string) {
   const db = await getDb(); if (!db) throw new Error("DATABASE_URL is not configured");
   await db.delete(portfolioProjectOverrides).where(eq(portfolioProjectOverrides.projectKey, projectKey));
+}
+
+export async function setPortfolioProjectAsset(projectKey: string, kind: "thumbnail" | "media", url: string) {
+  const db = await getDb(); if (!db) throw new Error("DATABASE_URL is not configured");
+  const existing = await getPortfolioProjectOverride(projectKey);
+  if (kind === "thumbnail") {
+    if (existing) await db.update(portfolioProjectOverrides).set({ thumbnail: url, updatedAt: new Date() }).where(eq(portfolioProjectOverrides.projectKey, projectKey));
+    else await db.insert(portfolioProjectOverrides).values({ projectKey, thumbnail: url });
+    return;
+  }
+  const media = existing?.media ? JSON.parse(existing.media) as string[] : [];
+  media.push(url);
+  if (existing) await db.update(portfolioProjectOverrides).set({ media: JSON.stringify(media), updatedAt: new Date() }).where(eq(portfolioProjectOverrides.projectKey, projectKey));
+  else await db.insert(portfolioProjectOverrides).values({ projectKey, media: JSON.stringify(media) });
+}
+
+export async function recordAuditLog(input: { actor: string; entityType: string; entityKey: string; action: string; details?: string }) {
+  const db = await getDb(); if (!db) return;
+  await db.insert(auditLogs).values({ actor: input.actor, entityType: input.entityType, entityKey: input.entityKey, action: input.action, details: input.details ?? null });
+}
+
+export async function listAuditLogs() {
+  const db = await getDb(); if (!db) return [];
+  return db.select().from(auditLogs).orderBy(desc(auditLogs.createdAt)).limit(250);
 }
