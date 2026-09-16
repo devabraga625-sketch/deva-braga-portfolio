@@ -25,3 +25,33 @@ a { text-decoration: none; }
 .lightbox { position: fixed; z-index: 30; inset: 0; display: grid; place-items: center; background: rgba(17,17,15,.96); color: var(--paper); padding: 7vh 12vw; }.lightbox-image { height: min(75vh, 800px); width: min(75vw, 900px); }.lightbox-image img { width: 100%; height: 100%; object-fit: contain; }.lightbox-close { color: var(--paper); }.lightbox-nav { position: absolute; top: 50%; border: 0; background: transparent; color: var(--paper); }.lightbox-nav.prev { left: 4vw; }.lightbox-nav.next { right: 4vw; }.lightbox-caption { position: absolute; bottom: 5vh; left: 12vw; }.lightbox-caption span { font: 11px 'DM Mono', monospace; color: var(--acid); text-transform: uppercase; }.lightbox-caption h3 { font: 500 2rem 'Playfair Display', serif; margin: 7px 0 0; }
 @media (max-width: 700px) { .topbar { padding: 22px 20px; }.topbar-center { display: none; }.hero { min-height: 92vh; padding: 18vh 20px 28px; background-position: 57% center; }.hero h1 { margin-top: 12vh; }.hero-footer { gap: 20px; flex-direction: column; align-items: flex-start; }.work-section { padding: 22vw 20px; }.section-heading { display: block; }.section-heading h2 { font-size: 3rem; }.section-heading p { text-align: left; margin-top: 24px; }.section-heading > div { gap: 14px; }.filter-row { gap: 16px; overflow-x: auto; padding-bottom: 3px; white-space: nowrap; }.gallery-grid { gap: 8px; }.gallery-card.feature, .gallery-card.tall, .gallery-card.wide, .gallery-card.square { grid-column: span 6; min-height: 68vw; }.gallery-card.feature { grid-column: span 12; min-height: 110vw; }.card-meta { left: 12px; bottom: 12px; right: 10px; }.card-meta strong { font-size: 1.1rem; }.card-arrow { top: 10px; right: 10px; opacity: 1; transform: none; width: 28px; height: 28px; }.statement { display: block; padding: 22vw 20px 26vw; }.statement h2 { margin-top: 60px; margin-bottom: 32px; }.footer { min-height: 52vh; padding: 20vw 20px 24px; display: block; }.footer-right { margin-top: 24vh; flex-direction: row; text-align: left; gap: 18px; }.menu-inner { padding: 18vh 20px; }.menu-inner nav { margin-top: 8vh; }.lightbox { padding: 15vh 20px 18vh; }.lightbox-image { width: 100%; height: 62vh; }.lightbox-caption { left: 20px; bottom: 7vh; }.lightbox-nav.prev { left: 10px; }.lightbox-nav.next { right: 10px; } }
 @media (prefers-reduced-motion: reduce) { *, *:before, *:after { scroll-behavior: auto !important; transition-duration: .01ms !important; } }
+
+/* Complete portfolio catalog */
+.filter-row sup { font-size: 9px; margin-left: 5px; color: var(--muted); vertical-align: top; }
+.catalog-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 42px 18px; }
+.catalog-card { border: 0; padding: 0; background: transparent; text-align: left; }
+.catalog-image { aspect-ratio: 1 / 1.18; background: #bab6ad; overflow: hidden; position: relative; }
+.catalog-image img, .catalog-image video { width: 100%; height: 100%; object-fit: cover; transition: transform .7s cubic-bezier(.23,1,.32,1), filter .5s; }
+.catalog-card:hover .catalog-image img, .catalog-card:hover .catalog-image video { transform: scale(1.04); filter: saturate(1.08); }
+.catalog-card .card-shade { opacity: .15; transition: opacity .35s; }
+.catalog-card:hover .card-shade { opacity: .6; }
+.catalog-card .card-arrow { opacity: 0; transform: translateY(8px); }
+.catalog-card:hover .card-arrow { opacity: 1; transform: translateY(0); }
+.catalog-meta { display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding-top: 13px; }
+.catalog-number { font: 11px 'DM Mono', monospace; color: var(--muted); }
+.catalog-meta strong { display: block; font: 500 clamp(1.2rem, 2vw, 1.85rem)/1.03 'Playfair Display', serif; letter-spacing: -.035em; }
+.catalog-meta small { display: block; margin-top: 7px; color: #77736a; font: 10px 'DM Mono', monospace; text-transform: uppercase; line-height: 1.35; }
+.media-empty { height: 100%; display: grid; place-items: center; color: var(--muted); font: 11px 'DM Mono', monospace; text-transform: uppercase; }
+.project-view { position: fixed; z-index: 30; inset: 0; overflow-y: auto; background: var(--ink); color: var(--paper); padding: 7vw 4.4vw 9vw; }
+.project-close { position: fixed; z-index: 2; top: 26px; right: 4.4vw; border: 0; background: var(--acid); color: var(--ink); width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; }
+.project-header { display: flex; align-items: end; justify-content: space-between; gap: 30px; padding: 42px 0 56px; border-bottom: 1px solid rgba(232,228,220,.25); }
+.project-header h2 { max-width: 900px; margin: 16px 0 0; font: 500 clamp(3rem, 7vw, 8rem)/.88 'Playfair Display', serif; letter-spacing: -.065em; }
+.project-header a { display: inline-flex; align-items: center; gap: 8px; color: var(--acid); font: 11px 'DM Mono', monospace; text-transform: uppercase; white-space: nowrap; }
+.project-media-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; padding-top: 32px; }
+.project-media-grid figure { margin: 0; background: #24241f; min-height: 12vw; position: relative; }
+.project-media-grid figure.project-media-feature { grid-column: span 2; }
+.project-media-grid img, .project-media-grid video { display: block; width: 100%; max-height: 85vh; object-fit: contain; background: #24241f; }
+.project-media-grid figcaption { position: absolute; bottom: 10px; right: 12px; color: rgba(232,228,220,.7); font: 10px 'DM Mono', monospace; }
+.project-controls { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); display: flex; align-items: center; gap: 12px; padding: 6px 8px; border: 1px solid rgba(232,228,220,.3); border-radius: 30px; background: rgba(17,17,15,.85); backdrop-filter: blur(14px); font: 10px 'DM Mono', monospace; }
+.project-controls button { border: 0; background: transparent; color: var(--paper); width: 30px; height: 30px; display: grid; place-items: center; }
+@media (max-width: 700px) { .catalog-grid { grid-template-columns: repeat(2, 1fr); gap: 30px 10px; }.catalog-image { aspect-ratio: 1 / 1.25; }.catalog-meta { grid-template-columns: 24px 1fr; gap: 7px; }.catalog-meta strong { font-size: 1.1rem; }.catalog-meta small { font-size: 8px; }.project-view { padding: 18vw 20px 25vw; }.project-header { display: block; padding-top: 45px; }.project-header h2 { font-size: 3.4rem; margin-bottom: 28px; }.project-media-grid { grid-template-columns: 1fr; gap: 8px; }.project-media-grid figure.project-media-feature { grid-column: span 1; }.project-close { top: 18px; right: 20px; width: 34px; height: 34px; }.project-header a { font-size: 9px; } }
