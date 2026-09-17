@@ -1,4 +1,4 @@
-import { COOKIE_NAME, ONE_YEAR_MS, OAUTH_STATE_COOKIE, decodeOAuthState } from "@shared/const";
+import { COOKIE_NAME, OAUTH_STATE_COOKIE, TWO_FACTOR_PENDING_COOKIE, decodeOAuthState } from "@shared/const";
 import { parse as parseCookieHeader } from "cookie";
 import type { Express, Request, Response } from "express";
 import * as db from "../db";
@@ -48,15 +48,12 @@ export function registerOAuthRoutes(app: Express) {
         lastSignedIn: new Date(),
       });
 
-      const sessionToken = await sdk.createSessionToken(userInfo.openId, {
-        name: userInfo.name || "",
-        expiresInMs: ONE_YEAR_MS,
-      });
-
       const cookieOptions = getSessionCookieOptions(req);
-      res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
+      const pendingToken = await sdk.createTwoFactorPendingToken(userInfo.openId);
+      res.cookie(TWO_FACTOR_PENDING_COOKIE, pendingToken, { ...cookieOptions, maxAge: 10 * 60_000 });
+      res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
 
-      res.redirect(302, "/");
+      res.redirect(302, "/autenticacao-2fa");
     } catch (error) {
       console.error("[OAuth] Callback failed", error);
       res.status(500).json({ error: "OAuth callback failed" });

@@ -37,6 +37,12 @@ export async function getUserByOpenId(openId: string): Promise<User | undefined>
   return result[0];
 }
 
+export async function updateUserTwoFactor(openId: string, values: { twoFactorSecret?: string | null; twoFactorEnabled?: number; twoFactorRequired?: number }) {
+  const db = await getDb(); if (!db) throw new Error("DATABASE_URL is not configured");
+  await db.update(users).set(values).where(eq(users.openId, openId));
+  return getUserByOpenId(openId);
+}
+
 export type BehanceProjectInput = {
   projectKey: string; title: string; sourceUrl: string; cover?: string; description?: string; publishedAt?: Date;
 };

@@ -5,6 +5,7 @@ export const users = mysqlTable("users", {
   openId: varchar("openId", { length: 64 }).notNull().unique(),
   name: text("name"), email: varchar("email", { length: 320 }), loginMethod: varchar("loginMethod", { length: 64 }),
   role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
+  twoFactorSecret: varchar("twoFactorSecret", { length: 512 }), twoFactorEnabled: int("twoFactorEnabled").default(0).notNull(), twoFactorRequired: int("twoFactorRequired").default(1).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(), updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(), lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
 });
 

@@ -1,13 +1,23 @@
 import { z } from "zod";
-import { COOKIE_NAME } from "@shared/const";
+import { COOKIE_NAME, TWO_FACTOR_PENDING_COOKIE } from "@shared/const";
+import { parse as parseCookieHeader } from "cookie";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { notifyOwner } from "./_core/notification";
 import { adminProcedure, publicProcedure, router } from "./_core/trpc";
 import { systemRouter } from "./_core/systemRouter";
-import { createQuoteRequest, createTemplatedNotification, deletePortfolioProjectOverride, getProjectAccessCounts, getTrafficSummary, listAuditLogs, listBehanceProjects, listNotificationTemplates, listNotifications, listPortfolioProjectOverrides, listQuoteRequests, markNotificationRead, recordAuditLog, recordTrafficEvent, setPortfolioProjectAsset, updateQuoteRequestStatus, upsertNotificationTemplate, upsertPortfolioProjectOverride } from "./db";
+import { createQuoteRequest, createTemplatedNotification, deletePortfolioProjectOverride, getProjectAccessCounts, getTrafficSummary, getUserByOpenId, listAuditLogs, listBehanceProjects, listNotificationTemplates, listNotifications, listPortfolioProjectOverrides, listQuoteRequests, markNotificationRead, recordAuditLog, recordTrafficEvent, setPortfolioProjectAsset, updateQuoteRequestStatus, updateUserTwoFactor, upsertNotificationTemplate, upsertPortfolioProjectOverride } from "./db";
 import { storagePut } from "./storage";
 import { sendQuoteNotifications } from "./external-notifications";
 import { createEncryptedBackup } from "./backup";
+import { createTwoFactorEnrollment, decryptTwoFactorSecret, encryptTwoFactorSecret, verifyTwoFactorCode } from "./two-factor";
+import { sdk } from "./_core/sdk";
+
+async function getPendingTwoFactorUser(req: { headers: { cookie?: string } }) {
+  const token = parseCookieHeader(req.headers.cookie ?? "")[TWO_FACTOR_PENDING_COOKIE];
+  const pending = await sdk.verifyTwoFactorPendingToken(token);
+  if (!pending) return null;
+  return getUserByOpenId(pending.openId);
+}
 
 export const appRouter = router({
   system: systemRouter,
@@ -16,7 +26,53 @@ export const appRouter = router({
     logout: publicProcedure.mutation(({ ctx }) => {
       const cookieOptions = getSessionCookieOptions(ctx.req);
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
+      ctx.res.clearCookie(TWO_FACTOR_PENDING_COOKIE, { ...cookieOptions, maxAge: -1 });
       return { success: true } as const;
+    }),
+  }),
+  twoFactor: router({
+    status: publicProcedure.query(async ({ ctx }) => {
+      const user = await getPendingTwoFactorUser(ctx.req);
+      if (!user) return null;
+      return { state: user.twoFactorEnabled ? "verify" as const : "setup" as const, label: user.email ?? user.name ?? user.openId, role: user.role };
+    }),
+    begin: publicProcedure.mutation(async ({ ctx }) => {
+      const user = await getPendingTwoFactorUser(ctx.req);
+      if (!user) throw new Error("Sessão temporária de autenticação ausente ou expirada.");
+      if (user.twoFactorEnabled) throw new Error("O 2FA já está configurado para esta conta.");
+      const enrollment = await createTwoFactorEnrollment(user.email ?? user.name ?? user.openId);
+      await updateUserTwoFactor(user.openId, { twoFactorSecret: encryptTwoFactorSecret(enrollment.secret), twoFactorEnabled: 0, twoFactorRequired: 1 });
+      return { qrCode: enrollment.qrCode, secret: enrollment.secret, label: user.email ?? user.name ?? user.openId };
+    }),
+    confirmSetup: publicProcedure.input(z.object({ code: z.string().regex(/^\d{6}$/) })).mutation(async ({ ctx, input }) => {
+      const token = parseCookieHeader(ctx.req.headers.cookie ?? "")[TWO_FACTOR_PENDING_COOKIE];
+      const pending = await sdk.verifyTwoFactorPendingToken(token);
+      const user = pending ? await getUserByOpenId(pending.openId) : null;
+      if (!user || !user.twoFactorSecret) throw new Error("Inicie a configuração do 2FA novamente.");
+      const result = await verifyTwoFactorCode(user.openId, decryptTwoFactorSecret(user.twoFactorSecret), input.code);
+      if (result.rateLimited) throw new Error("Muitas tentativas. Aguarde alguns minutos.");
+      if (!result.valid) throw new Error("Código inválido. Confira o aplicativo autenticador e tente novamente.");
+      await updateUserTwoFactor(user.openId, { twoFactorEnabled: 1, twoFactorRequired: 1 });
+      const sessionToken = await sdk.createSessionToken(user.openId, { name: user.name ?? "", twoFactorVerified: true });
+      const cookieOptions = getSessionCookieOptions(ctx.req);
+      ctx.res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: 1000 * 60 * 60 * 24 * 365 });
+      ctx.res.clearCookie(TWO_FACTOR_PENDING_COOKIE, { ...cookieOptions, maxAge: -1 });
+      await recordAuditLog({ actor: user.email ?? user.name ?? user.openId, entityType: "user", entityKey: user.openId, action: "two_factor_enabled", details: "TOTP configurado com QR Code" });
+      return { ok: true as const, role: user.role };
+    }),
+    verify: publicProcedure.input(z.object({ code: z.string().regex(/^\d{6}$/) })).mutation(async ({ ctx, input }) => {
+      const token = parseCookieHeader(ctx.req.headers.cookie ?? "")[TWO_FACTOR_PENDING_COOKIE];
+      const pending = await sdk.verifyTwoFactorPendingToken(token);
+      const user = pending ? await getUserByOpenId(pending.openId) : null;
+      if (!user?.twoFactorSecret || !user.twoFactorEnabled) throw new Error("Sessão de 2FA ausente ou expirada.");
+      const result = await verifyTwoFactorCode(user.openId, decryptTwoFactorSecret(user.twoFactorSecret), input.code);
+      if (result.rateLimited) throw new Error("Muitas tentativas. Aguarde alguns minutos.");
+      if (!result.valid) throw new Error("Código inválido. Confira o aplicativo autenticador e tente novamente.");
+      const sessionToken = await sdk.createSessionToken(user.openId, { name: user.name ?? "", twoFactorVerified: true });
+      const cookieOptions = getSessionCookieOptions(ctx.req);
+      ctx.res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: 1000 * 60 * 60 * 24 * 365 });
+      ctx.res.clearCookie(TWO_FACTOR_PENDING_COOKIE, { ...cookieOptions, maxAge: -1 });
+      return { ok: true as const, role: user.role };
     }),
   }),
   behance: router({

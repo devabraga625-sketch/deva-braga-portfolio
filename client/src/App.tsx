@@ -7,7 +7,8 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import AnalyticsPanel from "./pages/AnalyticsPanel";
-import PrivacyPolicy from "./pages/PrivacyPolicy";
+import PrivacyPolicy from "@/pages/PrivacyPolicy";
+import TwoFactorPage from "@/pages/TwoFactorPage";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -16,6 +17,7 @@ function Router() {
       <Route path={"/"} component={Home} />
       <Route path={"/painel"} component={AnalyticsPanel} />
       <Route path={"/politica-de-privacidade"} component={PrivacyPolicy} />
+      <Route path={"/autenticacao-2fa"} component={TwoFactorPage} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

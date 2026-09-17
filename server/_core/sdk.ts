@@ -22,6 +22,7 @@ export type SessionPayload = {
   openId: string;
   appId: string;
   name: string;
+  twoFactorVerified?: boolean;
 };
 
 const EXCHANGE_TOKEN_PATH = `/webdev.v1.WebDevAuthPublicService/ExchangeToken`;
@@ -165,13 +166,14 @@ class SDKServer {
    */
   async createSessionToken(
     openId: string,
-    options: { expiresInMs?: number; name?: string } = {}
+    options: { expiresInMs?: number; name?: string; twoFactorVerified?: boolean } = {}
   ): Promise<string> {
     return this.signSession(
       {
         openId,
         appId: ENV.appId,
         name: options.name || "",
+        twoFactorVerified: options.twoFactorVerified === true,
       },
       options
     );
@@ -190,6 +192,7 @@ class SDKServer {
       openId: payload.openId,
       appId: payload.appId,
       name: payload.name,
+      twoFactorVerified: payload.twoFactorVerified === true,
     })
       .setProtectedHeader({ alg: "HS256", typ: "JWT" })
       .setExpirationTime(expirationSeconds)
@@ -198,7 +201,7 @@ class SDKServer {
 
   async verifySession(
     cookieValue: string | undefined | null
-  ): Promise<{ openId: string; appId: string; name: string } | null> {
+  ): Promise<{ openId: string; appId: string; name: string; twoFactorVerified: boolean } | null> {
     if (!cookieValue) {
       console.warn("[Auth] Missing session cookie");
       return null;
@@ -209,7 +212,7 @@ class SDKServer {
       const { payload } = await jwtVerify(cookieValue, secretKey, {
         algorithms: ["HS256"],
       });
-      const { openId, appId, name } = payload as Record<string, unknown>;
+      const { openId, appId, name, twoFactorVerified } = payload as Record<string, unknown>;
 
       if (
         !isNonEmptyString(openId) ||
@@ -224,11 +227,22 @@ class SDKServer {
         openId,
         appId,
         name,
+        twoFactorVerified: twoFactorVerified === true,
       };
     } catch (error) {
       console.warn("[Auth] Session verification failed", String(error));
       return null;
     }
+  }
+
+  async createTwoFactorPendingToken(openId: string): Promise<string> {
+    return this.signSession({ openId, appId: ENV.appId, name: "2FA pending", twoFactorVerified: false }, { expiresInMs: 10 * 60_000 });
+  }
+
+  async verifyTwoFactorPendingToken(token: string | undefined | null) {
+    const session = await this.verifySession(token);
+    if (!session || session.twoFactorVerified || session.name !== "2FA pending") return null;
+    return session;
   }
 
   async getUserInfoWithJwt(
@@ -309,6 +323,10 @@ class SDKServer {
 
     if (!user) {
       throw ForbiddenError("User not found");
+    }
+
+    if (user.twoFactorRequired && (!user.twoFactorEnabled || session.twoFactorVerified !== true)) {
+      throw ForbiddenError("Two-factor authentication required");
     }
 
     await db.upsertUser({
