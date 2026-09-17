@@ -405,3 +405,19 @@ a { text-decoration: none; }
   .case-study-metric-grid article { min-height: 120px; padding: 14px; }
   .case-study-testimonial blockquote { margin-top: 24px; font-size: 2rem; }
 }
+
+.notification-provider-card { margin: 18px 0; }
+.provider-lock { color: var(--acid); font: 10px 'DM Mono', monospace; text-transform: uppercase; }
+.provider-status-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; margin: 20px 0; background: rgba(232,228,220,.16); }
+.provider-status-grid > div { display: grid; gap: 7px; min-height: 110px; padding: 16px; background: var(--ink); }
+.provider-status-grid span, .provider-status-grid small { color: rgba(232,228,220,.58); font: 10px 'DM Mono', monospace; text-transform: uppercase; }
+.provider-status-grid strong { font: 500 1.25rem 'Playfair Display', serif; }
+.provider-online { color: var(--acid); }.provider-offline { color: #ff9d8d; }
+.provider-settings-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; border-top: 1px solid rgba(232,228,220,.16); padding-top: 20px; }
+.provider-settings-form label { display: grid; gap: 7px; color: rgba(232,228,220,.7); font: 10px 'DM Mono', monospace; text-transform: uppercase; }
+.provider-settings-form input { width: 100%; border: 1px solid rgba(232,228,220,.28); background: rgba(0,0,0,.16); color: var(--paper); padding: 11px 12px; outline: none; font: 13px 'DM Sans', sans-serif; }
+.provider-settings-form input:focus { border-color: var(--acid); box-shadow: 0 0 0 2px rgba(214,230,91,.12); }
+.provider-form-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; grid-column: 1 / -1; }
+.provider-feedback { grid-column: 1 / -1; margin: 0; color: #ffcf7a; font: 11px/1.45 'DM Mono', monospace; }.provider-success { color: var(--acid); }
+.provider-security-note { max-width: 720px; margin: 16px 0 0; color: rgba(232,228,220,.5); font: 11px/1.5 'DM Mono', monospace; }
+@media (max-width: 700px) { .provider-status-grid { grid-template-columns: 1fr; }.provider-status-grid > div { min-height: auto; }.provider-settings-form { grid-template-columns: 1fr; }.provider-form-actions { display: grid; grid-template-columns: 1fr; }.provider-form-actions button { width: 100%; } }

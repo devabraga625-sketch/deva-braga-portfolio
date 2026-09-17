@@ -1,4 +1,5 @@
-import { ENV } from "./_core/env";
+import nodemailer from "nodemailer";
+import { getNotificationProviderConfig } from "./notification-settings";
 
 export type QuoteNotification = {
   id?: number;
@@ -25,64 +26,107 @@ function notificationText(input: QuoteNotification) {
   ].join("\n");
 }
 
-async function sendResendEmail(input: QuoteNotification): Promise<boolean> {
-  if (!ENV.resendApiKey || !ENV.resendFrom || !ENV.notificationEmail) {
-    console.warn("[Notifications] Resend is not fully configured");
-    return false;
-  }
-  const text = notificationText(input);
-  const html = `<h2>Novo pedido de orçamento</h2><p><strong>Nome:</strong> ${escapeHtml(input.name)}</p><p><strong>Email:</strong> ${escapeHtml(input.email)}</p><p><strong>Telefone:</strong> ${escapeHtml(input.phone || "Não informado")}</p><p><strong>Mensagem:</strong></p><p>${escapeHtml(input.message).replace(/\n/g, "<br />")}</p>`;
+function smtpConfigured(config: Awaited<ReturnType<typeof getNotificationProviderConfig>>) {
+  return Boolean(config.smtpHost && config.smtpPort && config.smtpUser && config.smtpPassword && config.smtpFrom && config.notificationEmail);
+}
+
+function metaConfigured(config: Awaited<ReturnType<typeof getNotificationProviderConfig>>) {
+  return Boolean(config.metaWhatsAppAccessToken && config.metaWhatsAppPhoneNumberId && config.metaWhatsAppTo);
+}
+
+export async function verifySmtpConnection(): Promise<boolean> {
+  const config = await getNotificationProviderConfig();
+  if (!smtpConfigured(config)) return false;
+  const transporter = nodemailer.createTransport({
+    host: config.smtpHost,
+    port: config.smtpPort,
+    secure: config.smtpSecure,
+    requireTLS: !config.smtpSecure,
+    auth: { user: config.smtpUser, pass: config.smtpPassword },
+    connectionTimeout: 10_000,
+    greetingTimeout: 10_000,
+    socketTimeout: 15_000,
+  });
   try {
-    const response = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${ENV.resendApiKey}`,
-        "Content-Type": "application/json",
-        "Idempotency-Key": `quote-request-${input.id ?? `${Date.now()}-${input.email}`}`.slice(0, 256),
-      },
-      body: JSON.stringify({ from: ENV.resendFrom, to: [ENV.notificationEmail], subject: `Novo pedido de orçamento — ${input.name}`, text, html, reply_to: input.email }),
-    });
-    if (!response.ok) {
-      console.warn(`[Notifications] Resend failed (${response.status}): ${await response.text().catch(() => "")}`);
-      return false;
-    }
+    await transporter.verify();
     return true;
   } catch (error) {
-    console.warn("[Notifications] Resend request failed:", error);
+    console.warn("[Notifications] SMTP verification failed:", error instanceof Error ? error.message : "unknown error");
     return false;
+  } finally {
+    transporter.close();
   }
 }
 
-async function sendTwilioWhatsApp(input: QuoteNotification): Promise<boolean> {
-  if (!ENV.twilioAccountSid || !ENV.twilioAuthToken || !ENV.twilioWhatsAppFrom || !ENV.twilioWhatsAppTo) {
-    console.warn("[Notifications] Twilio WhatsApp is not fully configured");
+async function sendGmailSmtp(input: QuoteNotification): Promise<boolean> {
+  const config = await getNotificationProviderConfig();
+  if (!smtpConfigured(config)) {
+    console.warn("[Notifications] Gmail SMTP is not fully configured");
     return false;
   }
-  const endpoint = `https://api.twilio.com/2010-04-01/Accounts/${encodeURIComponent(ENV.twilioAccountSid)}/Messages.json`;
-  const body = new URLSearchParams();
-  body.set("From", ENV.twilioWhatsAppFrom);
-  body.set("To", ENV.twilioWhatsAppTo);
-  if (ENV.twilioContentSid) {
-    body.set("ContentSid", ENV.twilioContentSid);
-    body.set("ContentVariables", JSON.stringify({ "1": input.name, "2": input.email, "3": input.phone || "Não informado", "4": input.message }));
-  } else {
-    body.set("Body", `Novo pedido de orçamento — ${input.name}\nEmail: ${input.email}\nTelefone: ${input.phone || "Não informado"}\n\n${input.message}`);
-  }
+  const transporter = nodemailer.createTransport({
+    host: config.smtpHost,
+    port: config.smtpPort,
+    secure: config.smtpSecure,
+    requireTLS: !config.smtpSecure,
+    auth: { user: config.smtpUser, pass: config.smtpPassword },
+    connectionTimeout: 10_000,
+    greetingTimeout: 10_000,
+    socketTimeout: 15_000,
+  });
+  const text = notificationText(input);
+  const html = `<h2>Novo pedido de orçamento</h2><p><strong>Nome:</strong> ${escapeHtml(input.name)}</p><p><strong>Email:</strong> ${escapeHtml(input.email)}</p><p><strong>Telefone:</strong> ${escapeHtml(input.phone || "Não informado")}</p><p><strong>Mensagem:</strong></p><p>${escapeHtml(input.message).replace(/\n/g, "<br />")}</p>`;
   try {
-    const credentials = Buffer.from(`${ENV.twilioAccountSid}:${ENV.twilioAuthToken}`).toString("base64");
-    const response = await fetch(endpoint, { method: "POST", headers: { Authorization: `Basic ${credentials}`, "Content-Type": "application/x-www-form-urlencoded" }, body });
+    await transporter.sendMail({
+      from: config.smtpFrom,
+      to: config.notificationEmail,
+      replyTo: input.email,
+      subject: `Novo pedido de orçamento — ${input.name}`,
+      text,
+      html,
+      headers: { "X-Portfolio-Request-ID": String(input.id ?? `${Date.now()}-${input.email}`) },
+    });
+    return true;
+  } catch (error) {
+    console.warn("[Notifications] Gmail SMTP send failed:", error instanceof Error ? error.message : "unknown error");
+    return false;
+  } finally {
+    transporter.close();
+  }
+}
+
+async function sendMetaWhatsApp(input: QuoteNotification): Promise<boolean> {
+  const config = await getNotificationProviderConfig();
+  if (!metaConfigured(config)) {
+    console.warn("[Notifications] Meta WhatsApp is not fully configured");
+    return false;
+  }
+  const endpoint = `https://graph.facebook.com/v23.0/${encodeURIComponent(config.metaWhatsAppPhoneNumberId)}/messages`;
+  const body = {
+    messaging_product: "whatsapp",
+    recipient_type: "individual",
+    to: config.metaWhatsAppTo,
+    type: "text",
+    text: { preview_url: false, body: `Novo pedido de orçamento — ${input.name}\nEmail: ${input.email}\nTelefone: ${input.phone || "Não informado"}\n\n${input.message}`.slice(0, 4096) },
+  };
+  try {
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${config.metaWhatsAppAccessToken}`, "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
     if (!response.ok) {
-      console.warn(`[Notifications] Twilio failed (${response.status}): ${await response.text().catch(() => "")}`);
+      console.warn(`[Notifications] Meta WhatsApp failed (${response.status})`);
       return false;
     }
     return true;
   } catch (error) {
-    console.warn("[Notifications] Twilio request failed:", error);
+    console.warn("[Notifications] Meta WhatsApp request failed:", error instanceof Error ? error.message : "unknown error");
     return false;
   }
 }
 
 export async function sendQuoteNotifications(input: QuoteNotification) {
-  const [email, whatsapp] = await Promise.all([sendResendEmail(input), sendTwilioWhatsApp(input)]);
+  const [email, whatsapp] = await Promise.all([sendGmailSmtp(input), sendMetaWhatsApp(input)]);
   return { email, whatsapp, delivered: email || whatsapp };
 }
