@@ -15,6 +15,15 @@ function decode(value: string) {
   return value.replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, "&").replace(/\\u002F/g, "/").replace(/\\\//g, "/");
 }
 
+function parsePublishedAt(block: string) {
+  const raw = block.match(/(?:publishedAt|publishedOn|datePublished|createdAt)["']?\s*[:=]\s*["']([^"']+)["']/i)?.[1]
+    ?? block.match(/(?:publishedAt|publishedOn|datePublished|createdAt)["']?\s*[:=]\s*(\d{10,13})/i)?.[1]
+    ?? block.match(/data-(?:published|created)[-_]?(?:at|date)?=["']([^"']+)["']/i)?.[1];
+  if (!raw) return undefined;
+  const numeric = /^\d{10,13}$/.test(raw) ? Number(raw) * (raw.length === 10 ? 1000 : 1) : Date.parse(decode(raw));
+  return Number.isFinite(numeric) ? new Date(numeric) : undefined;
+}
+
 export async function fetchPublicBehanceProjects(): Promise<PublicProject[]> {
   let response: Response | undefined;
   let lastError: unknown;
@@ -51,9 +60,10 @@ export async function fetchPublicBehanceProjects(): Promise<PublicProject[]> {
       title: decode(titleMatch?.[1] ?? slug.replace(/-/g, " ")),
       sourceUrl: `https://www.behance.net/gallery/${projectKey}/${slug}`,
       cover: coverMatch?.[0]?.replace(/\\u0026/g, "&"),
+      publishedAt: parsePublishedAt(block),
     });
   }
-  return projects.map((project, index) => ({ ...project, publishedAt: new Date(Date.now() - index * 1000) }));
+  return projects;
 }
 
 export async function syncPublicBehanceProjects() {

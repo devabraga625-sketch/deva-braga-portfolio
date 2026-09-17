@@ -8,7 +8,7 @@ describe("fetchPublicBehanceProjects", () => {
     const html = `
       <article>
         <div aria-label="Projeto de Teste, estudo visual">
-          <picture><img src="https://mir-s3-cdn-cf.behance.net/projects/404/abc.jpg" /></picture>
+          <div data-published-date="2024-06-15T12:00:00.000Z"><picture><img src="https://mir-s3-cdn-cf.behance.net/projects/404/abc.jpg" /></picture></div>
           <a href="/gallery/123456/Projeto-de-Teste"></a>
         </div>
       </article>`;
@@ -22,6 +22,6 @@ describe("fetchPublicBehanceProjects", () => {
       sourceUrl: "https://www.behance.net/gallery/123456/Projeto-de-Teste",
       cover: "https://mir-s3-cdn-cf.behance.net/projects/404/abc.jpg",
     });
-    expect(projects[0]?.publishedAt).toBeInstanceOf(Date);
+    expect(projects[0]?.publishedAt).toEqual(new Date("2024-06-15T12:00:00.000Z"));
   });
 });
