@@ -1,6 +1,6 @@
 import { count, desc, eq, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, User, auditLogs, backupJobs, behanceProjects, behanceSyncJobs, mediaDownloadEvents, mediaDownloads, notificationTemplates, notifications, portfolioProjectOverrides, quoteRequests, trafficEvents, users } from "../drizzle/schema";
+import { InsertUser, User, auditLogs, backupJobs, behanceProjects, behanceSyncJobs, mediaDownloadEvents, mediaDownloads, notificationAttempts, notificationTemplates, notifications, portfolioProjectOverrides, quoteRequests, trafficEvents, users } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -85,7 +85,24 @@ export async function updateBehanceSyncJob(name: string, values: Partial<typeof 
 
 export async function createQuoteRequest(input: { name: string; email: string; phone?: string; message: string }) {
   const db = await getDb(); if (!db) throw new Error("DATABASE_URL is not configured");
-  await db.insert(quoteRequests).values({ name: input.name, email: input.email, phone: input.phone ?? null, message: input.message, consent: 1, status: "pending" });
+  const [result] = await db.insert(quoteRequests).values({ name: input.name, email: input.email, phone: input.phone ?? null, message: input.message, consent: 1, status: "pending" }).$returningId();
+  return result?.id ?? 0;
+}
+
+export async function getQuoteRequest(id: number) {
+  const db = await getDb(); if (!db) return undefined;
+  const result = await db.select().from(quoteRequests).where(eq(quoteRequests.id, id)).limit(1);
+  return result[0];
+}
+
+export async function createNotificationAttempt(input: { quoteRequestId?: number; channel: string; attemptType: "automatic" | "manual_retry" | "test"; status: "sent" | "failed"; errorCode?: string; providerMessageId?: string; details?: string }) {
+  const db = await getDb(); if (!db) return;
+  await db.insert(notificationAttempts).values({ quoteRequestId: input.quoteRequestId ?? null, channel: input.channel, attemptType: input.attemptType, status: input.status, errorCode: input.errorCode ?? null, providerMessageId: input.providerMessageId ?? null, details: input.details ?? null });
+}
+
+export async function listNotificationAttempts() {
+  const db = await getDb(); if (!db) return [];
+  return db.select().from(notificationAttempts).orderBy(desc(notificationAttempts.createdAt)).limit(250);
 }
 
 export async function listQuoteRequests() {

@@ -1,11 +1,12 @@
 import { z } from "zod";
+import { TRPCError } from "@trpc/server";
 import { COOKIE_NAME, TWO_FACTOR_PENDING_COOKIE } from "@shared/const";
 import { parse as parseCookieHeader } from "cookie";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { notifyOwner } from "./_core/notification";
 import { adminProcedure, publicProcedure, router } from "./_core/trpc";
 import { systemRouter } from "./_core/systemRouter";
-import { createQuoteRequest, createTemplatedNotification, deletePortfolioProjectOverride, getPortfolioProjectOverride, getProjectAccessCounts, getTrafficSummary, getUserByOpenId, incrementMediaDownload, listAuditLogs, listBehanceProjects, listBrokenAssetEvents, listMediaDownloads, listMediaDownloadsByPeriod, listNotificationTemplates, listNotifications, listPortfolioProjectOverrides, listQuoteRequests, markNotificationRead, recordAuditLog, recordTrafficEvent, setPortfolioProjectAsset, updateQuoteRequestStatus, updateUserTwoFactor, upsertNotificationTemplate, upsertPortfolioProjectOverride } from "./db";
+import { createNotification, createNotificationAttempt, createQuoteRequest, createTemplatedNotification, deletePortfolioProjectOverride, getPortfolioProjectOverride, getProjectAccessCounts, getQuoteRequest, getTrafficSummary, getUserByOpenId, incrementMediaDownload, listAuditLogs, listBehanceProjects, listBrokenAssetEvents, listMediaDownloads, listMediaDownloadsByPeriod, listNotificationAttempts, listNotificationTemplates, listNotifications, listPortfolioProjectOverrides, listQuoteRequests, markNotificationRead, recordAuditLog, recordTrafficEvent, setPortfolioProjectAsset, updateQuoteRequestStatus, updateUserTwoFactor, upsertNotificationTemplate, upsertPortfolioProjectOverride } from "./db";
 import { storagePut } from "./storage";
 import { sendQuoteNotifications } from "./external-notifications";
 import { getNotificationProviderStatus, saveNotificationProviderSettings } from "./notification-settings";
@@ -18,6 +19,21 @@ async function getPendingTwoFactorUser(req: { headers: { cookie?: string } }) {
   const pending = await sdk.verifyTwoFactorPendingToken(token);
   if (!pending) return null;
   return getUserByOpenId(pending.openId);
+}
+
+async function recordDeliveryAttempts(quoteRequestId: number | undefined, attemptType: "automatic" | "manual_retry" | "test", internal: boolean, external: Awaited<ReturnType<typeof sendQuoteNotifications>>) {
+  const channels = [
+    { channel: "internal", result: { ok: internal } },
+    { channel: "email", result: external.details.email },
+    { channel: "whatsapp", result: external.details.whatsapp },
+  ];
+  await Promise.all(channels.map(async ({ channel, result }) => {
+    if (result.errorCode === "not_attempted") return;
+    await createNotificationAttempt({ quoteRequestId, channel, attemptType, status: result.ok ? "sent" : "failed", errorCode: result.errorCode, providerMessageId: result.providerMessageId });
+    if (!result.ok && (channel === "email" || channel === "whatsapp")) {
+      await createNotification({ eventKey: `quote_${channel}_failed`, title: `Falha no ${channel === "email" ? "email" : "WhatsApp"}`, message: `O envio do pedido${quoteRequestId ? ` #${quoteRequestId}` : ""} falhou no canal ${channel === "email" ? "Gmail SMTP" : "Meta WhatsApp"}. Reenvie manualmente pelo painel.`, severity: "urgent" });
+    }
+  }));
 }
 
 export const appRouter = router({
@@ -97,7 +113,9 @@ export const appRouter = router({
     summary: adminProcedure.input(z.object({ days: z.union([z.literal(7), z.literal(30)]).default(7) })).query(({ input }) => getTrafficSummary(input.days)),
     notificationProviderStatus: adminProcedure.query(() => getNotificationProviderStatus()),
     saveNotificationProviderSettings: adminProcedure.input(z.object({ smtpHost: z.string().trim().min(1).max(255).optional(), smtpPort: z.number().int().min(1).max(65535).optional(), smtpUser: z.string().email().max(320).optional(), smtpPassword: z.string().min(16).max(128).optional(), smtpFrom: z.string().email().max(320).optional(), notificationEmail: z.string().email().max(320).optional(), metaAccessToken: z.string().min(20).max(1000).optional(), metaPhoneNumberId: z.string().regex(/^\d{8,20}$/).optional(), metaBusinessAccountId: z.string().regex(/^\d{8,20}$/).optional(), metaTo: z.string().regex(/^\d{10,15}$/).optional() })).mutation(async ({ input, ctx }) => { await saveNotificationProviderSettings(input); await recordAuditLog({ actor: ctx.user.email ?? ctx.user.name ?? ctx.user.openId, entityType: "notification", entityKey: "providers", action: "provider_settings_updated", details: JSON.stringify({ smtpUser: Boolean(input.smtpUser), smtpPassword: Boolean(input.smtpPassword), metaAccessToken: Boolean(input.metaAccessToken), metaPhoneNumberId: Boolean(input.metaPhoneNumberId) }) }); return { ok: true as const }; }),
-    testNotificationProviders: adminProcedure.mutation(async ({ ctx }) => { const testInput = { id: 0, name: "TESTE DE NOTIFICAÇÃO", email: "deva.jpeg@gmail.com", phone: "+55 71 98639-7739", message: "Teste controlado dos canais Gmail SMTP, Meta WhatsApp e fallback interno. Não é um pedido real." }; const [internal, external] = await Promise.all([notifyOwner({ title: "TESTE DE NOTIFICAÇÃO", content: "Teste controlado do portfólio: Gmail SMTP + Meta WhatsApp + fallback interno." }).catch(() => false), sendQuoteNotifications(testInput).catch(() => ({ email: false, whatsapp: false, delivered: false }))]); await recordAuditLog({ actor: ctx.user.email ?? ctx.user.name ?? ctx.user.openId, entityType: "notification", entityKey: "providers", action: "provider_test_sent", details: JSON.stringify({ internal, email: external.email, whatsapp: external.whatsapp }) }); return { internal, email: external.email, whatsapp: external.whatsapp, delivered: internal || external.delivered }; }),
+    notificationAttempts: adminProcedure.query(() => listNotificationAttempts()),
+    retryQuoteNotifications: adminProcedure.input(z.object({ quoteRequestId: z.number().int().positive() })).mutation(async ({ input, ctx }) => { const quote = await getQuoteRequest(input.quoteRequestId); if (!quote) throw new TRPCError({ code: "NOT_FOUND", message: "Pedido não encontrado." }); const history = (await listNotificationAttempts()).filter(item => item.quoteRequestId === input.quoteRequestId); const latest = new Map<string, typeof history[number]>(); for (const item of history) if (item.channel === "email" || item.channel === "whatsapp") { if (!latest.has(item.channel)) latest.set(item.channel, item); } const email = latest.get("email")?.status === "failed"; const whatsapp = latest.get("whatsapp")?.status === "failed"; if (!email && !whatsapp) throw new TRPCError({ code: "BAD_REQUEST", message: "Não há falhas de email ou WhatsApp para reenviar." }); const external = await sendQuoteNotifications({ id: quote.id, name: quote.name, email: quote.email, phone: quote.phone ?? undefined, message: quote.message }, { email, whatsapp }); await recordDeliveryAttempts(quote.id, "manual_retry", false, external); await recordAuditLog({ actor: ctx.user.email ?? ctx.user.name ?? ctx.user.openId, entityType: "quote", entityKey: String(quote.id), action: "notifications_retried", details: JSON.stringify({ email: external.email, whatsapp: external.whatsapp }) }); return { email: external.email, whatsapp: external.whatsapp, delivered: external.delivered }; }),
+    testNotificationProviders: adminProcedure.mutation(async ({ ctx }) => { const testInput = { id: 0, name: "TESTE DE NOTIFICAÇÃO", email: "deva.jpeg@gmail.com", phone: "+55 71 98639-7739", message: "Teste controlado dos canais Gmail SMTP, Meta WhatsApp e fallback interno. Não é um pedido real." }; const [internal, external] = await Promise.all([notifyOwner({ title: "TESTE DE NOTIFICAÇÃO", content: "Teste controlado do portfólio: Gmail SMTP + Meta WhatsApp + fallback interno." }).catch(() => false), sendQuoteNotifications(testInput).catch(() => ({ email: false, whatsapp: false, delivered: false, attempted: { email: false, whatsapp: false }, details: { email: { ok: false, errorCode: "test_failed" }, whatsapp: { ok: false, errorCode: "test_failed" } } }))]); await recordDeliveryAttempts(undefined, "test", internal, external); await recordAuditLog({ actor: ctx.user.email ?? ctx.user.name ?? ctx.user.openId, entityType: "notification", entityKey: "providers", action: "provider_test_sent", details: JSON.stringify({ internal, email: external.email, whatsapp: external.whatsapp }) }); return { internal, email: external.email, whatsapp: external.whatsapp, delivered: internal || external.delivered }; }),
     downloadRanking: adminProcedure.input(z.object({ period: z.enum(["week", "month"]) })).query(({ input }) => listMediaDownloadsByPeriod(input.period)),
     leads: adminProcedure.query(() => listQuoteRequests()),
     updateLeadStatus: adminProcedure.input(z.object({ id: z.number().int().positive(), status: z.enum(["pending", "responded", "completed"]) })).mutation(async ({ input, ctx }) => { await updateQuoteRequestStatus(input.id, input.status); await createTemplatedNotification({ eventKey: "lead_status_changed", variables: { id: String(input.id), status: input.status }, fallback: { title: "Pedido atualizado", message: `O pedido #${input.id} mudou para ${input.status}.`, severity: "info" } }); await recordAuditLog({ actor: ctx.user.email ?? ctx.user.name ?? ctx.user.openId, entityType: "quote", entityKey: String(input.id), action: "status_changed", details: JSON.stringify({ status: input.status }) }); return { ok: true as const }; }),
@@ -116,13 +134,14 @@ export const appRouter = router({
   }),
   quoteRequests: router({
     create: publicProcedure.input(z.object({ name: z.string().trim().min(2).max(160), email: z.string().email().max(320), phone: z.string().trim().max(40).optional(), message: z.string().trim().min(10).max(5000), consent: z.literal(true) })).mutation(async ({ input }) => {
-      await createQuoteRequest(input);
+      const quoteRequestId = await createQuoteRequest(input);
       const content = `${input.name} (${input.email}) enviou um pedido de orçamento pelo portfólio.\n\n${input.message}`;
       await createTemplatedNotification({ eventKey: "quote_received", variables: { name: input.name, email: input.email, phone: input.phone ?? "Não informado", message: input.message }, fallback: { title: "Novo pedido de orçamento", message: content, severity: "urgent" } });
       const [internal, external] = await Promise.all([
         notifyOwner({ title: "Novo pedido de orçamento", content }).catch(() => false),
-        sendQuoteNotifications(input).catch(() => ({ email: false, whatsapp: false, delivered: false })),
+        sendQuoteNotifications(input).catch(() => ({ email: false, whatsapp: false, delivered: false, attempted: { email: true, whatsapp: true }, details: { email: { ok: false, errorCode: "provider_error" }, whatsapp: { ok: false, errorCode: "provider_error" } } })),
       ]);
+      await recordDeliveryAttempts(quoteRequestId, "automatic", internal, external);
       return { ok: true as const, notified: internal || external.delivered, channels: { internal, email: external.email, whatsapp: external.whatsapp } };
     }),
   }),

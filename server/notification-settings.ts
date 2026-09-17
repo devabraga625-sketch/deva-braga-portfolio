@@ -71,6 +71,8 @@ export async function getNotificationProviderConfig() {
     metaWhatsAppPhoneNumberId: stored?.metaPhoneNumberId ?? ENV.metaWhatsAppPhoneNumberId,
     metaWhatsAppBusinessAccountId: stored?.metaBusinessAccountId ?? ENV.metaWhatsAppBusinessAccountId,
     metaWhatsAppTo: stored?.metaTo ?? ENV.metaWhatsAppTo,
+    metaWhatsAppTemplateName: ENV.metaWhatsAppTemplateName,
+    metaWhatsAppTemplateLanguage: ENV.metaWhatsAppTemplateLanguage,
   };
 }
 

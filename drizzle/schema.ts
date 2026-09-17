@@ -53,6 +53,10 @@ export const notificationProviderSettings = mysqlTable("notification_provider_se
   id: int("id").primaryKey(), smtpHost: varchar("smtpHost", { length: 255 }), smtpPort: int("smtpPort"), smtpUser: varchar("smtpUser", { length: 320 }), smtpPasswordEncrypted: text("smtpPasswordEncrypted"), smtpFrom: varchar("smtpFrom", { length: 320 }), notificationEmail: varchar("notificationEmail", { length: 320 }), metaAccessTokenEncrypted: text("metaAccessTokenEncrypted"), metaPhoneNumberId: varchar("metaPhoneNumberId", { length: 64 }), metaBusinessAccountId: varchar("metaBusinessAccountId", { length: 64 }), metaTo: varchar("metaTo", { length: 32 }), updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
 
+export const notificationAttempts = mysqlTable("notification_attempts", {
+  id: int("id").autoincrement().primaryKey(), quoteRequestId: int("quoteRequestId"), channel: varchar("channel", { length: 32 }).notNull(), attemptType: varchar("attemptType", { length: 32 }).notNull(), status: varchar("status", { length: 32 }).notNull(), errorCode: varchar("errorCode", { length: 64 }), providerMessageId: varchar("providerMessageId", { length: 255 }), details: text("details"), createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
 export const backupJobs = mysqlTable("backup_jobs", {
   id: int("id").autoincrement().primaryKey(), name: varchar("name", { length: 120 }).notNull().unique(), scheduleCronTaskUid: varchar("scheduleCronTaskUid", { length: 65 }), lastRunAt: timestamp("lastRunAt"), lastStatus: varchar("lastStatus", { length: 32 }), lastError: text("lastError"), lastObjectKey: varchar("lastObjectKey", { length: 500 }), updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
@@ -70,4 +74,5 @@ export type AuditLog = typeof auditLogs.$inferSelect;
 export type NotificationTemplate = typeof notificationTemplates.$inferSelect;
 export type Notification = typeof notifications.$inferSelect;
 export type NotificationProviderSettings = typeof notificationProviderSettings.$inferSelect;
+export type NotificationAttempt = typeof notificationAttempts.$inferSelect;
 export type BackupJob = typeof backupJobs.$inferSelect;

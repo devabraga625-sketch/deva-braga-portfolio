@@ -25,5 +25,7 @@ export const ENV = {
   metaWhatsAppPhoneNumberId: process.env.META_WHATSAPP_PHONE_NUMBER_ID ?? "",
   metaWhatsAppBusinessAccountId: process.env.META_WHATSAPP_BUSINESS_ACCOUNT_ID ?? "",
   metaWhatsAppTo: process.env.META_WHATSAPP_TO ?? "",
+  metaWhatsAppTemplateName: process.env.META_WHATSAPP_TEMPLATE_NAME ?? "",
+  metaWhatsAppTemplateLanguage: process.env.META_WHATSAPP_TEMPLATE_LANGUAGE ?? "pt_BR",
   backupEncryptionKey: process.env.BACKUP_ENCRYPTION_KEY ?? "",
 };

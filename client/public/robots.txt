@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /painel
+Disallow: /autenticacao-2fa
+Disallow: /api/
+Sitemap: https://devabraga-59enyuvp.manus.space/sitemap.xml
