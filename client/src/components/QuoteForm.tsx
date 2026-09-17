@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { ArrowUpRight, CheckCircle2, Loader2 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
+import { pushGtmEvent } from "@/lib/gtm";
 
 export default function QuoteForm() {
   const [form, setForm] = useState({ name: "", email: "", phone: "", message: "", consent: false });
-  const mutation = trpc.quoteRequests.create.useMutation({ onSuccess: () => setForm({ name: "", email: "", phone: "", message: "", consent: false }) });
+  const mutation = trpc.quoteRequests.create.useMutation({ onSuccess: () => { pushGtmEvent({ event: "contact_form_submit", form_name: "quote_request", lead_type: "budget_request" }); setForm({ name: "", email: "", phone: "", message: "", consent: false }); } });
   const set = (key: keyof typeof form, value: string | boolean) => setForm(current => ({ ...current, [key]: value }));
   return <form className="quote-form" aria-busy={mutation.isPending} onSubmit={event => { event.preventDefault(); if (!form.consent || mutation.isPending) return; mutation.mutate({ ...form, consent: true }); }}>
     <div className="quote-form-heading"><span className="eyebrow">Novo projeto</span><h3>Conte o que você<br /><em>imagina.</em></h3></div>

@@ -181,3 +181,15 @@ a { text-decoration: none; }
 /* Keep visual editor adjustments scoped to their intended elements. */
 .wordmark { width: 47px; min-height: 29px; }
 @media (max-width: 700px) { .wordmark { width: 47px; min-height: 29px; } }
+
+.not-found-page { min-height: 100vh; display: grid; place-items: center; position: relative; overflow: hidden; padding: 8vw 8vw 5vw; background: var(--ink); color: var(--paper); }
+.not-found-page:before { content: ''; position: absolute; width: 70vw; height: 70vw; max-width: 900px; max-height: 900px; border-radius: 50%; background: radial-gradient(circle, rgba(214,230,91,.18), transparent 68%); pointer-events: none; }
+.not-found-frame { position: relative; z-index: 1; width: min(100%, 920px); }
+.not-found-number { margin: 7vh 0 -1.4rem; color: rgba(232,228,220,.14); font: 500 clamp(8rem, 25vw, 20rem)/.75 'Playfair Display', serif; letter-spacing: -.1em; }
+.not-found-page h1 { margin: 0; font: 500 clamp(3.5rem, 8vw, 8rem)/.88 'Playfair Display', serif; letter-spacing: -.07em; }
+.not-found-page h1 em { color: var(--acid); font-style: italic; }
+.not-found-copy { max-width: 390px; margin: 34px 0 30px; color: rgba(232,228,220,.68); font-size: 16px; line-height: 1.5; }
+.not-found-home { display: inline-flex; align-items: center; gap: 10px; border: 1px solid rgba(232,228,220,.45); background: transparent; color: var(--paper); padding: 13px 17px; font: 500 11px 'DM Mono', monospace; letter-spacing: .04em; text-transform: uppercase; transition: background .2s, color .2s, transform .2s; }
+.not-found-home:hover { background: var(--acid); color: var(--ink); transform: translateY(-2px); }
+.not-found-footer { position: absolute; z-index: 1; bottom: 28px; left: 8vw; color: rgba(232,228,220,.45); font: 10px 'DM Mono', monospace; letter-spacing: .04em; text-transform: uppercase; }
+@media (max-width: 700px) { .not-found-page { padding: 20vw 20px 24vw; place-items: start center; }.not-found-frame { margin-top: 18vh; }.not-found-number { margin-top: 10vh; font-size: 38vw; }.not-found-copy { font-size: 15px; }.not-found-footer { left: 20px; right: 20px; bottom: 24px; line-height: 1.4; } }
