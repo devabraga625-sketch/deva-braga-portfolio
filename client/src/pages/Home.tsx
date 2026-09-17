@@ -175,6 +175,16 @@ export default function Home() {
     window.addEventListener("keydown", onKeyDown);
     return () => { document.body.style.overflow = ""; window.removeEventListener("keydown", onKeyDown); };
   }, [fullscreenOpen, selected, mediaIndex]);
+  useEffect(() => {
+    if (!selected) return;
+    const onProjectKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      if (fullscreenOpen) closeFullscreen();
+      else closeProject();
+    };
+    window.addEventListener("keydown", onProjectKeyDown);
+    return () => window.removeEventListener("keydown", onProjectKeyDown);
+  }, [selected, fullscreenOpen, fullscreenClosing, projectClosing]);
 
   return (
     <main className={`site-shell${darkMode ? " dark-mode" : ""}`}>
