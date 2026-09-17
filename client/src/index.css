@@ -236,3 +236,18 @@ a { text-decoration: none; }
 .not-found-light .not-found-back:hover, .not-found-light .not-found-back:focus-visible { color: #657000; }
 @media (max-width: 700px) { .not-found-back { margin: 8px 0 0; padding-left: 0; display: flex; } }
 @media (prefers-reduced-motion: reduce) { .not-found-back { transition: none; } }
+
+.status-page { min-height: 100vh; display: grid; place-items: center; position: relative; overflow: hidden; padding: 8vw; background: var(--ink); color: var(--paper); }
+.status-grid { position: absolute; inset: 0; opacity: .15; background-image: linear-gradient(rgba(232,228,220,.15) 1px, transparent 1px), linear-gradient(90deg, rgba(232,228,220,.15) 1px, transparent 1px); background-size: 48px 48px; mask-image: linear-gradient(to bottom, black, transparent 75%); }
+.status-card { position: relative; width: min(100%, 650px); }
+.status-card .eyebrow { display: flex; align-items: center; gap: 8px; color: var(--acid); }
+.status-indicator { display: flex; align-items: center; gap: 9px; margin: 12vh 0 22px; font: 10px 'DM Mono', monospace; letter-spacing: .08em; text-transform: uppercase; color: rgba(232,228,220,.62); }
+.status-indicator i { width: 8px; height: 8px; border-radius: 50%; background: #a8c63f; box-shadow: 0 0 0 5px rgba(168,198,63,.14); }
+.status-card h1 { margin: 0; font: 500 clamp(3.5rem, 8vw, 7.5rem)/.88 'Playfair Display', serif; letter-spacing: -.07em; }
+.status-card h1 em { color: var(--acid); font-style: italic; }
+.status-card p { max-width: 450px; margin: 30px 0; color: rgba(232,228,220,.68); font-size: 16px; line-height: 1.55; }
+.status-service { display: flex; align-items: center; gap: 10px; width: min(100%, 450px); border-top: 1px solid rgba(232,228,220,.25); border-bottom: 1px solid rgba(232,228,220,.25); padding: 14px 0; color: rgba(232,228,220,.68); font: 11px 'DM Mono', monospace; text-transform: uppercase; }
+.status-service svg { color: #a8c63f; }.status-service strong { margin-left: auto; color: #a8c63f; font-weight: 400; }
+.status-back { display: inline-flex; align-items: center; gap: 10px; margin-top: 34px; border-bottom: 1px solid var(--acid); padding-bottom: 7px; color: var(--paper); font: 11px 'DM Mono', monospace; letter-spacing: .05em; text-transform: uppercase; }
+.status-back:hover { color: var(--acid); }.status-page footer { position: absolute; bottom: 28px; left: 8vw; color: rgba(232,228,220,.42); font: 10px 'DM Mono', monospace; text-transform: uppercase; }
+@media (max-width: 700px) { .status-page { padding: 20vw 20px 24vw; place-items: start center; }.status-card { margin-top: 16vh; }.status-indicator { margin-top: 10vh; }.status-page footer { left: 20px; bottom: 24px; } }

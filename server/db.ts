@@ -119,6 +119,11 @@ export async function getProjectAccessCounts() {
   return db.select({ projectKey: trafficEvents.projectKey, accesses: count() }).from(trafficEvents).where(eq(trafficEvents.eventType, "project_click")).groupBy(trafficEvents.projectKey).orderBy(desc(count())).limit(200);
 }
 
+export async function listBrokenAssetEvents() {
+  const db = await getDb(); if (!db) return [];
+  return db.select().from(trafficEvents).where(eq(trafficEvents.eventType, "asset_error")).orderBy(desc(trafficEvents.createdAt)).limit(100);
+}
+
 export async function listPortfolioProjectOverrides() {
   const db = await getDb(); if (!db) return [];
   return db.select().from(portfolioProjectOverrides);

@@ -5,7 +5,7 @@ import { getSessionCookieOptions } from "./_core/cookies";
 import { notifyOwner } from "./_core/notification";
 import { adminProcedure, publicProcedure, router } from "./_core/trpc";
 import { systemRouter } from "./_core/systemRouter";
-import { createQuoteRequest, createTemplatedNotification, deletePortfolioProjectOverride, getProjectAccessCounts, getTrafficSummary, getUserByOpenId, listAuditLogs, listBehanceProjects, listNotificationTemplates, listNotifications, listPortfolioProjectOverrides, listQuoteRequests, markNotificationRead, recordAuditLog, recordTrafficEvent, setPortfolioProjectAsset, updateQuoteRequestStatus, updateUserTwoFactor, upsertNotificationTemplate, upsertPortfolioProjectOverride } from "./db";
+import { createQuoteRequest, createTemplatedNotification, deletePortfolioProjectOverride, getProjectAccessCounts, getTrafficSummary, getUserByOpenId, listAuditLogs, listBehanceProjects, listBrokenAssetEvents, listNotificationTemplates, listNotifications, listPortfolioProjectOverrides, listQuoteRequests, markNotificationRead, recordAuditLog, recordTrafficEvent, setPortfolioProjectAsset, updateQuoteRequestStatus, updateUserTwoFactor, upsertNotificationTemplate, upsertPortfolioProjectOverride } from "./db";
 import { storagePut } from "./storage";
 import { sendQuoteNotifications } from "./external-notifications";
 import { createEncryptedBackup } from "./backup";
@@ -82,7 +82,7 @@ export const appRouter = router({
     overrides: publicProcedure.query(() => listPortfolioProjectOverrides()),
   }),
   analytics: router({
-    track: publicProcedure.input(z.object({ eventType: z.enum(["page_view", "project_click", "external_click"]), path: z.string().max(255), projectKey: z.string().max(191).optional(), visitorId: z.string().regex(/^[a-zA-Z0-9_-]{8,64}$/) })).mutation(async ({ input }) => {
+    track: publicProcedure.input(z.object({ eventType: z.enum(["page_view", "project_click", "external_click", "asset_error"]), path: z.string().max(255), projectKey: z.string().max(191).optional(), visitorId: z.string().regex(/^[a-zA-Z0-9_-]{8,64}$/) })).mutation(async ({ input }) => {
       await recordTrafficEvent(input);
       return { ok: true } as const;
     }),
@@ -95,6 +95,7 @@ export const appRouter = router({
     restoreProject: adminProcedure.input(z.object({ projectKey: z.string().min(1).max(191) })).mutation(async ({ input, ctx }) => { await deletePortfolioProjectOverride(input.projectKey); await recordAuditLog({ actor: ctx.user.email ?? ctx.user.name ?? ctx.user.openId, entityType: "project", entityKey: input.projectKey, action: "restored", details: "Override removido e projeto restaurado" }); return { ok: true as const }; }),
     uploadProjectAsset: adminProcedure.input(z.object({ projectKey: z.string().min(1).max(191), kind: z.enum(["thumbnail", "media"]), fileName: z.string().min(1).max(180), contentType: z.enum(["image/jpeg", "image/png", "image/webp", "image/gif"]), dataBase64: z.string().min(1).max(20_000_000) })).mutation(async ({ input, ctx }) => { const data = Buffer.from(input.dataBase64, "base64"); if (data.byteLength > 12 * 1024 * 1024) throw new Error("Imagem muito grande. Limite de 12 MB."); const safeName = input.fileName.replace(/[^a-zA-Z0-9._-]/g, "-"); const uploaded = await storagePut(`portfolio/${input.projectKey}/${input.kind}/${safeName}`, data, input.contentType); await setPortfolioProjectAsset(input.projectKey, input.kind, uploaded.url); await recordAuditLog({ actor: ctx.user.email ?? ctx.user.name ?? ctx.user.openId, entityType: "project", entityKey: input.projectKey, action: input.kind === "thumbnail" ? "thumbnail_uploaded" : "media_uploaded", details: JSON.stringify({ fileName: input.fileName, url: uploaded.url }) }); return { url: uploaded.url } as const; }),
     audit: adminProcedure.query(() => listAuditLogs()),
+    brokenAssets: adminProcedure.query(() => listBrokenAssetEvents()),
     notifications: adminProcedure.query(() => listNotifications()),
     markNotificationRead: adminProcedure.input(z.object({ id: z.number().int().positive() })).mutation(({ input }) => markNotificationRead(input.id)),
     notificationTemplates: adminProcedure.query(() => listNotificationTemplates()),

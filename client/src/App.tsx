@@ -9,6 +9,7 @@ import Home from "./pages/Home";
 import AnalyticsPanel from "./pages/AnalyticsPanel";
 import PrivacyPolicy from "@/pages/PrivacyPolicy";
 import TwoFactorPage from "@/pages/TwoFactorPage";
+import StatusPage from "@/pages/StatusPage";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -18,6 +19,7 @@ function Router() {
       <Route path={"/painel"} component={AnalyticsPanel} />
       <Route path={"/politica-de-privacidade"} component={PrivacyPolicy} />
       <Route path={"/autenticacao-2fa"} component={TwoFactorPage} />
+      <Route path={"/status"} component={StatusPage} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
