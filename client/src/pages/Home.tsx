@@ -141,7 +141,7 @@ export default function Home() {
         <span className="section-index">02</span>
         <div className="statement-copy">
           <h2>Entre o documento<br />e a <em>atmosfera.</em></h2>
-          <p>Deva Braga é fotógrafo e designer gráfico em Salvador. Seu trabalho percorre pessoas, lugares e marcas em busca de uma imagem que carregue presença.</p>
+          <p>Deva Braga é fotógrafo e designer gráfico e reside em Salvador. Seu trabalho percorre pessoas, lugares e marcas em busca de uma imagem que carregue presença.</p>
           <a href="#contato">Conheça o processo <ArrowUpRight size={17} /></a>
         </div>
         <figure className="statement-portrait">
