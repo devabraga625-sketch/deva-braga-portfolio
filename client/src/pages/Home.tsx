@@ -146,7 +146,7 @@ export default function Home() {
         </div>
         <figure className="statement-portrait">
           <img className="protected-media" draggable={false} onContextMenu={event => event.preventDefault()} src="/manus-storage/portfolio/about/fotoperfildevacircular_688f59af.png" alt="Retrato de Deva Braga diante do mar" loading="lazy" />
-          <figcaption>Deva Braga / Fotógrafo e Designer</figcaption>
+          <figcaption>Deva Braga / Fotógrafo e Designer Gráfico</figcaption>
         </figure>
       </section>
       <footer className="footer" id="contato"><div className="footer-intro"><span className="section-index">03</span><p>Tem uma ideia em mente?</p><a href="mailto:deva.jpeg@gmail.com">deva.jpeg@gmail.com</a><div className="footer-links"><a href="https://www.behance.net/deva_braga" target="_blank" rel="noreferrer" onClick={() => { if (cookieChoice === "accepted") track.mutate({ eventType: "external_click", path: window.location.pathname, projectKey: "behance", visitorId: getVisitorId() }); }}>MEU BEHANCE <ExternalLink size={14} /></a><a href="https://stock.adobe.com/br/contributor/212810827/Deva%20Braga" target="_blank" rel="noreferrer" onClick={() => { if (cookieChoice === "accepted") track.mutate({ eventType: "external_click", path: window.location.pathname, projectKey: "adobe-stock", visitorId: getVisitorId() }); }}>ADOBE STOCK <ExternalLink size={14} /></a></div></div><div className="footer-form" id="orcamento"><QuoteForm /></div><div className="footer-right"><span>Salvador, BR</span><span>© 2026 Deva Braga</span></div></footer>
