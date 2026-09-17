@@ -29,6 +29,10 @@ export const mediaDownloads = mysqlTable("media_downloads", {
   id: int("id").autoincrement().primaryKey(), projectKey: varchar("projectKey", { length: 191 }).notNull(), mediaIndex: int("mediaIndex").notNull(), downloads: int("downloads").default(0).notNull(), updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 }, table => ({ projectMediaUnique: uniqueIndex("media_downloads_project_media_unique").on(table.projectKey, table.mediaIndex) }));
 
+export const mediaDownloadEvents = mysqlTable("media_download_events", {
+  id: int("id").autoincrement().primaryKey(), projectKey: varchar("projectKey", { length: 191 }).notNull(), mediaIndex: int("mediaIndex").notNull(), createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
 export const portfolioProjectOverrides = mysqlTable("portfolio_project_overrides", {
   id: int("id").autoincrement().primaryKey(), projectKey: varchar("projectKey", { length: 191 }).notNull().unique(), title: text("title"), description: text("description"), year: varchar("year", { length: 32 }), thumbnail: text("thumbnail"), media: text("media"), mediaMetadata: text("mediaMetadata"), license: varchar("license", { length: 500 }), sourceUrl: text("sourceUrl"), hidden: int("hidden").default(0).notNull(), allowDownloads: int("allowDownloads").default(0).notNull(), updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
@@ -56,6 +60,7 @@ export type BehanceSyncJob = typeof behanceSyncJobs.$inferSelect;
 export type QuoteRequest = typeof quoteRequests.$inferSelect;
 export type TrafficEvent = typeof trafficEvents.$inferSelect;
 export type MediaDownload = typeof mediaDownloads.$inferSelect;
+export type MediaDownloadEvent = typeof mediaDownloadEvents.$inferSelect;
 export type PortfolioProjectOverride = typeof portfolioProjectOverrides.$inferSelect;
 export type AuditLog = typeof auditLogs.$inferSelect;
 export type NotificationTemplate = typeof notificationTemplates.$inferSelect;

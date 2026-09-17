@@ -386,3 +386,22 @@ a { text-decoration: none; }
 .download-ranking-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
 .download-ranking-actions select { max-width: 260px; border: 1px solid rgba(232,228,220,.3); background: var(--ink); color: var(--paper); padding: 8px 10px; font: 10px 'DM Mono', monospace; }
 @media (max-width: 700px) { .download-ranking-actions { justify-content: flex-start; width: 100%; }.download-ranking-actions select, .download-ranking-actions .csv-button { width: 100%; max-width: none; }.download-ranking-label { grid-template-columns: 26px minmax(0, 1fr) auto; gap: 7px; }.download-ranking-label strong { font-size: 13px; } }
+
+.case-study-metrics, .case-study-testimonial { margin-top: 7vw; padding-top: 42px; border-top: 1px solid var(--line); }
+.case-study-metrics { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 50px; }
+.case-study-metrics h2, .case-study-testimonial h2 { margin: 12px 0 16px; font: 500 clamp(2.2rem, 4vw, 4rem)/.95 'Playfair Display', serif; letter-spacing: -.05em; }
+.case-study-metrics p, .case-study-note { max-width: 460px; margin: 0; color: #5c5a54; font: 15px/1.55 'DM Sans', sans-serif; }
+.case-study-metric-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.case-study-metric-grid article { min-height: 145px; display: flex; flex-direction: column; justify-content: space-between; padding: 18px; background: var(--paper); }
+.case-study-metric-grid strong { color: var(--ink); font: 500 clamp(2.4rem, 5vw, 5rem) 'Playfair Display', serif; letter-spacing: -.06em; }
+.case-study-metric-grid span { color: #6d6a62; font: 10px 'DM Mono', monospace; text-transform: uppercase; }
+.case-study-testimonial { max-width: 900px; }
+.case-study-testimonial blockquote { margin: 30px 0 14px; color: var(--ink); font: italic 500 clamp(1.8rem, 3.5vw, 3.6rem)/1.05 'Playfair Display', serif; letter-spacing: -.04em; }
+@media (max-width: 700px) {
+  .case-study-metrics, .case-study-testimonial { margin-top: 18vw; padding-top: 30px; }
+  .case-study-metrics { display: block; }
+  .case-study-metrics p { font-size: 14px; }
+  .case-study-metric-grid { margin-top: 30px; }
+  .case-study-metric-grid article { min-height: 120px; padding: 14px; }
+  .case-study-testimonial blockquote { margin-top: 24px; font-size: 2rem; }
+}

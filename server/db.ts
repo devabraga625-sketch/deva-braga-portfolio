@@ -1,6 +1,6 @@
 import { count, desc, eq, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, User, auditLogs, backupJobs, behanceProjects, behanceSyncJobs, mediaDownloads, notificationTemplates, notifications, portfolioProjectOverrides, quoteRequests, trafficEvents, users } from "../drizzle/schema";
+import { InsertUser, User, auditLogs, backupJobs, behanceProjects, behanceSyncJobs, mediaDownloadEvents, mediaDownloads, notificationTemplates, notifications, portfolioProjectOverrides, quoteRequests, trafficEvents, users } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -129,9 +129,20 @@ export async function listMediaDownloads(projectKey?: string) {
   return projectKey ? db.select().from(mediaDownloads).where(eq(mediaDownloads.projectKey, projectKey)) : db.select().from(mediaDownloads);
 }
 
+export async function listMediaDownloadsByPeriod(period: "week" | "month") {
+  const db = await getDb(); if (!db) return [];
+  const days = period === "week" ? 7 : 30;
+  return db.select({ projectKey: mediaDownloadEvents.projectKey, mediaIndex: mediaDownloadEvents.mediaIndex, downloads: count() })
+    .from(mediaDownloadEvents)
+    .where(sql`${mediaDownloadEvents.createdAt} >= DATE_SUB(NOW(), INTERVAL ${sql.raw(String(days))} DAY)`)
+    .groupBy(mediaDownloadEvents.projectKey, mediaDownloadEvents.mediaIndex)
+    .orderBy(desc(count()));
+}
+
 export async function incrementMediaDownload(projectKey: string, mediaIndex: number) {
   const db = await getDb(); if (!db) return;
   await db.insert(mediaDownloads).values({ projectKey, mediaIndex, downloads: 1 }).onDuplicateKeyUpdate({ set: { downloads: sql`${mediaDownloads.downloads} + 1`, updatedAt: new Date() } });
+  await db.insert(mediaDownloadEvents).values({ projectKey, mediaIndex });
 }
 
 export async function listPortfolioProjectOverrides() {

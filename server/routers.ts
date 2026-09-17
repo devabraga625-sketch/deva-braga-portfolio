@@ -5,7 +5,7 @@ import { getSessionCookieOptions } from "./_core/cookies";
 import { notifyOwner } from "./_core/notification";
 import { adminProcedure, publicProcedure, router } from "./_core/trpc";
 import { systemRouter } from "./_core/systemRouter";
-import { createQuoteRequest, createTemplatedNotification, deletePortfolioProjectOverride, getPortfolioProjectOverride, getProjectAccessCounts, getTrafficSummary, getUserByOpenId, incrementMediaDownload, listAuditLogs, listBehanceProjects, listBrokenAssetEvents, listMediaDownloads, listNotificationTemplates, listNotifications, listPortfolioProjectOverrides, listQuoteRequests, markNotificationRead, recordAuditLog, recordTrafficEvent, setPortfolioProjectAsset, updateQuoteRequestStatus, updateUserTwoFactor, upsertNotificationTemplate, upsertPortfolioProjectOverride } from "./db";
+import { createQuoteRequest, createTemplatedNotification, deletePortfolioProjectOverride, getPortfolioProjectOverride, getProjectAccessCounts, getTrafficSummary, getUserByOpenId, incrementMediaDownload, listAuditLogs, listBehanceProjects, listBrokenAssetEvents, listMediaDownloads, listMediaDownloadsByPeriod, listNotificationTemplates, listNotifications, listPortfolioProjectOverrides, listQuoteRequests, markNotificationRead, recordAuditLog, recordTrafficEvent, setPortfolioProjectAsset, updateQuoteRequestStatus, updateUserTwoFactor, upsertNotificationTemplate, upsertPortfolioProjectOverride } from "./db";
 import { storagePut } from "./storage";
 import { sendQuoteNotifications } from "./external-notifications";
 import { createEncryptedBackup } from "./backup";
@@ -94,6 +94,7 @@ export const appRouter = router({
       return { ok: true } as const;
     }),
     summary: adminProcedure.input(z.object({ days: z.union([z.literal(7), z.literal(30)]).default(7) })).query(({ input }) => getTrafficSummary(input.days)),
+    downloadRanking: adminProcedure.input(z.object({ period: z.enum(["week", "month"]) })).query(({ input }) => listMediaDownloadsByPeriod(input.period)),
     leads: adminProcedure.query(() => listQuoteRequests()),
     updateLeadStatus: adminProcedure.input(z.object({ id: z.number().int().positive(), status: z.enum(["pending", "responded", "completed"]) })).mutation(async ({ input, ctx }) => { await updateQuoteRequestStatus(input.id, input.status); await createTemplatedNotification({ eventKey: "lead_status_changed", variables: { id: String(input.id), status: input.status }, fallback: { title: "Pedido atualizado", message: `O pedido #${input.id} mudou para ${input.status}.`, severity: "info" } }); await recordAuditLog({ actor: ctx.user.email ?? ctx.user.name ?? ctx.user.openId, entityType: "quote", entityKey: String(input.id), action: "status_changed", details: JSON.stringify({ status: input.status }) }); return { ok: true as const }; }),
     projectAccess: publicProcedure.query(() => getProjectAccessCounts()),
