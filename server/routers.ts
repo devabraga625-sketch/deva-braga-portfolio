@@ -5,7 +5,7 @@ import { getSessionCookieOptions } from "./_core/cookies";
 import { notifyOwner } from "./_core/notification";
 import { adminProcedure, publicProcedure, router } from "./_core/trpc";
 import { systemRouter } from "./_core/systemRouter";
-import { createQuoteRequest, createTemplatedNotification, deletePortfolioProjectOverride, getProjectAccessCounts, getTrafficSummary, getUserByOpenId, listAuditLogs, listBehanceProjects, listBrokenAssetEvents, listNotificationTemplates, listNotifications, listPortfolioProjectOverrides, listQuoteRequests, markNotificationRead, recordAuditLog, recordTrafficEvent, setPortfolioProjectAsset, updateQuoteRequestStatus, updateUserTwoFactor, upsertNotificationTemplate, upsertPortfolioProjectOverride } from "./db";
+import { createQuoteRequest, createTemplatedNotification, deletePortfolioProjectOverride, getPortfolioProjectOverride, getProjectAccessCounts, getTrafficSummary, getUserByOpenId, incrementMediaDownload, listAuditLogs, listBehanceProjects, listBrokenAssetEvents, listMediaDownloads, listNotificationTemplates, listNotifications, listPortfolioProjectOverrides, listQuoteRequests, markNotificationRead, recordAuditLog, recordTrafficEvent, setPortfolioProjectAsset, updateQuoteRequestStatus, updateUserTwoFactor, upsertNotificationTemplate, upsertPortfolioProjectOverride } from "./db";
 import { storagePut } from "./storage";
 import { sendQuoteNotifications } from "./external-notifications";
 import { createEncryptedBackup } from "./backup";
@@ -80,6 +80,14 @@ export const appRouter = router({
   }),
   portfolio: router({
     overrides: publicProcedure.query(() => listPortfolioProjectOverrides()),
+    mediaDownloads: publicProcedure.input(z.object({ projectKey: z.string().min(1).max(191) }).optional()).query(({ input }) => listMediaDownloads(input?.projectKey)),
+    registerDownload: publicProcedure.input(z.object({ projectKey: z.string().min(1).max(191), mediaIndex: z.number().int().nonnegative(), visitorId: z.string().regex(/^[a-zA-Z0-9_-]{8,64}$/).optional() })).mutation(async ({ input }) => {
+      const override = await getPortfolioProjectOverride(input.projectKey);
+      if (!override?.allowDownloads) throw new Error("Downloads não autorizados para este projeto.");
+      await incrementMediaDownload(input.projectKey, input.mediaIndex);
+      if (input.visitorId) await recordTrafficEvent({ eventType: "download", path: `/projeto/${input.projectKey}`, projectKey: input.projectKey, visitorId: input.visitorId });
+      return { ok: true as const };
+    }),
   }),
   analytics: router({
     track: publicProcedure.input(z.object({ eventType: z.enum(["page_view", "project_click", "external_click", "asset_error"]), path: z.string().max(255), projectKey: z.string().max(191).optional(), visitorId: z.string().regex(/^[a-zA-Z0-9_-]{8,64}$/) })).mutation(async ({ input }) => {

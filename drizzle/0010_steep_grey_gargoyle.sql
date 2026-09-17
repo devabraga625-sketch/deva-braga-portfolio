@@ -1,0 +1,1 @@
+ALTER TABLE `media_downloads` ADD CONSTRAINT `media_downloads_project_media_unique` UNIQUE(`projectKey`,`mediaIndex`);

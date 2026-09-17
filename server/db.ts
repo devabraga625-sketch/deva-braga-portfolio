@@ -1,6 +1,6 @@
 import { count, desc, eq, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, User, auditLogs, backupJobs, behanceProjects, behanceSyncJobs, notificationTemplates, notifications, portfolioProjectOverrides, quoteRequests, trafficEvents, users } from "../drizzle/schema";
+import { InsertUser, User, auditLogs, backupJobs, behanceProjects, behanceSyncJobs, mediaDownloads, notificationTemplates, notifications, portfolioProjectOverrides, quoteRequests, trafficEvents, users } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -104,14 +104,14 @@ export async function recordTrafficEvent(input: { eventType: string; path: strin
 }
 
 export async function getTrafficSummary(days = 7) {
-  const db = await getDb(); if (!db) return { totals: { views: 0, clicks: 0, visitors: 0 }, byDay: [], topProjects: [] };
+  const db = await getDb(); if (!db) return { totals: { views: 0, clicks: 0, downloads: 0, visitors: 0 }, byDay: [], topProjects: [] };
   const [totals, visitors, byDay, topProjects] = await Promise.all([
-    db.select({ views: count(sql`CASE WHEN ${trafficEvents.eventType} = 'page_view' THEN 1 END`), clicks: count(sql`CASE WHEN ${trafficEvents.eventType} = 'project_click' THEN 1 END`) }).from(trafficEvents),
+    db.select({ views: count(sql`CASE WHEN ${trafficEvents.eventType} = 'page_view' THEN 1 END`), clicks: count(sql`CASE WHEN ${trafficEvents.eventType} = 'project_click' THEN 1 END`), downloads: count(sql`CASE WHEN ${trafficEvents.eventType} = 'download' THEN 1 END`) }).from(trafficEvents),
     db.select({ visitors: sql<number>`COUNT(DISTINCT ${trafficEvents.visitorId})` }).from(trafficEvents),
-    db.select({ day: sql<string>`DATE_FORMAT(${trafficEvents.createdAt}, '%Y-%m-%d')`, views: count(sql`CASE WHEN ${trafficEvents.eventType} = 'page_view' THEN 1 END`), clicks: count(sql`CASE WHEN ${trafficEvents.eventType} = 'project_click' THEN 1 END`) }).from(trafficEvents).where(sql`${trafficEvents.createdAt} >= DATE_SUB(NOW(), INTERVAL ${sql.raw(String(days))} DAY)`).groupBy(sql`DATE_FORMAT(${trafficEvents.createdAt}, '%Y-%m-%d')`).orderBy(sql`DATE_FORMAT(${trafficEvents.createdAt}, '%Y-%m-%d')`),
+    db.select({ day: sql<string>`DATE_FORMAT(${trafficEvents.createdAt}, '%Y-%m-%d')`, views: count(sql`CASE WHEN ${trafficEvents.eventType} = 'page_view' THEN 1 END`), clicks: count(sql`CASE WHEN ${trafficEvents.eventType} = 'project_click' THEN 1 END`), downloads: count(sql`CASE WHEN ${trafficEvents.eventType} = 'download' THEN 1 END`) }).from(trafficEvents).where(sql`${trafficEvents.createdAt} >= DATE_SUB(NOW(), INTERVAL ${sql.raw(String(days))} DAY)`).groupBy(sql`DATE_FORMAT(${trafficEvents.createdAt}, '%Y-%m-%d')`).orderBy(sql`DATE_FORMAT(${trafficEvents.createdAt}, '%Y-%m-%d')`),
     db.select({ projectKey: trafficEvents.projectKey, clicks: count() }).from(trafficEvents).where(eq(trafficEvents.eventType, "project_click")).groupBy(trafficEvents.projectKey).orderBy(desc(count())).limit(8),
   ]);
-  return { totals: { views: Number(totals[0]?.views ?? 0), clicks: Number(totals[0]?.clicks ?? 0), visitors: Number(visitors[0]?.visitors ?? 0) }, byDay, topProjects };
+  return { totals: { views: Number(totals[0]?.views ?? 0), clicks: Number(totals[0]?.clicks ?? 0), downloads: Number(totals[0]?.downloads ?? 0), visitors: Number(visitors[0]?.visitors ?? 0) }, byDay, topProjects };
 }
 
 export async function getProjectAccessCounts() {
@@ -122,6 +122,16 @@ export async function getProjectAccessCounts() {
 export async function listBrokenAssetEvents() {
   const db = await getDb(); if (!db) return [];
   return db.select().from(trafficEvents).where(eq(trafficEvents.eventType, "asset_error")).orderBy(desc(trafficEvents.createdAt)).limit(100);
+}
+
+export async function listMediaDownloads(projectKey?: string) {
+  const db = await getDb(); if (!db) return [];
+  return projectKey ? db.select().from(mediaDownloads).where(eq(mediaDownloads.projectKey, projectKey)) : db.select().from(mediaDownloads);
+}
+
+export async function incrementMediaDownload(projectKey: string, mediaIndex: number) {
+  const db = await getDb(); if (!db) return;
+  await db.insert(mediaDownloads).values({ projectKey, mediaIndex, downloads: 1 }).onDuplicateKeyUpdate({ set: { downloads: sql`${mediaDownloads.downloads} + 1`, updatedAt: new Date() } });
 }
 
 export async function listPortfolioProjectOverrides() {

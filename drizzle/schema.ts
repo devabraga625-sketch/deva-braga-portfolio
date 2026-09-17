@@ -1,4 +1,4 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { int, mysqlEnum, mysqlTable, text, timestamp, uniqueIndex, varchar } from "drizzle-orm/mysql-core";
 
 export const users = mysqlTable("users", {
   id: int("id").autoincrement().primaryKey(),
@@ -24,6 +24,10 @@ export const quoteRequests = mysqlTable("quote_requests", {
 export const trafficEvents = mysqlTable("traffic_events", {
   id: int("id").autoincrement().primaryKey(), eventType: varchar("eventType", { length: 64 }).notNull(), path: varchar("path", { length: 255 }).notNull(), projectKey: varchar("projectKey", { length: 191 }), visitorId: varchar("visitorId", { length: 64 }).notNull(), createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
+
+export const mediaDownloads = mysqlTable("media_downloads", {
+  id: int("id").autoincrement().primaryKey(), projectKey: varchar("projectKey", { length: 191 }).notNull(), mediaIndex: int("mediaIndex").notNull(), downloads: int("downloads").default(0).notNull(), updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, table => ({ projectMediaUnique: uniqueIndex("media_downloads_project_media_unique").on(table.projectKey, table.mediaIndex) }));
 
 export const portfolioProjectOverrides = mysqlTable("portfolio_project_overrides", {
   id: int("id").autoincrement().primaryKey(), projectKey: varchar("projectKey", { length: 191 }).notNull().unique(), title: text("title"), description: text("description"), year: varchar("year", { length: 32 }), thumbnail: text("thumbnail"), media: text("media"), mediaMetadata: text("mediaMetadata"), sourceUrl: text("sourceUrl"), hidden: int("hidden").default(0).notNull(), allowDownloads: int("allowDownloads").default(0).notNull(), updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
@@ -51,6 +55,7 @@ export type BehanceProject = typeof behanceProjects.$inferSelect;
 export type BehanceSyncJob = typeof behanceSyncJobs.$inferSelect;
 export type QuoteRequest = typeof quoteRequests.$inferSelect;
 export type TrafficEvent = typeof trafficEvents.$inferSelect;
+export type MediaDownload = typeof mediaDownloads.$inferSelect;
 export type PortfolioProjectOverride = typeof portfolioProjectOverrides.$inferSelect;
 export type AuditLog = typeof auditLogs.$inferSelect;
 export type NotificationTemplate = typeof notificationTemplates.$inferSelect;
