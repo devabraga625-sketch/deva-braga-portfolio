@@ -6,6 +6,7 @@ export default function NotFound() {
 
   return (
     <main className="not-found-page" aria-labelledby="not-found-title">
+      <div className="not-found-art" aria-hidden="true"><span className="not-found-orbit orbit-one" /><span className="not-found-orbit orbit-two" /><span className="not-found-spark spark-one" /><span className="not-found-spark spark-two" /></div>
       <div className="not-found-frame">
         <span className="eyebrow">Arquivo / 404</span>
         <p className="not-found-number" aria-hidden="true">404</p>

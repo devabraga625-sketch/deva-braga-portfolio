@@ -193,3 +193,17 @@ a { text-decoration: none; }
 .not-found-home:hover { background: var(--acid); color: var(--ink); transform: translateY(-2px); }
 .not-found-footer { position: absolute; z-index: 1; bottom: 28px; left: 8vw; color: rgba(232,228,220,.45); font: 10px 'DM Mono', monospace; letter-spacing: .04em; text-transform: uppercase; }
 @media (max-width: 700px) { .not-found-page { padding: 20vw 20px 24vw; place-items: start center; }.not-found-frame { margin-top: 18vh; }.not-found-number { margin-top: 10vh; font-size: 38vw; }.not-found-copy { font-size: 15px; }.not-found-footer { left: 20px; right: 20px; bottom: 24px; line-height: 1.4; } }
+
+.not-found-art { position: absolute; z-index: 0; top: 13vh; right: 9vw; width: min(32vw, 420px); aspect-ratio: 1; border: 1px solid rgba(232,228,220,.18); border-radius: 50%; transform: rotate(-18deg); opacity: .9; pointer-events: none; }
+.not-found-art:before, .not-found-art:after { content: ''; position: absolute; inset: 12%; border: 1px solid rgba(214,230,91,.35); border-radius: 50%; }
+.not-found-art:after { inset: 25%; border-color: rgba(232,228,220,.26); }
+.not-found-orbit { position: absolute; left: 50%; top: 50%; display: block; width: 100%; height: 1px; transform-origin: center; background: linear-gradient(90deg, transparent, rgba(214,230,91,.7), transparent); }
+.orbit-one { transform: translate(-50%, -50%) rotate(26deg); animation: orbit-drift 8s ease-in-out infinite alternate; }
+.orbit-two { transform: translate(-50%, -50%) rotate(-42deg); opacity: .65; animation: orbit-drift 11s ease-in-out -2s infinite alternate-reverse; }
+.not-found-spark { position: absolute; display: block; width: 8px; height: 8px; border-radius: 50%; background: var(--acid); box-shadow: 0 0 0 5px rgba(214,230,91,.1); }
+.spark-one { top: 17%; left: 21%; animation: spark-float 4.5s cubic-bezier(.23,1,.32,1) infinite alternate; }
+.spark-two { right: 16%; bottom: 22%; width: 5px; height: 5px; opacity: .7; animation: spark-float 5.5s cubic-bezier(.23,1,.32,1) -1s infinite alternate-reverse; }
+@keyframes orbit-drift { from { transform: translate(-50%, -50%) rotate(20deg) scaleX(.92); opacity: .45; } to { transform: translate(-50%, -50%) rotate(34deg) scaleX(1.04); opacity: .9; } }
+@keyframes spark-float { from { transform: translate3d(0, 0, 0); opacity: .5; } to { transform: translate3d(8px, -12px, 0); opacity: 1; } }
+@media (max-width: 700px) { .not-found-art { top: 8vh; right: -14vw; width: 64vw; opacity: .7; } }
+@media (prefers-reduced-motion: reduce) { .not-found-art *, .not-found-art:before, .not-found-art:after { animation: none !important; } }
