@@ -339,3 +339,50 @@ a { text-decoration: none; }
   .media-download-inline { transition: none; }
   .media-download { transition: none; }
 }
+
+/* Download controls: stable on narrow screens */
+.media-actions { flex-wrap: wrap; align-items: center; max-width: calc(100% - 24px); }
+.media-download-inline, .media-expand { min-height: 32px; touch-action: manipulation; }
+.media-download-count { padding: 4px 6px; background: rgba(17,17,15,.78); }
+.project-header-links { display: flex; align-items: center; justify-content: flex-end; gap: 18px; flex-wrap: wrap; }
+.quote-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; grid-column: 1 / -1; }
+.quote-actions button { width: auto; }
+.whatsapp-button { display: inline-flex !important; align-items: center; gap: 7px; width: fit-content !important; padding: 11px 15px; border: 1px solid #1f6d4d !important; background: #1f6d4d; color: #fff !important; font: 500 10px 'DM Mono', monospace !important; text-transform: uppercase; }
+.field-error { color: #9a2d22; font: 10px/1.3 'DM Mono', monospace; text-transform: none; }
+.quote-form input[aria-invalid="true"], .quote-form textarea[aria-invalid="true"] { border-color: #9a2d22; }
+.case-study-page { min-height: 100vh; background: var(--paper); color: var(--ink); }
+.case-study-header { padding: 6vw 10vw 8vw; background: var(--ink); color: var(--paper); }
+.case-study-back { display: inline-flex; align-items: center; gap: 7px; margin-bottom: 14vw; border: 0; background: transparent; color: var(--acid); font: 11px 'DM Mono', monospace; text-transform: uppercase; }
+.case-study-header h1 { max-width: 1000px; margin: 18px 0 24px; font: 500 clamp(3.6rem, 8vw, 9rem)/.86 'Playfair Display', serif; letter-spacing: -.07em; }
+.case-study-header p { max-width: 680px; color: rgba(232,228,220,.72); font: 17px/1.5 'DM Sans', sans-serif; }
+.case-study-header > a { display: inline-flex; align-items: center; gap: 8px; margin-top: 26px; color: var(--acid); font: 11px 'DM Mono', monospace; text-transform: uppercase; }
+.case-study-body { padding: 7vw 10vw 10vw; }
+.case-study-hero { margin: 0 0 7vw; background: #c3beb4; }
+.case-study-hero img { display: block; width: 100%; max-height: 72vh; object-fit: cover; }
+.case-study-sections article { display: grid; grid-template-columns: 120px minmax(0, 720px); gap: 30px; padding: 42px 0; border-top: 1px solid var(--line); }
+.case-study-sections h2 { margin: 0 0 16px; font: 500 clamp(2rem, 4vw, 4rem)/.95 'Playfair Display', serif; letter-spacing: -.05em; }
+.case-study-sections p { margin: 0; color: #5c5a54; font: 17px/1.6 'DM Sans', sans-serif; }
+.case-study-footer { display: flex; justify-content: space-between; gap: 20px; padding: 30px 10vw 50px; background: var(--acid); font: 11px 'DM Mono', monospace; text-transform: uppercase; }
+@media (max-width: 700px) {
+  .media-actions { left: 8px; bottom: 8px; gap: 5px; }
+  .media-download-inline, .media-expand { padding: 7px 8px; font-size: 9px; }
+  .media-download-count { font-size: 8px; }
+  .media-license { margin-left: 8px; max-width: calc(100% - 16px); line-height: 1.35; }
+  .project-header-links { justify-content: flex-start; gap: 10px 16px; margin-bottom: 10px; }
+  .quote-actions { align-items: stretch; flex-direction: column; }
+  .quote-actions button, .quote-actions .whatsapp-button { width: 100% !important; }
+  .case-study-header { padding: 22vw 20px 18vw; }
+  .case-study-back { margin-bottom: 20vw; }
+  .case-study-header h1 { font-size: 3.5rem; }
+  .case-study-header p { font-size: 15px; }
+  .case-study-body { padding: 8vw 20px 16vw; }
+  .case-study-sections article { display: block; padding: 30px 0; }
+  .case-study-sections .section-index { display: block; margin-bottom: 18px; }
+  .case-study-sections p { font-size: 15px; }
+  .case-study-footer { padding: 26px 20px 38px; flex-direction: column; }
+}
+@media (prefers-reduced-motion: reduce) { .media-download-inline:hover, .media-download-inline:focus-visible, .media-download:hover, .media-download:focus-visible { transform: none; } }
+
+.download-ranking-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+.download-ranking-actions select { max-width: 260px; border: 1px solid rgba(232,228,220,.3); background: var(--ink); color: var(--paper); padding: 8px 10px; font: 10px 'DM Mono', monospace; }
+@media (max-width: 700px) { .download-ranking-actions { justify-content: flex-start; width: 100%; }.download-ranking-actions select, .download-ranking-actions .csv-button { width: 100%; max-width: none; }.download-ranking-label { grid-template-columns: 26px minmax(0, 1fr) auto; gap: 7px; }.download-ranking-label strong { font-size: 13px; } }

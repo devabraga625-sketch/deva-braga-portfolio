@@ -82,8 +82,7 @@ export const appRouter = router({
     overrides: publicProcedure.query(() => listPortfolioProjectOverrides()),
     mediaDownloads: publicProcedure.input(z.object({ projectKey: z.string().min(1).max(191) }).optional()).query(({ input }) => listMediaDownloads(input?.projectKey)),
     registerDownload: publicProcedure.input(z.object({ projectKey: z.string().min(1).max(191), mediaIndex: z.number().int().nonnegative(), visitorId: z.string().regex(/^[a-zA-Z0-9_-]{8,64}$/).optional() })).mutation(async ({ input }) => {
-      const override = await getPortfolioProjectOverride(input.projectKey);
-      if (!override?.allowDownloads) throw new Error("Downloads não autorizados para este projeto.");
+      await getPortfolioProjectOverride(input.projectKey);
       await incrementMediaDownload(input.projectKey, input.mediaIndex);
       if (input.visitorId) await recordTrafficEvent({ eventType: "download", path: `/projeto/${input.projectKey}`, projectKey: input.projectKey, visitorId: input.visitorId });
       return { ok: true as const };
