@@ -13,6 +13,7 @@ import { handleEncryptedBackup } from "../backup-scheduled";
 import { ensureBackupJob, ensureBehanceSyncJob, ensureDefaultNotificationTemplates } from "../db";
 import { JOB_NAME } from "../behance-sync";
 import { applySecurityMiddleware } from "./security";
+import { registerMetaWebhook } from "../meta-webhook";
 
 const BACKUP_JOB_NAME = "encrypted-daily-backup";
 
@@ -42,11 +43,12 @@ async function startServer() {
   await ensureBehanceSyncJob(JOB_NAME).catch(error => console.warn("[Behance] Could not initialize sync job:", error));
   await ensureDefaultNotificationTemplates().catch(error => console.warn("[Notifications] Could not initialize templates:", error));
   await ensureBackupJob(BACKUP_JOB_NAME).catch(error => console.warn("[Backup] Could not initialize backup job:", error));
-  // Configure body parser with larger size limit for file uploads
-  app.use(express.json({ limit: "50mb" }));
+  // Preserve the raw body so Meta's X-Hub-Signature-256 can be verified.
+  app.use(express.json({ limit: "50mb", verify: (req, _res, buffer) => { (req as typeof req & { rawBody?: Buffer }).rawBody = Buffer.from(buffer); } }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
   registerStorageProxy(app);
   registerOAuthRoutes(app);
+  registerMetaWebhook(app);
   // tRPC API
   app.use(
     "/api/trpc",

@@ -29,7 +29,7 @@ async function recordDeliveryAttempts(quoteRequestId: number | undefined, attemp
   ];
   await Promise.all(channels.map(async ({ channel, result }) => {
     if (result.errorCode === "not_attempted") return;
-    await createNotificationAttempt({ quoteRequestId, channel, attemptType, status: result.ok ? "sent" : "failed", errorCode: result.errorCode, providerMessageId: result.providerMessageId });
+    await createNotificationAttempt({ quoteRequestId, channel, attemptType, status: result.ok ? "sent" : "failed", providerStatus: result.ok && channel === "whatsapp" ? "sent" : undefined, errorCode: result.errorCode, providerMessageId: result.providerMessageId });
     if (!result.ok && (channel === "email" || channel === "whatsapp")) {
       await createNotification({ eventKey: `quote_${channel}_failed`, title: `Falha no ${channel === "email" ? "email" : "WhatsApp"}`, message: `O envio do pedido${quoteRequestId ? ` #${quoteRequestId}` : ""} falhou no canal ${channel === "email" ? "Gmail SMTP" : "Meta WhatsApp"}. Reenvie manualmente pelo painel.`, severity: "urgent" });
     }

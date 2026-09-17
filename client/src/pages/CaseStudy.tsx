@@ -1,5 +1,6 @@
-import { ArrowLeft, ExternalLink } from "lucide-react";
+import { ArrowLeft, Check, Copy, ExternalLink, Facebook, Linkedin, MessageCircle, Share2 } from "lucide-react";
 import { Link, useRoute } from "wouter";
+import { useState } from "react";
 import { portfolioProjects } from "@/data/portfolio";
 import { trpc } from "@/lib/trpc";
 
@@ -15,6 +16,7 @@ function sectionCopy(categories: readonly string[]) {
 export default function CaseStudy() {
   const [, params] = useRoute<{ slug: string }>("/estudo-de-caso/:slug");
   const { data: syncedProjects = [] } = trpc.behance.projects.useQuery();
+  const [copied, setCopied] = useState(false);
   const localProject = portfolioProjects.find(item => item.slug === params?.slug);
   const remoteProject = syncedProjects.find(item => `behance-${item.projectKey}` === params?.slug);
   const project = localProject ?? (remoteProject ? { id: 1000, title: remoteProject.title, slug: `behance-${remoteProject.projectKey}`, year: remoteProject.publishedAt ? new Date(remoteProject.publishedAt).getFullYear().toString() : "Behance", publishedAt: remoteProject.publishedAt?.toISOString(), sourceUrl: remoteProject.sourceUrl, categories: ["Design"] as const, thumbnail: remoteProject.cover ?? "", description: remoteProject.description ?? "Projeto publicado no Behance.", media: [] as string[] } : undefined);
@@ -28,6 +30,18 @@ export default function CaseStudy() {
     { value: project.year, label: "Ano de publicação" },
     { value: clientMatch ? "01" : "—", label: clientMatch ? "Cliente identificado" : "Cliente não informado" },
   ];
+  const shareUrl = typeof window !== "undefined" ? window.location.href : `https://devabraga-59enyuvp.manus.space/estudo-de-caso/${project.slug}`;
+  const shareTitle = `${project.title} — Deva Braga`;
+  const shareOn = (network: "whatsapp" | "facebook" | "linkedin") => {
+    const encodedUrl = encodeURIComponent(shareUrl);
+    const encodedTitle = encodeURIComponent(shareTitle);
+    const urls = { whatsapp: `https://wa.me/?text=${encodedTitle}%20${encodedUrl}`, facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`, linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}` };
+    window.open(urls[network], "_blank", "noopener,noreferrer,width=620,height=520");
+  };
+  const copyShareLink = async () => {
+    try { await navigator.clipboard.writeText(shareUrl); setCopied(true); window.setTimeout(() => setCopied(false), 1800); } catch { window.prompt("Copie o link deste estudo de caso:", shareUrl); }
+  };
+  const nativeShare = async () => { if (navigator.share) await navigator.share({ title: shareTitle, text: project.description, url: shareUrl }); else await copyShareLink(); };
   return <main className="case-study-page">
     <header className="case-study-header">
       <button className="case-study-back" onClick={() => window.history.back()}><ArrowLeft size={15} /> Voltar</button>
@@ -35,6 +49,15 @@ export default function CaseStudy() {
       <h1>{project.title}</h1>
       <p>{project.description}</p>
       <a href={project.sourceUrl} target="_blank" rel="noreferrer">Ver projeto original <ExternalLink size={15} /></a>
+      <div className="case-study-share" aria-label="Compartilhar estudo de caso">
+        <span>Compartilhar</span>
+        <button type="button" onClick={() => shareOn("whatsapp")} aria-label="Compartilhar no WhatsApp" title="Compartilhar no WhatsApp"><MessageCircle size={15} /></button>
+        <button type="button" onClick={() => shareOn("facebook")} aria-label="Compartilhar no Facebook" title="Compartilhar no Facebook"><Facebook size={15} /></button>
+        <button type="button" onClick={() => shareOn("linkedin")} aria-label="Compartilhar no LinkedIn" title="Compartilhar no LinkedIn"><Linkedin size={15} /></button>
+        <button type="button" onClick={() => void nativeShare()} aria-label="Abrir opções nativas de compartilhamento" title="Mais opções"><Share2 size={15} /></button>
+        <button type="button" onClick={() => void copyShareLink()} aria-label={copied ? "Link copiado" : "Copiar link"} title={copied ? "Link copiado" : "Copiar link"}>{copied ? <Check size={15} /> : <Copy size={15} />}</button>
+        {copied && <small role="status">Link copiado</small>}
+      </div>
     </header>
     <section className="case-study-body">
       <figure className="case-study-hero"><img src={project.thumbnail} alt={project.title} loading="eager" decoding="async" /></figure>

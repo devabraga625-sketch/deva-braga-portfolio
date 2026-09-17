@@ -54,7 +54,7 @@ export const notificationProviderSettings = mysqlTable("notification_provider_se
 });
 
 export const notificationAttempts = mysqlTable("notification_attempts", {
-  id: int("id").autoincrement().primaryKey(), quoteRequestId: int("quoteRequestId"), channel: varchar("channel", { length: 32 }).notNull(), attemptType: varchar("attemptType", { length: 32 }).notNull(), status: varchar("status", { length: 32 }).notNull(), errorCode: varchar("errorCode", { length: 64 }), providerMessageId: varchar("providerMessageId", { length: 255 }), details: text("details"), createdAt: timestamp("createdAt").defaultNow().notNull(),
+  id: int("id").autoincrement().primaryKey(), quoteRequestId: int("quoteRequestId"), channel: varchar("channel", { length: 32 }).notNull(), attemptType: varchar("attemptType", { length: 32 }).notNull(), status: varchar("status", { length: 32 }).notNull(), providerStatus: varchar("providerStatus", { length: 32 }), errorCode: varchar("errorCode", { length: 64 }), providerMessageId: varchar("providerMessageId", { length: 255 }), details: text("details"), providerUpdatedAt: timestamp("providerUpdatedAt"), createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
 export const backupJobs = mysqlTable("backup_jobs", {

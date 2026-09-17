@@ -152,6 +152,7 @@ export default function Home() {
   const closeFullscreen = () => { if (!fullscreenOpen || fullscreenClosing) return; setFullscreenClosing(true); window.setTimeout(() => { setFullscreenOpen(false); setFullscreenClosing(false); }, 180); };
   const openProject = (project: PortfolioProject) => { setProjectClosing(false); setSelected(project); setMediaIndex(0); setFullscreenOpen(false); setFullscreenClosing(false); resetZoom(); };
   const closeProject = () => { if (!selected || projectClosing) return; setProjectClosing(true); window.setTimeout(() => { setSelected(null); setProjectClosing(false); }, 220); };
+  const changeProject = (direction: number) => { if (!selected || projectClosing || fullscreenOpen || filtered.length < 2) return; const index = filtered.findIndex(project => project.id === selected.id); if (index < 0) return; openProject(filtered[(index + direction + filtered.length) % filtered.length]); };
   const changeMedia = (direction: number) => { if (!selected) return; const total = mediaFor(selected).length; if (!total) return; setMediaIndex((mediaIndex + direction + total) % total); };
   const mediaMetadata = (project: PortfolioProject, index: number) => project.mediaMetadata?.[String(index)] ?? {};
   const downloadCount = (projectKey: string, index: number) => Number(downloadCounts.find(item => item.projectKey === projectKey && item.mediaIndex === index)?.downloads ?? 0);
@@ -178,13 +179,19 @@ export default function Home() {
   useEffect(() => {
     if (!selected) return;
     const onProjectKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== "Escape") return;
-      if (fullscreenOpen) closeFullscreen();
-      else closeProject();
+      if (event.key === "Escape") {
+        if (fullscreenOpen) closeFullscreen();
+        else closeProject();
+        return;
+      }
+      if (!fullscreenOpen && (event.key === "ArrowLeft" || event.key === "ArrowRight")) {
+        event.preventDefault();
+        changeProject(event.key === "ArrowRight" ? 1 : -1);
+      }
     };
     window.addEventListener("keydown", onProjectKeyDown);
     return () => window.removeEventListener("keydown", onProjectKeyDown);
-  }, [selected, fullscreenOpen, fullscreenClosing, projectClosing]);
+  }, [selected, fullscreenOpen, fullscreenClosing, projectClosing, filtered]);
 
   return (
     <main className={`site-shell${darkMode ? " dark-mode" : ""}`}>

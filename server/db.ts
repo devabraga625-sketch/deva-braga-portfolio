@@ -95,14 +95,20 @@ export async function getQuoteRequest(id: number) {
   return result[0];
 }
 
-export async function createNotificationAttempt(input: { quoteRequestId?: number; channel: string; attemptType: "automatic" | "manual_retry" | "test"; status: "sent" | "failed"; errorCode?: string; providerMessageId?: string; details?: string }) {
+export async function createNotificationAttempt(input: { quoteRequestId?: number; channel: string; attemptType: "automatic" | "manual_retry" | "test"; status: "sent" | "failed"; providerStatus?: string; errorCode?: string; providerMessageId?: string; details?: string; providerUpdatedAt?: Date }) {
   const db = await getDb(); if (!db) return;
-  await db.insert(notificationAttempts).values({ quoteRequestId: input.quoteRequestId ?? null, channel: input.channel, attemptType: input.attemptType, status: input.status, errorCode: input.errorCode ?? null, providerMessageId: input.providerMessageId ?? null, details: input.details ?? null });
+  await db.insert(notificationAttempts).values({ quoteRequestId: input.quoteRequestId ?? null, channel: input.channel, attemptType: input.attemptType, status: input.status, providerStatus: input.providerStatus ?? null, errorCode: input.errorCode ?? null, providerMessageId: input.providerMessageId ?? null, details: input.details ?? null, providerUpdatedAt: input.providerUpdatedAt ?? null });
 }
 
 export async function listNotificationAttempts() {
   const db = await getDb(); if (!db) return [];
   return db.select().from(notificationAttempts).orderBy(desc(notificationAttempts.createdAt)).limit(250);
+}
+
+export async function updateWhatsAppDeliveryStatus(input: { providerMessageId: string; providerStatus: string; errorCode?: string; details?: string; providerUpdatedAt?: Date }) {
+  const db = await getDb(); if (!db) return 0;
+  const result = await db.update(notificationAttempts).set({ providerStatus: input.providerStatus, errorCode: input.errorCode ?? null, details: input.details ?? null, providerUpdatedAt: input.providerUpdatedAt ?? new Date(), status: input.providerStatus === "failed" ? "failed" : "sent" }).where(eq(notificationAttempts.providerMessageId, input.providerMessageId));
+  return result[0]?.affectedRows ?? 0;
 }
 
 export async function listQuoteRequests() {

@@ -106,6 +106,13 @@
       "when": 1789654676651,
       "tag": "0014_bright_vermin",
       "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "5",
+      "when": 1789673366380,
+      "tag": "0015_bitter_blonde_phantom",
+      "breakpoints": true
     }
   ]
 }

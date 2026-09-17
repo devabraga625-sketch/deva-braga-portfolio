@@ -1,4 +1,4 @@
-import { AlertTriangle, CheckCircle2, Clock3, RotateCw, Send } from "lucide-react";
+import { AlertTriangle, CheckCheck, CheckCircle2, Clock3, RotateCw, Send } from "lucide-react";
 import { useMemo } from "react";
 import { trpc } from "@/lib/trpc";
 
@@ -10,6 +10,7 @@ type DeliveryItem = {
   channel: string;
   attemptType: string;
   status: string;
+  providerStatus: string | null;
   errorCode: string | null;
   providerMessageId: string | null;
   createdAt: Date | string;
@@ -21,6 +22,12 @@ function statusMeta(item: DeliveryItem) {
   }
   if (item.status === "pending") {
     return { label: "Pendente", detail: " · aguardando confirmação", className: "delivery-status-pill status-pending", icon: <Clock3 size={13} /> };
+  }
+  if (item.channel === "whatsapp" && item.providerStatus === "read") {
+    return { label: "Lido", detail: item.providerMessageId ? ` · ID ${item.providerMessageId.slice(0, 12)}` : "", className: "delivery-status-pill status-read", icon: <CheckCheck size={13} /> };
+  }
+  if (item.channel === "whatsapp" && item.providerStatus === "delivered") {
+    return { label: "Entregue", detail: item.providerMessageId ? ` · ID ${item.providerMessageId.slice(0, 12)}` : "", className: "delivery-status-pill status-delivered", icon: <CheckCheck size={13} /> };
   }
   return {
     label: item.channel === "whatsapp" ? "Enviado à Meta" : "Enviado",
@@ -42,7 +49,7 @@ export default function NotificationDeliveryHistory({ quotes }: { quotes: Quote[
     {recentFailures.length > 0 && <div className="provider-alert-banner" role="alert"><AlertTriangle size={17} /><div><strong>Falha de entrega detectada</strong><span>{recentFailures.length} tentativa{recentFailures.length === 1 ? "" : "s"} falhou{recentFailures.length === 1 ? "" : "ram"} nas últimas 24 horas. Os pedidos continuam salvos no painel.</span></div><a href="#notification-delivery-history">Revisar agora ↓</a></div>}
     <section className="panel-card notification-delivery-card" id="notification-delivery-history">
       <div className="panel-card-heading"><div><span className="eyebrow">Entrega de mensagens</span><span>Histórico por canal e reenvio manual</span></div><span>{rows.length} registros</span></div>
-      <div className="delivery-status-legend" aria-label="Legenda dos estados"><span><i className="status-dot dot-sent" /> Enviado</span><span><i className="status-dot dot-pending" /> Pendente</span><span><i className="status-dot dot-failed" /> Falhou</span></div>
+      <div className="delivery-status-legend" aria-label="Legenda dos estados"><span><i className="status-dot dot-sent" /> Enviado</span><span><i className="status-dot dot-delivered" /> Entregue</span><span><i className="status-dot dot-read" /> Lido</span><span><i className="status-dot dot-pending" /> Pendente</span><span><i className="status-dot dot-failed" /> Falhou</span></div>
       {retryableQuoteIds.length > 0 && <div className="retry-summary"><span><AlertTriangle size={14} /> {retryableQuoteIds.length} pedido{retryableQuoteIds.length === 1 ? "" : "s"} com falha pode{retryableQuoteIds.length === 1 ? "" : "m"} ser reenviado.</span><span>O reenvio tenta somente os canais que falharam.</span></div>}
       {rows.length === 0 ? <p className="empty-panel-state">Nenhuma tentativa registrada ainda.</p> : <div className="delivery-history-list">{rows.slice(0, 80).map(item => {
         const quote = item.quoteRequestId ? quoteNames.get(item.quoteRequestId) : undefined;
