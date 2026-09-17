@@ -54,6 +54,11 @@ function SpecialMedia({ item, alt, featured = false, onAssetError }: { item: { k
   return <img className="protected-media" draggable={false} onContextMenu={event => event.preventDefault()} onError={onAssetError} src={item.src} alt={alt} loading={featured ? "eager" : "lazy"} />;
 }
 
+function FullscreenContent({ item, alt }: { item: { kind: "image" | "youtube" | "embed"; src: string }; alt: string }) {
+  if (item.kind === "youtube" || item.kind === "embed") return <iframe className="fullscreen-embed" src={item.src} title={alt} allow="autoplay; fullscreen; picture-in-picture" allowFullScreen />;
+  return <img className="fullscreen-image protected-media" draggable={false} onContextMenu={event => event.preventDefault()} src={item.src} alt={alt} />;
+}
+
 function getVisitorId() {
   const key = "deva-portfolio-visitor";
   try {
@@ -113,6 +118,7 @@ export default function Home() {
   const [sortOrder, setSortOrder] = useState<"recent" | "oldest" | "accessed" | "alphabetical">("recent");
   const [selected, setSelected] = useState<PortfolioProject | null>(null);
   const [mediaIndex, setMediaIndex] = useState(0);
+  const [fullscreenOpen, setFullscreenOpen] = useState(false);
   const years = useMemo(() => Array.from(new Set(allProjects.map(project => project.year).filter(year => /^\d{4}$/.test(year)))).sort((a, b) => Number(b) - Number(a)), [allProjects]);
   const accessMap = useMemo(() => new Map(accessCounts.map(item => [item.projectKey ?? "", Number(item.accesses)])), [accessCounts]);
   const lastBehanceSync = useMemo(() => syncedProjects.reduce<Date | null>((latest, project) => {
@@ -132,8 +138,19 @@ export default function Home() {
   const filterSignature = `${filter}-${yearFilter}-${mediaFilter}-${sortOrder}-${searchQuery}`;
   const toggleTheme = () => { const next = !darkMode; setDarkMode(next); try { window.localStorage.setItem("deva-theme", next ? "dark" : "light"); } catch {} };
   
-  const openProject = (project: PortfolioProject) => { setSelected(project); setMediaIndex(0); };
+  const openProject = (project: PortfolioProject) => { setSelected(project); setMediaIndex(0); setFullscreenOpen(false); };
   const changeMedia = (direction: number) => { if (!selected) return; const total = mediaFor(selected).length; if (!total) return; setMediaIndex((mediaIndex + direction + total) % total); };
+  useEffect(() => {
+    if (!fullscreenOpen) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setFullscreenOpen(false);
+      if (event.key === "ArrowLeft") changeMedia(-1);
+      if (event.key === "ArrowRight") changeMedia(1);
+    };
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", onKeyDown);
+    return () => { document.body.style.overflow = ""; window.removeEventListener("keydown", onKeyDown); };
+  }, [fullscreenOpen, selected, mediaIndex]);
 
   return (
     <main className={`site-shell${darkMode ? " dark-mode" : ""}`}>
@@ -164,7 +181,7 @@ export default function Home() {
 
       <div className={`menu-panel ${menuOpen ? "open" : ""}`} aria-hidden={!menuOpen}><button className="close-menu" onClick={() => setMenuOpen(false)} aria-label="Fechar menu"><X /></button><div className="menu-inner"><p className="eyebrow">Navegação</p><nav><a href="#top" onClick={() => setMenuOpen(false)}>Início <span>01</span></a><a href="#trabalhos" onClick={() => setMenuOpen(false)}>Trabalhos <span>02</span></a><a href="#sobre" onClick={() => setMenuOpen(false)}>Sobre <span>03</span></a><a href="#contato" onClick={() => setMenuOpen(false)}>Contato <span>04</span></a></nav><p className="menu-note">Fotografia, design gráfico e edição<br />a partir de Salvador.</p></div></div>
 
-      {selected && <div className="project-view" role="dialog" aria-modal="true" aria-label={selected.title}><button className="project-close" onClick={() => setSelected(null)} aria-label="Fechar projeto"><X /></button><div className="project-header"><div><span className="quick-view-label">Visualização rápida</span><span className="eyebrow">{String(selected.id).padStart(2, "0")} / {selected.year} / {categoryFor(selected)}</span><h2>{selected.title}</h2><p className="project-description">{selected.description}</p></div><a href={selected.sourceUrl} target="_blank" rel="noreferrer">Ver página original <ExternalLink size={15} /></a></div><div className="project-media-grid">{mediaFor(selected).map((item, i) => <figure key={`${item.src}-${i}`} className={i === 0 ? "project-media-feature" : ""}><SpecialMedia item={item} alt={`${selected.title} — mídia ${i + 1}`} featured={i === 0} onAssetError={() => reportAssetError(selected.slug)} /><figcaption>{String(i + 1).padStart(2, "0")} / {mediaFor(selected).length}</figcaption></figure>)}</div>{mediaFor(selected).length === 0 && <div className="project-media-empty"><p>Este projeto está publicado no Behance.</p><a href={selected.sourceUrl} target="_blank" rel="noreferrer">Abrir projeto no Behance <ExternalLink size={15} /></a></div>}{mediaFor(selected).length > 0 && <div className="project-controls"><button onClick={() => changeMedia(-1)} aria-label="Mídia anterior"><ChevronLeft /></button><span>{mediaIndex + 1} / {mediaFor(selected).length}</span><button onClick={() => changeMedia(1)} aria-label="Próxima mídia"><ChevronRight /></button></div>}</div>}
+      {selected && <div className="project-view" role="dialog" aria-modal="true" aria-label={selected.title}><button className="project-close" onClick={() => setSelected(null)} aria-label="Fechar projeto"><X /></button><div className="project-header"><div><span className="quick-view-label">Visualização rápida</span><span className="eyebrow">{String(selected.id).padStart(2, "0")} / {selected.year} / {categoryFor(selected)}</span><h2>{selected.title}</h2><p className="project-description">{selected.description}</p></div><a href={selected.sourceUrl} target="_blank" rel="noreferrer">Ver página original <ExternalLink size={15} /></a></div><div className="project-media-grid">{mediaFor(selected).map((item, i) => <figure key={`${item.src}-${i}`} className={i === 0 ? "project-media-feature" : ""}><SpecialMedia item={item} alt={`${selected.title} — mídia ${i + 1}`} featured={i === 0} onAssetError={() => reportAssetError(selected.slug)} /><button className="media-expand" onClick={() => { setMediaIndex(i); setFullscreenOpen(true); }} aria-label={`Ampliar mídia ${i + 1} de ${mediaFor(selected).length}`}>Tela cheia ↗</button><figcaption>{String(i + 1).padStart(2, "0")} / {mediaFor(selected).length}</figcaption></figure>)}</div>{mediaFor(selected).length === 0 && <div className="project-media-empty"><p>Este projeto está publicado no Behance.</p><a href={selected.sourceUrl} target="_blank" rel="noreferrer">Abrir projeto no Behance <ExternalLink size={15} /></a></div>}{mediaFor(selected).length > 0 && <div className="project-controls"><button onClick={() => changeMedia(-1)} aria-label="Mídia anterior"><ChevronLeft /></button><span>{mediaIndex + 1} / {mediaFor(selected).length}</span><button onClick={() => changeMedia(1)} aria-label="Próxima mídia"><ChevronRight /></button></div>}{fullscreenOpen && mediaFor(selected)[mediaIndex] && <div className="fullscreen-view" role="dialog" aria-modal="true" aria-label={`Tela cheia: ${selected.title}`} onClick={() => setFullscreenOpen(false)}><button className="fullscreen-close" onClick={() => setFullscreenOpen(false)} aria-label="Fechar tela cheia"><X /></button><button className="fullscreen-nav fullscreen-prev" onClick={event => { event.stopPropagation(); changeMedia(-1); }} aria-label="Mídia anterior"><ChevronLeft /></button><div className="fullscreen-content" onClick={event => event.stopPropagation()}><FullscreenContent item={mediaFor(selected)[mediaIndex]} alt={`${selected.title} — mídia ${mediaIndex + 1}`} /><span>{String(mediaIndex + 1).padStart(2, "0")} / {mediaFor(selected).length} · Use as setas para navegar</span></div><button className="fullscreen-nav fullscreen-next" onClick={event => { event.stopPropagation(); changeMedia(1); }} aria-label="Próxima mídia"><ChevronRight /></button></div>}</div>}
       {!cookieChoice && <aside className="cookie-banner" role="dialog" aria-label="Aviso de cookies"><p>Este site utiliza cookies para melhorar a navegação. <a href="/politica-de-privacidade">Política de privacidade</a></p><div><button onClick={() => { saveCookieChoice("accepted"); setCookieChoice("accepted"); }}>Aceitar</button><button className="cookie-reject" onClick={() => { saveCookieChoice("rejected"); setCookieChoice("rejected"); }}>Recusar</button></div></aside>}
     </main>
   );
