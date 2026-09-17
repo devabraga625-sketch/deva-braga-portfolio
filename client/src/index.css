@@ -217,3 +217,22 @@ a { text-decoration: none; }
 .not-found-links a:hover, .not-found-links a:focus-visible { color: var(--acid); border-color: var(--acid); }
 @media (max-width: 700px) { .not-found-links { gap: 14px; margin-top: 28px; }.not-found-links span { width: 100%; } }
 @media (prefers-reduced-motion: reduce) { .not-found-page { transition: none; }.not-found-page.is-leaving { opacity: 1; transform: none; }.not-found-links a { transition: none; } }
+
+.not-found-page.not-found-light { background: var(--paper); color: var(--ink); }
+.not-found-light:before { background: radial-gradient(circle, rgba(133,130,122,.2), transparent 68%); }
+.not-found-light:after { opacity: .06; mix-blend-mode: multiply; }
+.not-found-light .not-found-number { color: rgba(17,17,15,.12); }
+.not-found-light .not-found-page h1, .not-found-light h1 { color: var(--ink); }
+.not-found-light .not-found-copy { color: rgba(17,17,15,.62); }
+.not-found-light .not-found-home { border-color: rgba(17,17,15,.4); color: var(--ink); }
+.not-found-light .not-found-home:hover { background: var(--ink); color: var(--paper); }
+.not-found-light .not-found-links { color: rgba(17,17,15,.55); }
+.not-found-light .not-found-links a { color: var(--ink); border-color: rgba(17,17,15,.3); }
+.not-found-light .not-found-links a:hover, .not-found-light .not-found-links a:focus-visible { color: #657000; border-color: #657000; }
+.not-found-light .not-found-footer { color: rgba(17,17,15,.48); }
+.not-found-back { display: inline-flex; align-items: center; gap: 7px; margin-left: 14px; border: 0; background: transparent; color: rgba(232,228,220,.58); padding: 13px 4px; font: 500 10px 'DM Mono', monospace; letter-spacing: .04em; text-transform: uppercase; transition: color .18s ease-out; }
+.not-found-back:hover, .not-found-back:focus-visible { color: var(--acid); }
+.not-found-light .not-found-back { color: rgba(17,17,15,.58); }
+.not-found-light .not-found-back:hover, .not-found-light .not-found-back:focus-visible { color: #657000; }
+@media (max-width: 700px) { .not-found-back { margin: 8px 0 0; padding-left: 0; display: flex; } }
+@media (prefers-reduced-motion: reduce) { .not-found-back { transition: none; } }
