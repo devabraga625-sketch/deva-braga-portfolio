@@ -66,7 +66,13 @@ a { text-decoration: none; }
 .media-expand { position: absolute; left: 12px; bottom: 9px; border: 1px solid rgba(232,228,220,.45); background: rgba(17,17,15,.72); color: var(--paper); padding: 6px 8px; opacity: 0; transform: translateY(5px); transition: opacity .18s cubic-bezier(.23,1,.32,1), transform .18s cubic-bezier(.23,1,.32,1); font: 10px 'DM Mono', monospace; text-transform: uppercase; }
 .project-media-grid figure:hover .media-expand, .media-expand:focus-visible { opacity: 1; transform: translateY(0); }
 .fullscreen-view { position: fixed; z-index: 60; inset: 0; display: grid; place-items: center; padding: 6vh 8vw; background: rgba(8,8,7,.97); color: var(--paper); animation: fullscreen-in .2s cubic-bezier(.23,1,.32,1) both; }
-.fullscreen-content { display: grid; justify-items: center; gap: 14px; width: min(90vw, 1400px); height: min(86vh, 900px); }
+.fullscreen-content { display: grid; justify-items: center; gap: 14px; width: min(90vw, 1400px); height: min(86vh, 900px); touch-action: none; }
+.fullscreen-visual { display: grid; place-items: center; width: 100%; height: 100%; transform-origin: center; transition: transform .12s cubic-bezier(.23,1,.32,1); cursor: grab; }
+.fullscreen-visual:active { cursor: grabbing; }
+.fullscreen-details { display: grid; justify-items: center; gap: 5px; text-align: center; }
+.fullscreen-details strong { font: 500 1.1rem 'Playfair Display', serif; }
+.fullscreen-details span, .fullscreen-details small { color: rgba(232,228,220,.65); font: 10px 'DM Mono', monospace; text-transform: uppercase; }
+.media-download { margin-top: 5px; border: 1px solid var(--acid); background: transparent; color: var(--acid); padding: 6px 9px; font: 10px 'DM Mono', monospace; text-transform: uppercase; }
 .fullscreen-image, .fullscreen-embed { width: 100%; height: 100%; object-fit: contain; border: 0; background: #11110f; }
 .fullscreen-embed { min-height: 70vh; }
 .fullscreen-content > span { color: rgba(232,228,220,.65); font: 10px 'DM Mono', monospace; text-transform: uppercase; }

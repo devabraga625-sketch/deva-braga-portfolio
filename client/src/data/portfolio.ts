@@ -1,5 +1,6 @@
 export type WorkCategory = "Fotografia" | "Design" | "Edição";
-export type PortfolioProject = { id:number; title:string; slug:string; year:string; publishedAt?: string; sourceUrl:string; categories:WorkCategory[]; thumbnail:string; description:string; media:string[]; };
+export type MediaMetadata = { caption?: string; alt?: string; credit?: string };
+export type PortfolioProject = { id:number; title:string; slug:string; year:string; publishedAt?: string; sourceUrl:string; categories:WorkCategory[]; thumbnail:string; description:string; media:string[]; mediaMetadata?: Record<string, MediaMetadata>; allowDownloads?: boolean; };
 
 export const portfolioProjects: PortfolioProject[] = [
   { id: 0, title: "Festival Gastronômico da Feira de São Joaquim", slug: "festival-gastronomico-da-feira-de-sao-joaquim", year: "2026", sourceUrl: "https://devabraga.myportfolio.com/festival-gastronomico-da-feira-de-sao-joaquim", categories: ["Fotografia", "Edição"], thumbnail: "https://cdn.myportfolio.com/6c489dbe-0602-4931-a87d-9c7195c565f3/27086fe5-4777-46ac-a9de-9383241c262e_car_1x1.jpg?h=55065a94eacd1513acb4be010879b171&url=aHR0cHM6Ly9taXItczMtY2RuLWNmLmJlaGFuY2UubmV0L3Byb2plY3RzL29yaWdpbmFsLzY4ODk1MTI1NTc3MjY1Ny5ZM0p2Y0N3MU1URXpMRFF3TURBc05qZ3pMREEuanBn", description: "Fotografias capturadas no Festival Gastronômico da Feira de São Joaquim.", media: [
