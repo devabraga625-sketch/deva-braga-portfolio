@@ -170,3 +170,10 @@ a { text-decoration: none; }
 
 .statement { grid-template-columns: minmax(42px, 1fr) minmax(0, 1.35fr) minmax(260px, .85fr); align-items: center; }.statement-copy { min-width: 0; }.statement-portrait { position: relative; justify-self: end; width: min(100%, 390px); margin: 0; }.statement-portrait img { display: block; width: 100%; aspect-ratio: 1; object-fit: contain; }.statement-portrait figcaption { margin-top: 10px; color: rgba(232,228,220,.5); font: 10px 'DM Mono', monospace; letter-spacing: .04em; text-transform: uppercase; }
 @media (max-width: 700px) { .statement { display: grid; grid-template-columns: 1fr; gap: 0; padding: 22vw 20px 26vw; }.statement .section-index { order: 1; }.statement-copy { order: 2; }.statement-portrait { order: 3; width: min(100%, 360px); justify-self: center; margin-top: 48px; }.statement h2 { margin-top: 60px; margin-bottom: 32px; } }
+
+/* Refined About portrait placement */
+.statement { margin-top: 0; }
+.statement-portrait { transform: translateY(-18px); }
+.statement-portrait img { height: 338px; padding-bottom: 0; margin: 0; }
+.statement-portrait figcaption { padding-left: 45px; margin-top: 10px; }
+@media (max-width: 700px) { .statement-portrait { transform: none; }.statement-portrait img { height: auto; }.statement-portrait figcaption { padding-left: 0; } }
