@@ -72,6 +72,17 @@ a { text-decoration: none; }
 .media-download-count { align-self: center; color: rgba(232,228,220,.82); font: 9px 'DM Mono', monospace; text-transform: uppercase; white-space: nowrap; }
 .media-license { display: block; margin: 7px 0 0 12px; color: rgba(232,228,220,.58); font: 9px 'DM Mono', monospace; letter-spacing: .02em; text-transform: uppercase; }
 @keyframes download-arrow { from { opacity: 0; transform: translateY(-3px); } to { opacity: 1; transform: translateY(0); } }
+.download-ranking { display: grid; gap: 18px; margin: 0; padding: 8px 0 0; list-style: none; }
+.download-ranking li { display: grid; gap: 8px; }
+.download-ranking-label { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; align-items: center; gap: 12px; }
+.download-ranking-label > div { display: grid; gap: 4px; min-width: 0; }
+.download-ranking-label strong { overflow: hidden; color: var(--paper); font: 500 15px 'Playfair Display', serif; text-overflow: ellipsis; white-space: nowrap; }
+.download-ranking-label span { color: rgba(232,228,220,.55); font: 9px 'DM Mono', monospace; text-transform: uppercase; }
+.download-ranking-label b { color: var(--acid); font: 500 12px 'DM Mono', monospace; }
+.download-rank-number { color: rgba(232,228,220,.4); font: 11px 'DM Mono', monospace; }
+.download-ranking-track { height: 4px; overflow: hidden; background: rgba(232,228,220,.14); }
+.download-ranking-track i { display: block; height: 100%; background: var(--acid); transform-origin: left; animation: ranking-bar-in .45s cubic-bezier(.23,1,.32,1) both; }
+@keyframes ranking-bar-in { from { opacity: .3; transform: scaleX(.2); } to { opacity: 1; transform: scaleX(1); } }
 .project-media-grid figure:hover .media-expand, .media-expand:focus-visible { opacity: 1; transform: translateY(0); }
 .fullscreen-view { position: fixed; z-index: 60; inset: 0; display: grid; place-items: center; padding: 6vh 8vw; background: rgba(8,8,7,.97); color: var(--paper); animation: fullscreen-in .2s cubic-bezier(.23,1,.32,1) both; }
 .fullscreen-content { display: grid; justify-items: center; gap: 14px; width: min(90vw, 1400px); height: min(86vh, 900px); touch-action: none; }
@@ -309,6 +320,8 @@ a { text-decoration: none; }
   .media-download-inline { padding: 6px 7px; font-size: 8px; }
   .media-download-count { font-size: 8px; }
   .media-license { margin-left: 8px; margin-right: 8px; font-size: 8px; line-height: 1.35; }
+  .download-ranking-label { grid-template-columns: 26px minmax(0, 1fr) auto; gap: 8px; }
+  .download-ranking-label strong { font-size: 13px; }
   .fullscreen-view { padding: 10vh 12px 8vh; }
   .fullscreen-content { width: 100%; height: min(78vh, 720px); }
   .fullscreen-embed { min-height: 62vh; }

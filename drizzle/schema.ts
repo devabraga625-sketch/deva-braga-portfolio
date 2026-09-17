@@ -30,7 +30,7 @@ export const mediaDownloads = mysqlTable("media_downloads", {
 }, table => ({ projectMediaUnique: uniqueIndex("media_downloads_project_media_unique").on(table.projectKey, table.mediaIndex) }));
 
 export const portfolioProjectOverrides = mysqlTable("portfolio_project_overrides", {
-  id: int("id").autoincrement().primaryKey(), projectKey: varchar("projectKey", { length: 191 }).notNull().unique(), title: text("title"), description: text("description"), year: varchar("year", { length: 32 }), thumbnail: text("thumbnail"), media: text("media"), mediaMetadata: text("mediaMetadata"), sourceUrl: text("sourceUrl"), hidden: int("hidden").default(0).notNull(), allowDownloads: int("allowDownloads").default(0).notNull(), updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  id: int("id").autoincrement().primaryKey(), projectKey: varchar("projectKey", { length: 191 }).notNull().unique(), title: text("title"), description: text("description"), year: varchar("year", { length: 32 }), thumbnail: text("thumbnail"), media: text("media"), mediaMetadata: text("mediaMetadata"), license: varchar("license", { length: 500 }), sourceUrl: text("sourceUrl"), hidden: int("hidden").default(0).notNull(), allowDownloads: int("allowDownloads").default(0).notNull(), updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
 
 export const auditLogs = mysqlTable("audit_logs", {

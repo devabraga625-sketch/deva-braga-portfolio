@@ -1,0 +1,1 @@
+ALTER TABLE `portfolio_project_overrides` ADD `license` varchar(500);
