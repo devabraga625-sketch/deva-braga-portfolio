@@ -54,6 +54,7 @@ describe("responsive UI contracts", () => {
   it("keeps back-to-top actions available inside work surfaces and case studies", () => {
     expect(home).toContain('className="project-back-to-top"');
     expect(home).toContain('aria-label="Voltar ao topo do trabalho"');
+    expect(home).toContain("<span>Voltar ao topo</span>");
     expect(home).toContain('closest<HTMLElement>(".project-view")');
     expect(caseStudy).toContain('className="back-to-top case-study-back-to-top"');
     expect(caseStudy).toContain('aria-label="Voltar ao topo do estudo de caso"');
@@ -96,7 +97,7 @@ describe("responsive UI contracts", () => {
     expect(caseStudy).toContain('className="testimonial-read-more"');
     expect(caseStudy).toContain('className="testimonial-modal"');
     expect(caseStudy).toContain('aria-label="Fechar depoimento"');
-    expect(cssHas(".project-view > .project-back-to-top { position: sticky")).toBe(true);
+    expect(cssHas(".project-view > .project-back-to-top { position: fixed")).toBe(true);
     expect(cssHas(".testimonial-modal-card")).toBe(true);
   });
 });

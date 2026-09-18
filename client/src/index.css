@@ -634,3 +634,9 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 @keyframes testimonial-modal-in { from { opacity: 0; } to { opacity: 1; } }
 @media (max-width: 600px) { .project-view > .project-back-to-top { top: 12px; margin-bottom: -44px; }.testimonial-modal { padding: 14px; }.testimonial-modal-card { padding: 28px 20px 24px; } }
 @media (prefers-reduced-motion: reduce) { .testimonial-modal { animation: none; }.testimonial-read-more, .testimonial-modal-close { transition: none; }.testimonial-modal-close:hover, .testimonial-modal-close:focus-visible { transform: none; } }
+
+/* Final work-surface control layout: bottom-right, centered contents, safe margins, theme-aware. */
+.project-view > .project-back-to-top { position: fixed; top: auto; right: max(20px, env(safe-area-inset-right)); bottom: max(20px, env(safe-area-inset-bottom)); float: none; display: inline-flex; align-items: center; justify-content: center; margin: 0; min-width: 150px; min-height: 44px; padding: 11px 16px; gap: 8px; background: var(--ink); color: var(--acid); text-align: center; box-shadow: 0 12px 32px rgba(0,0,0,.32); }
+.project-view > .project-back-to-top:hover, .project-view > .project-back-to-top:focus-visible { background: var(--acid); color: var(--ink); }
+.project-view > .project-close { z-index: 13; }
+@media (max-width: 700px) { .project-view > .project-back-to-top { right: max(16px, env(safe-area-inset-right)); bottom: max(16px, env(safe-area-inset-bottom)); min-width: 142px; padding-inline: 13px; } }
