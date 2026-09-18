@@ -64,4 +64,12 @@ describe("responsive UI contracts", () => {
     expect(cssHas(".topbar { color: #fff" )).toBe(true);
     expect(cssHas("mix-blend-mode: normal")).toBe(true);
   });
+
+  it("keeps normal header weight and restrained hover feedback", () => {
+    expect(cssHas(".topbar-center, .menu-trigger { font-weight: 500; }")).toBe(true);
+    expect(cssHas(".wordmark { font-weight: 500; }")).toBe(true);
+    expect(cssHas(".theme-toggle:hover, .theme-toggle:focus-visible")).toBe(true);
+    expect(cssHas(".menu-trigger:hover .menu-lines i:first-child")).toBe(true);
+    expect(cssHas(".statement-portrait figcaption:hover")).toBe(true);
+  });
 });
