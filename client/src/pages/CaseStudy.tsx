@@ -51,11 +51,11 @@ export default function CaseStudy() {
       <a href={project.sourceUrl} target="_blank" rel="noreferrer">Ver projeto original <ExternalLink size={15} /></a>
       <div className="case-study-share" aria-label="Compartilhar estudo de caso">
         <span>Compartilhar</span>
-        <button type="button" onClick={() => shareOn("whatsapp")} aria-label="Compartilhar no WhatsApp" title="Compartilhar no WhatsApp"><MessageCircle size={15} /></button>
-        <button type="button" onClick={() => shareOn("facebook")} aria-label="Compartilhar no Facebook" title="Compartilhar no Facebook"><Facebook size={15} /></button>
-        <button type="button" onClick={() => shareOn("linkedin")} aria-label="Compartilhar no LinkedIn" title="Compartilhar no LinkedIn"><Linkedin size={15} /></button>
-        <button type="button" onClick={() => void nativeShare()} aria-label="Abrir opções nativas de compartilhamento" title="Mais opções"><Share2 size={15} /></button>
-        <button type="button" onClick={() => void copyShareLink()} aria-label={copied ? "Link copiado" : "Copiar link"} title={copied ? "Link copiado" : "Copiar link"}>{copied ? <Check size={15} /> : <Copy size={15} />}</button>
+        <button type="button" data-tooltip="WhatsApp" onClick={() => shareOn("whatsapp")} aria-label="Compartilhar no WhatsApp" title="Compartilhar no WhatsApp"><MessageCircle size={15} /></button>
+        <button type="button" data-tooltip="Facebook" onClick={() => shareOn("facebook")} aria-label="Compartilhar no Facebook" title="Compartilhar no Facebook"><Facebook size={15} /></button>
+        <button type="button" data-tooltip="LinkedIn" onClick={() => shareOn("linkedin")} aria-label="Compartilhar no LinkedIn" title="Compartilhar no LinkedIn"><Linkedin size={15} /></button>
+        <button type="button" data-tooltip="Mais opções" onClick={() => void nativeShare()} aria-label="Abrir opções nativas de compartilhamento" title="Mais opções"><Share2 size={15} /></button>
+        <button type="button" data-tooltip={copied ? "Link copiado" : "Copiar link"} onClick={() => void copyShareLink()} aria-label={copied ? "Link copiado" : "Copiar link"} title={copied ? "Link copiado" : "Copiar link"}>{copied ? <Check size={15} /> : <Copy size={15} />}</button>
         {copied && <small role="status">Link copiado</small>}
       </div>
     </header>
