@@ -558,3 +558,12 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 @keyframes back-to-top-in { from { opacity: 0; transform: translateY(8px) scale(.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
 @media (max-width: 480px) { .back-to-top { right: 14px; bottom: 14px; padding: 10px; } .back-to-top span { display: none; } }
 @media (prefers-reduced-motion: reduce) { .back-to-top { animation: none; transition: none; } .back-to-top:hover, .back-to-top:focus-visible { transform: none; } }
+
+/* Lazy gallery media: reserve the card geometry and reveal each thumbnail without a flash. */
+.catalog-image { isolation: isolate; }
+.catalog-image > .image-skeleton { position: absolute; inset: 0; z-index: 0; display: block; background: linear-gradient(105deg, rgba(255,255,255,.08) 18%, rgba(255,255,255,.28) 36%, rgba(255,255,255,.08) 54%); background-size: 220% 100%; animation: image-skeleton-shimmer 1.15s linear infinite; }
+.catalog-image > img { position: relative; z-index: 1; opacity: 0; transition: opacity .32s cubic-bezier(.23,1,.32,1), transform .7s cubic-bezier(.23,1,.32,1), filter .5s; }
+.catalog-image > img.is-loaded { opacity: 1; }
+.catalog-image > .card-shade, .catalog-image > .card-arrow { z-index: 2; }
+@keyframes image-skeleton-shimmer { from { background-position: 180% 0; } to { background-position: -40% 0; } }
+@media (prefers-reduced-motion: reduce) { .catalog-image > .image-skeleton { animation: none; } .catalog-image > img { transition: none; } }

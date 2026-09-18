@@ -40,7 +40,9 @@ describe("responsive UI contracts", () => {
   });
 
   it("keeps gallery images lazy and exposes a reduced-motion back-to-top control", () => {
-    expect(home).toContain('src={project.thumbnail} alt={project.title} loading="lazy" decoding="async"');
+    expect(home).toContain("function CatalogImage");
+    expect(home).toContain('src={src} alt={alt} loading="lazy" decoding="async"');
+    expect(home).toContain('className="image-skeleton"');
     expect(home).toContain('className="back-to-top"');
     expect(home).toContain('aria-label="Voltar ao topo"');
     expect(home).toContain('prefers-reduced-motion: reduce');
