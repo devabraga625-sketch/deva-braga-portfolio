@@ -550,3 +550,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   .case-study-header > .eyebrow { margin-left: 6px; }
   .case-study-back { margin-bottom: 17vh; }
 }
+
+/* Floating return control: compact on desktop, thumb-friendly on mobile. */
+.back-to-top { position: fixed; right: clamp(16px, 3vw, 34px); bottom: clamp(18px, 3vw, 34px); z-index: 35; display: inline-flex; align-items: center; gap: 7px; min-width: 44px; min-height: 44px; padding: 10px 13px; border: 1px solid var(--acid); border-radius: 999px; background: var(--ink); color: var(--acid); box-shadow: 0 12px 30px rgba(0,0,0,.18); font: 10px 'DM Mono', monospace; text-transform: uppercase; animation: back-to-top-in .2s cubic-bezier(.23,1,.32,1) both; transition: transform .18s cubic-bezier(.23,1,.32,1), background-color .18s cubic-bezier(.23,1,.32,1), color .18s cubic-bezier(.23,1,.32,1); }
+.back-to-top:hover, .back-to-top:focus-visible { transform: translateY(-3px); background: var(--acid); color: var(--ink); }
+.back-to-top:active { transform: translateY(-1px) scale(.97); }
+@keyframes back-to-top-in { from { opacity: 0; transform: translateY(8px) scale(.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@media (max-width: 480px) { .back-to-top { right: 14px; bottom: 14px; padding: 10px; } .back-to-top span { display: none; } }
+@media (prefers-reduced-motion: reduce) { .back-to-top { animation: none; transition: none; } .back-to-top:hover, .back-to-top:focus-visible { transform: none; } }

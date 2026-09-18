@@ -38,4 +38,13 @@ describe("responsive UI contracts", () => {
     expect(caseStudy).toContain('data-tooltip="WhatsApp"');
     expect(caseStudy).toContain('aria-label={copied ? "Link copiado" : "Copiar link"}');
   });
+
+  it("keeps gallery images lazy and exposes a reduced-motion back-to-top control", () => {
+    expect(home).toContain('src={project.thumbnail} alt={project.title} loading="lazy" decoding="async"');
+    expect(home).toContain('className="back-to-top"');
+    expect(home).toContain('aria-label="Voltar ao topo"');
+    expect(home).toContain('prefers-reduced-motion: reduce');
+    expect(cssHas(".back-to-top:hover, .back-to-top:focus-visible")).toBe(true);
+    expect(cssHas("@keyframes back-to-top-in")).toBe(true);
+  });
 });
