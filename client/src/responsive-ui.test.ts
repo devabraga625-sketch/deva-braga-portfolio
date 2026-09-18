@@ -55,7 +55,8 @@ describe("responsive UI contracts", () => {
     expect(home).toContain('className="project-back-to-top"');
     expect(home).toContain('aria-label="Voltar ao topo do trabalho"');
     expect(home).toContain("<span>Voltar ao topo</span>");
-    expect(home).toContain('closest<HTMLElement>(".project-view")');
+    expect(home).toContain("projectViewRef");
+    expect(home).toContain("surface.scrollTo({ top: 0, left: 0");
     expect(caseStudy).toContain('className="back-to-top case-study-back-to-top"');
     expect(caseStudy).toContain('aria-label="Voltar ao topo do estudo de caso"');
   });
