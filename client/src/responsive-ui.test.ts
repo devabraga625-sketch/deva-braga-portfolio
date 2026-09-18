@@ -49,4 +49,19 @@ describe("responsive UI contracts", () => {
     expect(cssHas(".back-to-top:hover, .back-to-top:focus-visible")).toBe(true);
     expect(cssHas("@keyframes back-to-top-in")).toBe(true);
   });
+
+  it("keeps back-to-top actions available inside work surfaces and case studies", () => {
+    expect(home).toContain('className="project-back-to-top"');
+    expect(home).toContain('aria-label="Voltar ao topo do trabalho"');
+    expect(home).toContain('closest<HTMLElement>(".project-view")');
+    expect(caseStudy).toContain('className="back-to-top case-study-back-to-top"');
+    expect(caseStudy).toContain('aria-label="Voltar ao topo do estudo de caso"');
+  });
+
+  it("keeps the requested green caption and high-contrast header treatment", () => {
+    expect(home).toContain("Deva Braga / Fotógrafo e Designer Gráfico");
+    expect(cssHas(".statement-portrait figcaption { color: var(--acid)" )).toBe(true);
+    expect(cssHas(".topbar { color: #fff" )).toBe(true);
+    expect(cssHas("mix-blend-mode: normal")).toBe(true);
+  });
 });

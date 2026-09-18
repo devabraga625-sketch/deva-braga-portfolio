@@ -1,6 +1,6 @@
-import { ArrowLeft, Check, Copy, ExternalLink, Facebook, Linkedin, MessageCircle, Share2 } from "lucide-react";
+import { ArrowLeft, ArrowUp, Check, Copy, ExternalLink, Facebook, Linkedin, MessageCircle, Share2 } from "lucide-react";
 import { Link, useRoute } from "wouter";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { portfolioProjects } from "@/data/portfolio";
 import { trpc } from "@/lib/trpc";
 
@@ -17,6 +17,7 @@ export default function CaseStudy() {
   const [, params] = useRoute<{ slug: string }>("/estudo-de-caso/:slug");
   const { data: syncedProjects = [] } = trpc.behance.projects.useQuery();
   const [copied, setCopied] = useState(false);
+  const [showBackToTop, setShowBackToTop] = useState(false);
   const localProject = portfolioProjects.find(item => item.slug === params?.slug);
   const remoteProject = syncedProjects.find(item => `behance-${item.projectKey}` === params?.slug);
   const project = localProject ?? (remoteProject ? { id: 1000, title: remoteProject.title, slug: `behance-${remoteProject.projectKey}`, year: remoteProject.publishedAt ? new Date(remoteProject.publishedAt).getFullYear().toString() : "Behance", publishedAt: remoteProject.publishedAt?.toISOString(), sourceUrl: remoteProject.sourceUrl, categories: ["Design"] as const, thumbnail: remoteProject.cover ?? "", description: remoteProject.description ?? "Projeto publicado no Behance.", media: [] as string[] } : undefined);
@@ -42,7 +43,15 @@ export default function CaseStudy() {
     try { await navigator.clipboard.writeText(shareUrl); setCopied(true); window.setTimeout(() => setCopied(false), 1800); } catch { window.prompt("Copie o link deste estudo de caso:", shareUrl); }
   };
   const nativeShare = async () => { if (navigator.share) await navigator.share({ title: shareTitle, text: project.description, url: shareUrl }); else await copyShareLink(); };
+  useEffect(() => {
+    const onScroll = () => setShowBackToTop(window.scrollY > Math.max(420, window.innerHeight * 0.7));
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  const scrollToTop = () => window.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
   return <main className="case-study-page">
+    {showBackToTop && <button type="button" className="back-to-top case-study-back-to-top" onClick={scrollToTop} aria-label="Voltar ao topo do estudo de caso" title="Voltar ao topo"><ArrowUp size={17} /><span>Topo</span></button>}
     <header className="case-study-header">
       <button className="case-study-back" onClick={() => window.history.back()}><ArrowLeft size={15} /> Voltar</button>
       <span className="eyebrow">Estudo de caso · {project.year}</span>

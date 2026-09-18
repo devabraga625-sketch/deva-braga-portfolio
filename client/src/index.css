@@ -567,3 +567,21 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .catalog-image > .card-shade, .catalog-image > .card-arrow { z-index: 2; }
 @keyframes image-skeleton-shimmer { from { background-position: 180% 0; } to { background-position: -40% 0; } }
 @media (prefers-reduced-motion: reduce) { .catalog-image > .image-skeleton { animation: none; } .catalog-image > img { transition: none; } }
+
+/* Accessibility refinement: stable contrast over the hero image in both themes. */
+.topbar { color: #fff; mix-blend-mode: normal; background: linear-gradient(180deg, rgba(10,12,10,.48), rgba(10,12,10,0)); text-shadow: 0 1px 12px rgba(0,0,0,.65); }
+.topbar-center, .menu-trigger { font-size: 12px; font-weight: 600; letter-spacing: .08em; }
+.wordmark { font-size: 20px; font-weight: 600; line-height: .9; }
+.menu-lines i { height: 2px; }
+.theme-toggle { width: 34px; height: 34px; border-width: 2px; }
+.topbar button:focus-visible, .topbar a:focus-visible { outline: 2px solid var(--acid); outline-offset: 4px; }
+.statement-portrait figcaption { color: var(--acid); font-size: 11px; font-weight: 500; line-height: 1.45; text-shadow: 0 1px 8px rgba(0,0,0,.35); }
+.statement-copy p { color: rgba(232,228,220,.9); }
+.dark-mode .statement { background: #0d0d0c; color: #fff; }
+.dark-mode .statement-copy p { color: rgba(255,255,255,.88); }
+.dark-mode .statement-portrait figcaption, .statement-portrait figcaption { color: var(--acid); }
+.project-back-to-top { position: fixed; right: clamp(16px, 3vw, 34px); bottom: clamp(18px, 3vw, 34px); z-index: 36; display: inline-flex; align-items: center; gap: 7px; min-width: 44px; min-height: 44px; padding: 10px 13px; border: 1px solid var(--acid); border-radius: 999px; background: var(--paper); color: var(--ink); box-shadow: 0 12px 30px rgba(0,0,0,.3); font: 10px 'DM Mono', monospace; text-transform: uppercase; transition: transform .18s cubic-bezier(.23,1,.32,1), background-color .18s cubic-bezier(.23,1,.32,1), color .18s cubic-bezier(.23,1,.32,1); }
+.project-back-to-top:hover, .project-back-to-top:focus-visible { transform: translateY(-3px); background: var(--acid); color: var(--ink); }
+.project-back-to-top:active { transform: translateY(-1px) scale(.97); }
+@media (max-width: 700px) { .topbar-center { font-size: 10px; }.menu-trigger { font-size: 11px; }.wordmark { font-size: 18px; }.project-back-to-top { right: 14px; bottom: 14px; padding: 10px; }.project-back-to-top span { display: none; } }
+@media (prefers-reduced-motion: reduce) { .project-back-to-top { transition: none; }.project-back-to-top:hover, .project-back-to-top:focus-visible { transform: none; } }
