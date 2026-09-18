@@ -1,8 +1,11 @@
-import { ArrowLeft, ArrowUp, Check, Copy, ExternalLink, Facebook, Linkedin, MessageCircle, Share2 } from "lucide-react";
+import { ArrowLeft, ArrowUp, Check, ChevronLeft, ChevronRight, Copy, ExternalLink, Facebook, Linkedin, MessageCircle, Share2 } from "lucide-react";
 import { Link, useRoute } from "wouter";
 import { useEffect, useState } from "react";
 import { portfolioProjects } from "@/data/portfolio";
 import { trpc } from "@/lib/trpc";
+import testimonialData from "@/data/testimonials.json";
+
+type Testimonial = { quote: string; clientName: string; clientRole?: string; avatar?: string; avatarAlt?: string; approved?: boolean };
 
 function sectionCopy(categories: readonly string[]) {
   const type = categories.join(" · ");
@@ -18,11 +21,13 @@ export default function CaseStudy() {
   const { data: syncedProjects = [] } = trpc.behance.projects.useQuery();
   const [copied, setCopied] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const [testimonialIndex, setTestimonialIndex] = useState(0);
   const localProject = portfolioProjects.find(item => item.slug === params?.slug);
   const remoteProject = syncedProjects.find(item => `behance-${item.projectKey}` === params?.slug);
   const project = localProject ?? (remoteProject ? { id: 1000, title: remoteProject.title, slug: `behance-${remoteProject.projectKey}`, year: remoteProject.publishedAt ? new Date(remoteProject.publishedAt).getFullYear().toString() : "Behance", publishedAt: remoteProject.publishedAt?.toISOString(), sourceUrl: remoteProject.sourceUrl, categories: ["Design"] as const, thumbnail: remoteProject.cover ?? "", description: remoteProject.description ?? "Projeto publicado no Behance.", media: [] as string[] } : undefined);
   if (!project) return <main className="case-study-page"><Link href="/">Voltar ao portfólio</Link><h1>Estudo de caso não encontrado.</h1></main>;
   const copy = sectionCopy(project.categories);
+  const testimonials = ((testimonialData.projects as Record<string, Testimonial[]>)[project.slug] ?? []).filter(item => item.approved !== false && item.quote.trim() && item.clientName.trim());
   const mediaCount = project.media.length;
   const clientMatch = project.description.match(/cliente:\s*([^.;]+)/i)?.[1]?.trim();
   const metrics = [
@@ -43,6 +48,7 @@ export default function CaseStudy() {
     try { await navigator.clipboard.writeText(shareUrl); setCopied(true); window.setTimeout(() => setCopied(false), 1800); } catch { window.prompt("Copie o link deste estudo de caso:", shareUrl); }
   };
   const nativeShare = async () => { if (navigator.share) await navigator.share({ title: shareTitle, text: project.description, url: shareUrl }); else await copyShareLink(); };
+  const changeTestimonial = (direction: number) => { if (!testimonials.length) return; setTestimonialIndex(index => (index + direction + testimonials.length) % testimonials.length); };
   useEffect(() => {
     const onScroll = () => setShowBackToTop(window.scrollY > Math.max(420, window.innerHeight * 0.7));
     onScroll();
@@ -82,8 +88,14 @@ export default function CaseStudy() {
       <section className="case-study-testimonial" aria-labelledby="case-testimonial-title">
         <span className="eyebrow">Depoimentos de clientes</span>
         <h2 id="case-testimonial-title">A voz de quem participou.</h2>
-        <blockquote>“{clientMatch ? `Depoimento de ${clientMatch} aguardando publicação autorizada.` : "Nenhum depoimento foi publicado para este projeto ainda."}”</blockquote>
-        <p className="case-study-note">A área está preparada para receber uma fala real do cliente, sempre mediante revisão e autorização de publicação.</p>
+        {testimonials.length > 0 ? <div className="testimonial-carousel" aria-roledescription="carrossel" aria-label={`Depoimentos de ${project.title}`}>
+          <div className="testimonial-slide" key={`${project.slug}-${testimonialIndex}`} aria-live="polite">
+            {testimonials[testimonialIndex].avatar && <img src={testimonials[testimonialIndex].avatar} alt={testimonials[testimonialIndex].avatarAlt ?? `Foto de ${testimonials[testimonialIndex].clientName}`} loading="lazy" />}
+            <blockquote>“{testimonials[testimonialIndex].quote}”</blockquote>
+            <p className="testimonial-author"><strong>{testimonials[testimonialIndex].clientName}</strong>{testimonials[testimonialIndex].clientRole && <span>{testimonials[testimonialIndex].clientRole}</span>}</p>
+          </div>
+          {testimonials.length > 1 && <div className="testimonial-controls"><button type="button" onClick={() => changeTestimonial(-1)} aria-label="Depoimento anterior"><ChevronLeft size={17} /></button><span>{String(testimonialIndex + 1).padStart(2, "0")} / {String(testimonials.length).padStart(2, "0")}</span><button type="button" onClick={() => changeTestimonial(1)} aria-label="Próximo depoimento"><ChevronRight size={17} /></button></div>}
+        </div> : <><blockquote>“Nenhum depoimento foi publicado para este projeto ainda.”</blockquote><p className="case-study-note">Adicione uma citação real e autorizada em <code>client/src/data/testimonials.json</code> para exibi-la aqui.</p></>}
       </section>
     </section>
     <footer className="case-study-footer"><Link href="/#trabalhos">Todos os trabalhos</Link><Link href="/#contato">Solicitar orçamento</Link></footer>

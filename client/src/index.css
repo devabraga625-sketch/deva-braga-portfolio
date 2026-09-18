@@ -598,3 +598,20 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .statement a, .statement-portrait figcaption { transition: color .18s cubic-bezier(.23,1,.32,1), transform .18s cubic-bezier(.23,1,.32,1); transform-origin: left center; }
 .statement a:hover, .statement a:focus-visible, .statement-portrait figcaption:hover { color: #efff78; transform: translateX(3px); }
 @media (prefers-reduced-motion: reduce) { .theme-toggle, .theme-toggle svg, .menu-trigger, .menu-lines i, .statement a, .statement-portrait figcaption { transition: none; } .theme-toggle:hover, .theme-toggle:focus-visible, .theme-toggle:hover svg, .theme-toggle:focus-visible svg, .statement a:hover, .statement a:focus-visible, .statement-portrait figcaption:hover { transform: none; } }
+
+/* Header readability veil: keeps navigation legible over bright or detailed photography. */
+.topbar { background: linear-gradient(180deg, rgba(7,9,8,.72) 0%, rgba(7,9,8,.38) 58%, rgba(7,9,8,0) 100%); }
+.case-study-header { position: relative; isolation: isolate; }
+.case-study-header::before { content: ''; position: absolute; z-index: -1; inset: 0; background: linear-gradient(180deg, rgba(7,9,8,.32), rgba(7,9,8,0) 72%); pointer-events: none; }
+.testimonial-carousel { position: relative; max-width: 760px; margin-top: 28px; }
+.testimonial-slide { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 18px 24px; align-items: center; padding: clamp(22px, 4vw, 42px); border: 1px solid rgba(232,228,220,.2); background: rgba(17,17,15,.18); animation: testimonial-slide-in .24s cubic-bezier(.23,1,.32,1) both; }
+.testimonial-slide img { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; grid-row: span 2; border: 1px solid var(--acid); }
+.testimonial-slide blockquote { margin: 0; color: var(--paper); font: 500 clamp(1.35rem, 3vw, 2.3rem)/1.16 'Playfair Display', serif; letter-spacing: -.025em; }
+.testimonial-author { grid-column: 2; margin: 0; display: grid; gap: 4px; color: var(--acid); font: 10px 'DM Mono', monospace; text-transform: uppercase; letter-spacing: .04em; }
+.testimonial-author span { color: rgba(232,228,220,.66); }
+.testimonial-controls { display: flex; align-items: center; gap: 12px; margin-top: 14px; color: var(--acid); font: 10px 'DM Mono', monospace; }
+.testimonial-controls button { display: grid; place-items: center; width: 38px; height: 38px; border: 1px solid rgba(214,230,91,.62); background: transparent; color: var(--acid); transition: transform .18s cubic-bezier(.23,1,.32,1), background-color .18s cubic-bezier(.23,1,.32,1), color .18s cubic-bezier(.23,1,.32,1); }
+.testimonial-controls button:hover, .testimonial-controls button:focus-visible { transform: translateY(-2px); background: var(--acid); color: var(--ink); }
+@keyframes testimonial-slide-in { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
+@media (max-width: 600px) { .testimonial-slide { grid-template-columns: 1fr; gap: 14px; }.testimonial-slide img { grid-row: auto; }.testimonial-author { grid-column: auto; }.testimonial-slide blockquote { font-size: 1.45rem; }.testimonial-controls { justify-content: flex-end; } }
+@media (prefers-reduced-motion: reduce) { .testimonial-slide { animation: none; }.testimonial-controls button { transition: none; }.testimonial-controls button:hover, .testimonial-controls button:focus-visible { transform: none; } }

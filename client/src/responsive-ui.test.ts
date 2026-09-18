@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 const css = readFileSync(new URL("./index.css", import.meta.url), "utf8");
 const home = readFileSync(new URL("./pages/Home.tsx", import.meta.url), "utf8");
 const caseStudy = readFileSync(new URL("./pages/CaseStudy.tsx", import.meta.url), "utf8");
+const testimonials = readFileSync(new URL("./data/testimonials.json", import.meta.url), "utf8");
 
 function cssHas(selector: string) {
   return css.includes(selector);
@@ -71,5 +72,18 @@ describe("responsive UI contracts", () => {
     expect(cssHas(".theme-toggle:hover, .theme-toggle:focus-visible")).toBe(true);
     expect(cssHas(".menu-trigger:hover .menu-lines i:first-child")).toBe(true);
     expect(cssHas(".statement-portrait figcaption:hover")).toBe(true);
+  });
+
+  it("keeps testimonials editable, consent-aware, and carousel-ready", () => {
+    expect(testimonials).toContain('"projects"');
+    expect(testimonials).toContain('"clientName"');
+    expect(testimonials).toContain('"avatar"');
+    expect(testimonials).toContain('"approved"');
+    expect(caseStudy).toContain('className="testimonial-carousel"');
+    expect(caseStudy).toContain('aria-roledescription="carrossel"');
+    expect(caseStudy).toContain('aria-label="Depoimento anterior"');
+    expect(caseStudy).toContain('aria-label="Próximo depoimento"');
+    expect(cssHas(".testimonial-slide")).toBe(true);
+    expect(cssHas(".topbar { background: linear-gradient(180deg")).toBe(true);
   });
 });

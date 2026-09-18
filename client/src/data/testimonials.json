@@ -1,0 +1,21 @@
+{
+  "instructions": "Adicione depoimentos somente com autorização de publicação. Use o slug exato do estudo de caso como chave em projects.",
+  "fields": {
+    "quote": "Texto integral autorizado pelo cliente.",
+    "clientName": "Nome público autorizado",
+    "clientRole": "Cargo, marca ou contexto autorizado",
+    "avatar": "/manus-storage/avatar-cliente.webp",
+    "avatarAlt": "Descrição acessível da foto do cliente",
+    "approved": true
+  },
+  "projects": {
+    "festival-gastronomico-da-feira-de-sao-joaquim": [],
+    "lavagem-das-baianas-festa-de-nossa-senhora-d-ajuda": [],
+    "role-pelas-ruas-de-cachoeira": [],
+    "ocupacao-377": [],
+    "a-revolucao-silenciosa": [],
+    "zestspice-propaganda": [],
+    "vinheta-savior": [],
+    "stories-depyl-care-012026": []
+  }
+}
