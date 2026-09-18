@@ -1,11 +1,11 @@
 import { ArrowLeft, ArrowUp, Check, ChevronLeft, ChevronRight, Copy, ExternalLink, Facebook, Linkedin, MessageCircle, Share2 } from "lucide-react";
 import { Link, useRoute } from "wouter";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { portfolioProjects } from "@/data/portfolio";
 import { trpc } from "@/lib/trpc";
 import testimonialData from "@/data/testimonials.json";
 
-type Testimonial = { quote: string; clientName: string; clientRole?: string; avatar?: string; avatarAlt?: string; approved?: boolean };
+type Testimonial = { quote: string; clientName: string; clientRole?: string; avatar?: string; avatarAlt?: string; rating?: number; approved?: boolean };
 
 function sectionCopy(categories: readonly string[]) {
   const type = categories.join(" · ");
@@ -22,6 +22,9 @@ export default function CaseStudy() {
   const [copied, setCopied] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [testimonialIndex, setTestimonialIndex] = useState(0);
+  const [autoplayPaused, setAutoplayPaused] = useState(false);
+  const [readingTestimonial, setReadingTestimonial] = useState<Testimonial | null>(null);
+  const touchStartX = useRef<number | null>(null);
   const localProject = portfolioProjects.find(item => item.slug === params?.slug);
   const remoteProject = syncedProjects.find(item => `behance-${item.projectKey}` === params?.slug);
   const project = localProject ?? (remoteProject ? { id: 1000, title: remoteProject.title, slug: `behance-${remoteProject.projectKey}`, year: remoteProject.publishedAt ? new Date(remoteProject.publishedAt).getFullYear().toString() : "Behance", publishedAt: remoteProject.publishedAt?.toISOString(), sourceUrl: remoteProject.sourceUrl, categories: ["Design"] as const, thumbnail: remoteProject.cover ?? "", description: remoteProject.description ?? "Projeto publicado no Behance.", media: [] as string[] } : undefined);
@@ -49,12 +52,26 @@ export default function CaseStudy() {
   };
   const nativeShare = async () => { if (navigator.share) await navigator.share({ title: shareTitle, text: project.description, url: shareUrl }); else await copyShareLink(); };
   const changeTestimonial = (direction: number) => { if (!testimonials.length) return; setTestimonialIndex(index => (index + direction + testimonials.length) % testimonials.length); };
+  const handleTestimonialTouchStart = (event: React.TouchEvent) => { touchStartX.current = event.touches[0]?.clientX ?? null; };
+  const handleTestimonialTouchEnd = (event: React.TouchEvent) => { if (touchStartX.current === null) return; const delta = (event.changedTouches[0]?.clientX ?? touchStartX.current) - touchStartX.current; touchStartX.current = null; if (Math.abs(delta) > 42) changeTestimonial(delta < 0 ? 1 : -1); };
   useEffect(() => {
     const onScroll = () => setShowBackToTop(window.scrollY > Math.max(420, window.innerHeight * 0.7));
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+  useEffect(() => {
+    if (testimonials.length < 2 || autoplayPaused || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const timer = window.setInterval(() => changeTestimonial(1), 6000);
+    return () => window.clearInterval(timer);
+  }, [autoplayPaused, testimonials.length]);
+  useEffect(() => {
+    if (!readingTestimonial) return;
+    const onKeyDown = (event: KeyboardEvent) => { if (event.key === "Escape") setReadingTestimonial(null); };
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", onKeyDown);
+    return () => { document.body.style.overflow = ""; window.removeEventListener("keydown", onKeyDown); };
+  }, [readingTestimonial]);
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
   return <main className="case-study-page">
     {showBackToTop && <button type="button" className="back-to-top case-study-back-to-top" onClick={scrollToTop} aria-label="Voltar ao topo do estudo de caso" title="Voltar ao topo"><ArrowUp size={17} /><span>Topo</span></button>}
@@ -88,16 +105,17 @@ export default function CaseStudy() {
       <section className="case-study-testimonial" aria-labelledby="case-testimonial-title">
         <span className="eyebrow">Depoimentos de clientes</span>
         <h2 id="case-testimonial-title">A voz de quem participou.</h2>
-        {testimonials.length > 0 ? <div className="testimonial-carousel" aria-roledescription="carrossel" aria-label={`Depoimentos de ${project.title}`}>
-          <div className="testimonial-slide" key={`${project.slug}-${testimonialIndex}`} aria-live="polite">
+        {testimonials.length > 0 ? <div className="testimonial-carousel" aria-roledescription="carrossel" aria-label={`Depoimentos de ${project.title}`} onMouseEnter={() => setAutoplayPaused(true)} onMouseLeave={() => setAutoplayPaused(false)} onFocus={() => setAutoplayPaused(true)} onBlur={() => setAutoplayPaused(false)} onTouchStart={handleTestimonialTouchStart} onTouchEnd={handleTestimonialTouchEnd}>
+          <div className="testimonial-slide" key={`${project.slug}-${testimonialIndex}`} aria-live="polite" aria-roledescription="slide">
             {testimonials[testimonialIndex].avatar && <img src={testimonials[testimonialIndex].avatar} alt={testimonials[testimonialIndex].avatarAlt ?? `Foto de ${testimonials[testimonialIndex].clientName}`} loading="lazy" />}
-            <blockquote>“{testimonials[testimonialIndex].quote}”</blockquote>
+            <div className="testimonial-copy"><div className="testimonial-stars" aria-label={`Avaliação: ${Math.min(5, Math.max(0, testimonials[testimonialIndex].rating ?? 0))} de 5`}>{Array.from({ length: 5 }, (_, index) => <span key={index} aria-hidden="true" className={index < Math.round(testimonials[testimonialIndex].rating ?? 0) ? "is-filled" : ""}>★</span>)}</div><blockquote>“{testimonials[testimonialIndex].quote.length > 280 ? `${testimonials[testimonialIndex].quote.slice(0, 280).trimEnd()}…` : testimonials[testimonialIndex].quote}”</blockquote>{testimonials[testimonialIndex].quote.length > 280 && <button type="button" className="testimonial-read-more" onClick={() => setReadingTestimonial(testimonials[testimonialIndex])}>Ler mais</button>}</div>
             <p className="testimonial-author"><strong>{testimonials[testimonialIndex].clientName}</strong>{testimonials[testimonialIndex].clientRole && <span>{testimonials[testimonialIndex].clientRole}</span>}</p>
           </div>
           {testimonials.length > 1 && <div className="testimonial-controls"><button type="button" onClick={() => changeTestimonial(-1)} aria-label="Depoimento anterior"><ChevronLeft size={17} /></button><span>{String(testimonialIndex + 1).padStart(2, "0")} / {String(testimonials.length).padStart(2, "0")}</span><button type="button" onClick={() => changeTestimonial(1)} aria-label="Próximo depoimento"><ChevronRight size={17} /></button></div>}
         </div> : <><blockquote>“Nenhum depoimento foi publicado para este projeto ainda.”</blockquote><p className="case-study-note">Adicione uma citação real e autorizada em <code>client/src/data/testimonials.json</code> para exibi-la aqui.</p></>}
       </section>
     </section>
+    {readingTestimonial && <div className="testimonial-modal" role="dialog" aria-modal="true" aria-labelledby="testimonial-modal-title" onClick={() => setReadingTestimonial(null)}><div className="testimonial-modal-card" onClick={event => event.stopPropagation()}><button type="button" className="testimonial-modal-close" onClick={() => setReadingTestimonial(null)} aria-label="Fechar depoimento">×</button><span className="eyebrow">Depoimento completo</span><h2 id="testimonial-modal-title">{readingTestimonial.clientName}</h2><div className="testimonial-stars" aria-label={`Avaliação: ${readingTestimonial.rating ?? 0} de 5`}>{Array.from({ length: 5 }, (_, index) => <span key={index} aria-hidden="true" className={index < Math.round(readingTestimonial.rating ?? 0) ? "is-filled" : ""}>★</span>)}</div><blockquote>“{readingTestimonial.quote}”</blockquote>{readingTestimonial.clientRole && <p>{readingTestimonial.clientRole}</p>}</div></div>}
     <footer className="case-study-footer"><Link href="/#trabalhos">Todos os trabalhos</Link><Link href="/#contato">Solicitar orçamento</Link></footer>
   </main>;
 }

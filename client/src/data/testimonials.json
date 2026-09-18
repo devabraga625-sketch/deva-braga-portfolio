@@ -6,6 +6,7 @@
     "clientRole": "Cargo, marca ou contexto autorizado",
     "avatar": "/manus-storage/avatar-cliente.webp",
     "avatarAlt": "Descrição acessível da foto do cliente",
+    "rating": 5,
     "approved": true
   },
   "projects": {

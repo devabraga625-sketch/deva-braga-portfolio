@@ -78,6 +78,7 @@ describe("responsive UI contracts", () => {
     expect(testimonials).toContain('"projects"');
     expect(testimonials).toContain('"clientName"');
     expect(testimonials).toContain('"avatar"');
+    expect(testimonials).toContain('"rating"');
     expect(testimonials).toContain('"approved"');
     expect(caseStudy).toContain('className="testimonial-carousel"');
     expect(caseStudy).toContain('aria-roledescription="carrossel"');
@@ -85,5 +86,17 @@ describe("responsive UI contracts", () => {
     expect(caseStudy).toContain('aria-label="Próximo depoimento"');
     expect(cssHas(".testimonial-slide")).toBe(true);
     expect(cssHas(".topbar { background: linear-gradient(180deg")).toBe(true);
+  });
+
+  it("keeps the testimonial carousel touch, autoplay, rating, and modal contracts", () => {
+    expect(caseStudy).toContain("handleTestimonialTouchStart");
+    expect(caseStudy).toContain("handleTestimonialTouchEnd");
+    expect(caseStudy).toContain("setInterval(() => changeTestimonial(1), 6000)");
+    expect(caseStudy).toContain('className="testimonial-stars"');
+    expect(caseStudy).toContain('className="testimonial-read-more"');
+    expect(caseStudy).toContain('className="testimonial-modal"');
+    expect(caseStudy).toContain('aria-label="Fechar depoimento"');
+    expect(cssHas(".project-view > .project-back-to-top { position: sticky")).toBe(true);
+    expect(cssHas(".testimonial-modal-card")).toBe(true);
   });
 });

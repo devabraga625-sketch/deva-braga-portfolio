@@ -615,3 +615,22 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 @keyframes testimonial-slide-in { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
 @media (max-width: 600px) { .testimonial-slide { grid-template-columns: 1fr; gap: 14px; }.testimonial-slide img { grid-row: auto; }.testimonial-author { grid-column: auto; }.testimonial-slide blockquote { font-size: 1.45rem; }.testimonial-controls { justify-content: flex-end; } }
 @media (prefers-reduced-motion: reduce) { .testimonial-slide { animation: none; }.testimonial-controls button { transition: none; }.testimonial-controls button:hover, .testimonial-controls button:focus-visible { transform: none; } }
+
+/* Work surface top control: sticky to the internal scroller, never a second viewport-fixed theme variant. */
+.project-view > .project-back-to-top { position: sticky; top: 18px; float: right; margin: 0 0 -44px; right: auto; bottom: auto; z-index: 12; background: var(--ink); color: var(--acid); }
+.project-view > .project-back-to-top:hover, .project-view > .project-back-to-top:focus-visible { background: var(--acid); color: var(--ink); }
+.testimonial-copy { min-width: 0; }
+.testimonial-stars { display: flex; gap: 3px; margin-bottom: 10px; color: rgba(214,230,91,.28); font-size: 14px; letter-spacing: .08em; }
+.testimonial-stars .is-filled { color: var(--acid); }
+.testimonial-read-more { margin-top: 13px; border: 0; border-bottom: 1px solid var(--acid); padding: 0 0 3px; background: transparent; color: var(--acid); font: 10px 'DM Mono', monospace; text-transform: uppercase; transition: color .18s cubic-bezier(.23,1,.32,1), border-color .18s cubic-bezier(.23,1,.32,1); }
+.testimonial-read-more:hover, .testimonial-read-more:focus-visible { color: #efff78; border-color: #efff78; }
+.testimonial-modal { position: fixed; z-index: 80; inset: 0; display: grid; place-items: center; padding: 22px; background: rgba(7,9,8,.78); animation: testimonial-modal-in .2s cubic-bezier(.23,1,.32,1) both; }
+.testimonial-modal-card { position: relative; width: min(680px, 100%); max-height: min(82vh, 760px); overflow-y: auto; padding: clamp(26px, 5vw, 54px); background: var(--ink); color: var(--paper); border: 1px solid rgba(214,230,91,.48); box-shadow: 0 24px 80px rgba(0,0,0,.4); }
+.testimonial-modal-card h2 { margin: 14px 0 0; font: 500 clamp(2rem, 5vw, 4rem)/.95 'Playfair Display', serif; letter-spacing: -.05em; }
+.testimonial-modal-card blockquote { margin: 24px 0 0; font: 500 clamp(1.3rem, 3vw, 2.2rem)/1.2 'Playfair Display', serif; }
+.testimonial-modal-card > p { color: var(--acid); font: 10px 'DM Mono', monospace; text-transform: uppercase; }
+.testimonial-modal-close { position: absolute; top: 14px; right: 16px; width: 36px; height: 36px; border: 1px solid rgba(232,228,220,.35); background: transparent; color: var(--paper); font-size: 24px; line-height: 1; transition: transform .18s cubic-bezier(.23,1,.32,1), color .18s cubic-bezier(.23,1,.32,1), border-color .18s cubic-bezier(.23,1,.32,1); }
+.testimonial-modal-close:hover, .testimonial-modal-close:focus-visible { transform: rotate(6deg); color: var(--acid); border-color: var(--acid); }
+@keyframes testimonial-modal-in { from { opacity: 0; } to { opacity: 1; } }
+@media (max-width: 600px) { .project-view > .project-back-to-top { top: 12px; margin-bottom: -44px; }.testimonial-modal { padding: 14px; }.testimonial-modal-card { padding: 28px 20px 24px; } }
+@media (prefers-reduced-motion: reduce) { .testimonial-modal { animation: none; }.testimonial-read-more, .testimonial-modal-close { transition: none; }.testimonial-modal-close:hover, .testimonial-modal-close:focus-visible { transform: none; } }
